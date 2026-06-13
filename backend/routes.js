@@ -89,7 +89,7 @@ router.post('/user/login', async (req, res) => {
     res.json({ success: true, data: newUser[0] });
   } catch (error) {
     console.error('登录失败:', error);
-    res.status(500).json({ success: false, message: '登录失败' });
+    res.status(500).json({ success: false, message: '登录失败', error: error.message });
   }
 });
 
