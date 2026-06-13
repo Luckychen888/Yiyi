@@ -76,6 +76,26 @@ app.get('/', (req, res) => {
   });
 });
 
+// 直接在根路径处理 webhook（无需数据库检查）
+app.post('/webhook', async (req, res) => {
+  try {
+    console.log('📨 收到腾讯云托管消息推送:', req.body);
+    res.json({
+      success: true,
+      message: '消息接收成功',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('处理webhook失败:', error);
+    res.status(500).json({ success: false, message: '处理失败' });
+  }
+});
+
+app.get('/webhook', (req, res) => {
+  console.log('🔍 收到验证请求:', req.query);
+  res.send(req.query.echostr || 'success');
+});
+
 // API 路由
 app.use('/api', (req, res, next) => {
   if (!req.app.locals.db) {

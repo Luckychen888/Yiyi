@@ -1053,7 +1053,7 @@ router.get('/message/token', async (req, res) => {
     res.json({ success: true, data: { accessToken: token } });
   } catch (error) {
     console.error('获取access_token失败:', error);
-    res.status(500).json({ success: false, message: '获取失败', error: error.message });
+    res.status(500).json({ success: false, message: '获取失败' });
   }
 });
 
