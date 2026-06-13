@@ -5,6 +5,8 @@ import styles from './index.module.scss';
 import { moodConfig } from '../../data/diaries';
 import { useCoupleStore } from '../../store/useCoupleStore';
 
+const defaultMood = { label: '', emoji: '', color: '#ccc' };
+
 const DiaryDetailPage: React.FC = () => {
   const { diaries, likeDiary, addDiary, addComment } = useCoupleStore();
   const [diary, setDiary] = useState<any>(null);
@@ -46,14 +48,16 @@ const DiaryDetailPage: React.FC = () => {
       imageUrl: 'https://picsum.photos/id/104/300/300'
     };
     
-    const truncatedContent = diary.content.length > 20 
-      ? diary.content.substring(0, 20) + '...' 
-      : diary.content;
+    const content = diary.content || '';
+    const truncatedContent = content.length > 20 
+      ? content.substring(0, 20) + '...' 
+      : content;
+    const images = diary.images || [];
     
     return {
       title: `${truncatedContent} 💌`,
       path: `/pages/diary-detail/index?id=${diary.id}`,
-      imageUrl: diary.images[0] || 'https://picsum.photos/id/104/300/300'
+      imageUrl: images[0] || 'https://picsum.photos/id/104/300/300'
     };
   });
 
@@ -63,8 +67,9 @@ const DiaryDetailPage: React.FC = () => {
       query: ''
     };
     
+    const content = diary.content || '';
     return {
-      title: `${diary.authorName}的日记：${diary.content.substring(0, 50)}...`,
+      title: `${diary.authorName || ''}的日记：${content.substring(0, 50)}...`,
       query: `id=${diary.id}`
     };
   });
@@ -101,6 +106,7 @@ const DiaryDetailPage: React.FC = () => {
   };
 
   const formatTime = (dateStr: string): string => {
+    if (!dateStr) return '';
     const date = new Date(dateStr);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
@@ -128,7 +134,9 @@ const DiaryDetailPage: React.FC = () => {
     );
   }
 
-  const mood = moodConfig[diary.mood];
+  const mood = moodConfig[diary.mood] || defaultMood;
+  const images = diary.images || [];
+  const comments = diary.comments || [];
 
   return (
     <ScrollView className={styles.page} scrollY enhanced showScrollbar={false}>
@@ -141,31 +149,33 @@ const DiaryDetailPage: React.FC = () => {
         <View className={styles.authorInfo}>
           <Image 
             className={styles.authorAvatar}
-            src={diary.authorAvatar}
+            src={diary.authorAvatar || ''}
             mode="aspectFill"
           />
           <View className={styles.authorMeta}>
-            <Text className={styles.authorName}>{diary.authorName}</Text>
+            <Text className={styles.authorName}>{diary.authorName || ''}</Text>
             <Text className={styles.publishTime}>{formatTime(diary.createdAt)}</Text>
           </View>
         </View>
-        <View className={styles.moodBadge} style={{ background: mood.color }}>
-          <Text className={styles.moodIcon}>{mood.emoji}</Text>
-          <Text className={styles.moodText}>{mood.label}</Text>
-        </View>
+        {mood.label && (
+          <View className={styles.moodBadge} style={{ background: mood.color }}>
+            <Text className={styles.moodIcon}>{mood.emoji}</Text>
+            <Text className={styles.moodText}>{mood.label}</Text>
+          </View>
+        )}
       </View>
 
       <View className={styles.contentSection}>
-        <Text className={styles.contentText}>{diary.content}</Text>
+        <Text className={styles.contentText}>{diary.content || ''}</Text>
       </View>
 
-      {diary.images.length > 0 && (
+      {images.length > 0 && (
         <View className={styles.imageGrid}>
-          {diary.images.map((img: string, index: number) => (
+          {images.map((img: string, index: number) => (
             <View 
               key={index}
               className={styles.imageItem}
-              onClick={() => handlePreviewImage(diary.images, index)}
+              onClick={() => handlePreviewImage(images, index)}
             >
               <Image 
                 className={styles.image}
@@ -199,14 +209,14 @@ const DiaryDetailPage: React.FC = () => {
           onClick={handleLike}
         >
           <Text className={styles.actionIcon}>{isLiked ? '❤️' : '🤍'}</Text>
-          <Text className={styles.actionText}>{diary.likes}</Text>
+          <Text className={styles.actionText}>{diary.likes || 0}</Text>
         </View>
         <View 
           className={styles.actionItem}
           onClick={() => setShowCommentInput(!showCommentInput)}
         >
           <Text className={styles.actionIcon}>💬</Text>
-          <Text className={styles.actionText}>{diary.comments.length}</Text>
+          <Text className={styles.actionText}>{comments.length}</Text>
         </View>
         <View className={styles.actionItem} onClick={() => {
           Taro.showShareMenu({
@@ -238,28 +248,28 @@ const DiaryDetailPage: React.FC = () => {
       <View className={styles.commentSection}>
         <View className={styles.commentHeader}>
           <Text className={styles.commentTitle}>评论</Text>
-          <Text className={styles.commentCount}>{diary.comments.length}条</Text>
+          <Text className={styles.commentCount}>{comments.length}条</Text>
         </View>
 
-        {diary.comments.length === 0 ? (
+        {comments.length === 0 ? (
           <View className={styles.commentEmpty}>
             <Text className={styles.commentEmptyText}>还没有评论，快来第一条吧~</Text>
           </View>
         ) : (
           <View className={styles.commentList}>
-            {diary.comments.map((comment: any) => (
+            {comments.map((comment: any) => (
               <View key={comment.id} className={styles.commentItem}>
                 <Image 
                   className={styles.commentAvatar}
-                  src={comment.authorAvatar}
+                  src={comment.authorAvatar || ''}
                   mode="aspectFill"
                 />
                 <View className={styles.commentContent}>
                   <View className={styles.commentMeta}>
-                    <Text className={styles.commentAuthor}>{comment.authorName}</Text>
+                    <Text className={styles.commentAuthor}>{comment.authorName || ''}</Text>
                     <Text className={styles.commentTime}>{formatTime(comment.createdAt)}</Text>
                   </View>
-                  <Text className={styles.commentText}>{comment.content}</Text>
+                  <Text className={styles.commentText}>{comment.content || ''}</Text>
                 </View>
               </View>
             ))}

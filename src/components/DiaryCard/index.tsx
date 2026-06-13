@@ -10,29 +10,35 @@ interface DiaryCardProps {
   onClick?: () => void;
 }
 
+const defaultMood = { label: '', emoji: '', color: '#ccc' };
+
 const DiaryCard: React.FC<DiaryCardProps> = ({ diary, onClick }) => {
-  const mood = moodConfig[diary.mood];
+  const mood = moodConfig[diary.mood] || defaultMood;
+  const images = diary.images || [];
+  const comments = diary.comments || [];
 
   return (
     <View className={styles.container} onClick={onClick}>
       <View className={styles.header}>
         <Image 
           className={styles.avatar}
-          src={diary.authorAvatar}
+          src={diary.authorAvatar || ''}
           mode="aspectFill"
         />
         <View className={styles.authorInfo}>
-          <Text className={styles.authorName}>{diary.authorName}</Text>
+          <Text className={styles.authorName}>{diary.authorName || ''}</Text>
           <Text className={styles.time}>{formatRelativeTime(diary.createdAt)}</Text>
         </View>
-        <View className={styles.moodTag} style={{ backgroundColor: mood.color }}>
-          <Text className={styles.moodEmoji}>{mood.emoji}</Text>
-          <Text className={styles.moodLabel}>{mood.label}</Text>
-        </View>
+        {mood.label && (
+          <View className={styles.moodTag} style={{ backgroundColor: mood.color }}>
+            <Text className={styles.moodEmoji}>{mood.emoji}</Text>
+            <Text className={styles.moodLabel}>{mood.label}</Text>
+          </View>
+        )}
       </View>
       
       <View className={styles.content}>
-        <Text className={styles.text}>{diary.content}</Text>
+        <Text className={styles.text}>{diary.content || ''}</Text>
         {diary.location && (
           <View className={styles.location}>
             <Text className={styles.locationIcon}>📍</Text>
@@ -41,14 +47,14 @@ const DiaryCard: React.FC<DiaryCardProps> = ({ diary, onClick }) => {
         )}
       </View>
 
-      {diary.images.length > 0 && (
+      {images.length > 0 && (
         <ScrollView 
           className={styles.images}
           scrollX
           enhanced
           showScrollbar={false}
         >
-          {diary.images.map((img, index) => (
+          {images.map((img, index) => (
             <Image 
               key={index}
               className={styles.image}
@@ -62,11 +68,11 @@ const DiaryCard: React.FC<DiaryCardProps> = ({ diary, onClick }) => {
       <View className={styles.footer}>
         <View className={styles.likes}>
           <Text className={styles.likesIcon}>❤️</Text>
-          <Text className={styles.likesCount}>{diary.likes}</Text>
+          <Text className={styles.likesCount}>{diary.likes || 0}</Text>
         </View>
         <View className={styles.comments}>
           <Text className={styles.commentsIcon}>💬</Text>
-          <Text className={styles.commentsCount}>{diary.comments.length}</Text>
+          <Text className={styles.commentsCount}>{comments.length}</Text>
         </View>
       </View>
     </View>

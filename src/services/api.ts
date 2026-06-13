@@ -6,9 +6,9 @@
  * 2. HTTP请求 - 直接调用公网域名（需要配置合法域名）
  */
 
-const BASE_URL = 'https://express-a4ne-269720-9-1442837704.sh.run.tcloudbase.com';
+const BASE_URL = 'https://yiyi-269720-9-1442837704.sh.run.tcloudbase.com';
 const ENV_ID = 'prod-d1gssem8n4896288b';
-const SERVICE_NAME = 'express-a4ne';
+const SERVICE_NAME = 'yiyi';
 
 // 是否使用云托管调用（true=callContainer, false=HTTP请求）
 const USE_CLOUD_CALL = true;
