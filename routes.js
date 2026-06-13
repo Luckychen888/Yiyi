@@ -23,12 +23,12 @@ function generateId(prefix) {
 
 /**
  * POST /api/user/login
- * 用户登录
+ * 用户登录（支持游客和微信登录）
  */
 router.post('/user/login', async (req, res) => {
   try {
     const db = getDB(req);
-    const { nickname, avatar, code, userId } = req.body;
+    const { nickname, avatar, code, userId, isGuest = false } = req.body;
     
     // 如果传了userId，直接查询用户
     if (userId) {
@@ -36,6 +36,21 @@ router.post('/user/login', async (req, res) => {
       if (users.length > 0) {
         return res.json({ success: true, data: users[0] });
       }
+    }
+    
+    // 游客登录 - 直接创建临时用户
+    if (isGuest) {
+      const guestNickname = nickname || `游客${Math.random().toString(36).substr(2, 6)}`;
+      const guestAvatar = avatar || `https://picsum.photos/seed/${Date.now()}/200/200`;
+      
+      const newUserId = generateId('guest');
+      await db.query(
+        'INSERT INTO users (id, openid, nickname, avatar, is_guest, created_at) VALUES (?, NULL, ?, ?, 1, NOW())',
+        [newUserId, guestNickname, guestAvatar]
+      );
+      
+      const [newUser] = await db.query('SELECT * FROM users WHERE id = ?', [newUserId]);
+      return res.json({ success: true, data: newUser[0] });
     }
     
     // 通过code获取微信openid（需要配置APPID和SECRET环境变量）
@@ -64,7 +79,7 @@ router.post('/user/login', async (req, res) => {
       }
     }
     
-    // 查询或创建用户
+    // 查询或创建微信用户
     if (openid) {
       const [users] = await db.query('SELECT * FROM users WHERE openid = ?', [openid]);
       if (users.length > 0) {
@@ -81,7 +96,7 @@ router.post('/user/login', async (req, res) => {
     // 创建新用户
     const newUserId = generateId('user');
     await db.query(
-      'INSERT INTO users (id, openid, nickname, avatar, created_at) VALUES (?, ?, ?, ?, NOW())',
+      'INSERT INTO users (id, openid, nickname, avatar, is_guest, created_at) VALUES (?, ?, ?, ?, 0, NOW())',
       [newUserId, openid, nickname, avatar]
     );
     
@@ -93,6 +108,59 @@ router.post('/user/login', async (req, res) => {
     res.status(500).json({ success: false, message: '登录失败', error: error.message });
   }
 });
+
+// ==================== 数据隔离验证中间件 ====================
+
+// 验证用户是否有权访问该情侣数据
+async function validateCoupleAccess(req, res, next) {
+  const userId = req.headers['x-user-id'];
+  const coupleId = req.params.coupleId || req.body.coupleId;
+  
+  if (!userId) {
+    return res.status(401).json({ success: false, message: '未登录' });
+  }
+  
+  if (coupleId) {
+    const db = getDB(req);
+    const [couples] = await db.query(
+      'SELECT * FROM couples WHERE id = ? AND (user1_id = ? OR user2_id = ?)',
+      [coupleId, userId, userId]
+    );
+    
+    if (couples.length === 0) {
+      return res.status(403).json({ success: false, message: '无权访问该数据' });
+    }
+    
+    req.couple = couples[0];
+  }
+  
+  req.userId = userId;
+  next();
+}
+
+// 验证用户是否有权访问该日记数据
+async function validateDiaryAccess(req, res, next) {
+  const userId = req.headers['x-user-id'];
+  const diaryId = req.params.id;
+  
+  if (!userId) {
+    return res.status(401).json({ success: false, message: '未登录' });
+  }
+  
+  const db = getDB(req);
+  const [diaries] = await db.query(
+    'SELECT d.* FROM diaries d JOIN couples c ON d.couple_id = c.id WHERE d.id = ? AND (c.user1_id = ? OR c.user2_id = ?)',
+    [diaryId, userId, userId]
+  );
+  
+  if (diaries.length === 0) {
+    return res.status(403).json({ success: false, message: '无权访问该日记' });
+  }
+  
+  req.diary = diaries[0];
+  req.userId = userId;
+  next();
+}
 
 /**
  * GET /api/user/:id
@@ -243,12 +311,17 @@ router.post('/couple/join', async (req, res) => {
 
 /**
  * GET /api/couple/:id
- * 获取情侣信息
+ * 获取情侣信息（带数据隔离）
  */
 router.get('/couple/:id', async (req, res) => {
   try {
     const db = getDB(req);
-    const [couples] = await db.query('SELECT * FROM couples WHERE id = ?', [req.params.id]);
+    const userId = req.headers['x-user-id'];
+    
+    const [couples] = await db.query(
+      'SELECT * FROM couples WHERE id = ? AND (user1_id = ? OR user2_id = ?)',
+      [req.params.id, userId, userId]
+    );
     
     if (couples.length === 0) {
       return res.status(404).json({ success: false, message: '情侣关系不存在' });
@@ -361,11 +434,23 @@ router.post('/diary', async (req, res) => {
 
 /**
  * GET /api/diary/couple/:coupleId
- * 获取情侣日记列表
+ * 获取情侣日记列表（带数据隔离）
  */
 router.get('/diary/couple/:coupleId', async (req, res) => {
   try {
     const db = getDB(req);
+    const userId = req.headers['x-user-id'];
+    
+    // 先验证用户是否有权访问该coupleId的数据
+    const [couples] = await db.query(
+      'SELECT * FROM couples WHERE id = ? AND (user1_id = ? OR user2_id = ?)',
+      [req.params.coupleId, userId, userId]
+    );
+    
+    if (couples.length === 0) {
+      return res.status(403).json({ success: false, message: '无权访问该数据' });
+    }
+    
     const [diaries] = await db.query(
       'SELECT * FROM diaries WHERE couple_id = ? ORDER BY created_at DESC',
       [req.params.coupleId]
