@@ -72,6 +72,12 @@ app.get('/', (req, res) => {
 });
 
 // API 路由
+app.use('/api', (req, res, next) => {
+  if (!req.app.locals.db) {
+    return res.status(503).json({ success: false, message: '数据库连接中，请稍后重试' });
+  }
+  next();
+});
 app.use('/api', routes);
 
 // 404 处理
