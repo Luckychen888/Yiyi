@@ -1,0 +1,22 @@
+{
+  "name": "yiyi-backend",
+  "version": "1.0.0",
+  "description": "恋人空间小程序后端API服务",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "init-db": "mysql -h $DB_HOST -u $DB_USER -p$DB_PASSWORD < init_db.sql"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mysql2": "^3.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

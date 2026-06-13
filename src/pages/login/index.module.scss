@@ -1,0 +1,148 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $color-primary-light 0%, $color-bg-page 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-lg;
+}
+
+.loginContainer {
+  width: 100%;
+  max-width: 600rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: $spacing-xl;
+}
+
+.logo {
+  width: 160rpx;
+  height: 160rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 8rpx 32rpx rgba(255, 107, 157, 0.3);
+}
+
+.logoText {
+  font-size: 70rpx;
+}
+
+.appTitle {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.appDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.formSection {
+  width: 100%;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-lg;
+}
+
+.formItem {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: $spacing-lg;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.formLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+}
+
+.avatarButton {
+  width: 120rpx;
+  height: 120rpx;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+.avatarPreview {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: $radius-round;
+  border: 4rpx solid $color-primary-light;
+}
+
+.avatarPlaceholder {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: $radius-round;
+  background: $color-bg-hover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4rpx dashed $color-border;
+}
+
+.avatarIcon {
+  font-size: 48rpx;
+}
+
+.input {
+  width: 100%;
+  height: 88rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  border: 2rpx solid transparent;
+  box-sizing: border-box;
+  
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+.loginButton {
+  width: 100%;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  border: none;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 8rpx 24rpx rgba(255, 107, 157, 0.4);
+}
+
+.loginButtonText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.tipText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  text-align: center;
+}

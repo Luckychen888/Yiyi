@@ -1,0 +1,94 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  display: flex;
+  align-items: center;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-sm;
+  transition: all $transition-base;
+}
+
+.completed {
+  background: $color-bg-hover;
+  opacity: 0.8;
+}
+
+.iconWrapper {
+  width: 56rpx;
+  height: 56rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-md;
+}
+
+.icon {
+  font-size: 28rpx;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.description {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  @include text-ellipsis;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.points {
+  background: $color-accent-light;
+  border-radius: $radius-sm;
+  padding: $spacing-xs $spacing-sm;
+}
+
+.pointsValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-accent;
+}
+
+.completeBtn {
+  @include button-reset;
+  background: $color-primary;
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  border-radius: $radius-button;
+  padding: $spacing-sm $spacing-md;
+  min-width: 80rpx;
+  
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.completedTag {
+  background: $color-success;
+  border-radius: $radius-sm;
+  padding: $spacing-xs $spacing-sm;
+}
+
+.completedText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+}

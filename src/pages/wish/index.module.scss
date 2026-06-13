@@ -1,0 +1,229 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding: 0 $page-padding;
+  padding-bottom: 120rpx;
+  background: $color-bg-page;
+}
+
+// 进度卡片
+.progressCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 4rpx 16rpx rgba(255, 107, 157, 0.3);
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.progressTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}
+
+.progressStats {
+  display: flex;
+  align-items: baseline;
+}
+
+.progressValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.progressUnit {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+  margin-left: $spacing-xs;
+}
+
+.progressBar {
+  height: 24rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: $radius-round;
+  overflow: hidden;
+  margin-bottom: $spacing-sm;
+}
+
+.progressFill {
+  height: 100%;
+  background: $color-text-white;
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.progressDesc {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+// 分类筛选
+.categoryFilter {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+  padding: $spacing-sm 0;
+}
+
+.categoryItem {
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  padding: $spacing-sm $spacing-lg;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+  
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.categoryItemActive {
+  background: $color-primary;
+}
+
+.categoryText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.categoryTextActive {
+  color: $color-text-white;
+}
+
+// 愿望列表
+.wishList {
+  margin-bottom: $spacing-lg;
+}
+
+// 愿望卡片
+.wishCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+  
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.wishCardCompleted {
+  background: linear-gradient(135deg, rgba(255, 107, 157, 0.1) 0%, rgba(255, 182, 193, 0.1) 100%);
+}
+
+.wishPhotoWrapper {
+  position: relative;
+  margin-bottom: $spacing-md;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.wishPhoto {
+  width: 100%;
+  height: 200rpx;
+  border-radius: $radius-md;
+}
+
+.wishCompletedBadge {
+  position: absolute;
+  top: $spacing-sm;
+  right: $spacing-sm;
+  width: 48rpx;
+  height: 48rpx;
+  background: $color-success;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wishBadgeText {
+  font-size: 24rpx;
+  color: $color-text-white;
+  font-weight: $font-weight-bold;
+}
+
+.wishContent {
+  flex: 1;
+}
+
+.wishHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.wishIcon {
+  font-size: 28rpx;
+}
+
+.wishCategoryTag {
+  background: $color-tag-bg;
+  border-radius: $radius-sm;
+  padding: $spacing-xs $spacing-sm;
+}
+
+.wishCategoryText {
+  font-size: $font-size-xs;
+  color: $color-primary;
+}
+
+.wishTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+  @include text-ellipsis;
+}
+
+.wishDescription {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  @include text-ellipsis-multi(2);
+}
+
+.wishActionHint {
+  display: flex;
+  justify-content: center;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-border;
+}
+
+.wishHintText {
+  font-size: $font-size-sm;
+  color: $color-primary;
+}
+
+.wishCompletedInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-border;
+}
+
+.wishCompletedIcon {
+  font-size: 20rpx;
+}
+
+.wishCompletedText {
+  font-size: $font-size-sm;
+  color: $color-success;
+}

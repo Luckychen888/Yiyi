@@ -1,0 +1,264 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding: 0 $page-padding;
+  padding-bottom: 120rpx;
+  background: $color-bg-page;
+}
+
+.section {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionAction {
+  font-size: $font-size-sm;
+  color: $color-primary;
+}
+
+// 爱情树
+.treeCard {
+  background: linear-gradient(135deg, #00B894 0%, #55EFC4 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 4rpx 16rpx rgba(0, 184, 148, 0.3);
+}
+
+.treeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.treeTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}
+
+.treeLevel {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.treeContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: $spacing-md;
+}
+
+.treeIcon {
+  font-size: 80rpx;
+}
+
+.treeProgress {
+  margin-bottom: $spacing-md;
+}
+
+.treeProgressBar {
+  height: 16rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.treeProgressFill {
+  height: 100%;
+  background: $color-text-white;
+  border-radius: $radius-round;
+}
+
+.treeProgressText {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin-top: $spacing-xs;
+}
+
+.treeActions {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.treeActionBtn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-button;
+  padding: $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  transition: all $transition-base;
+  
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.treeActionIcon {
+  font-size: 24rpx;
+}
+
+.treeActionText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+}
+
+// 默契值
+.matchCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.matchHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.matchTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.matchScore {
+  display: flex;
+  align-items: baseline;
+}
+
+.matchValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.matchUnit {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.matchProgress {
+  margin-bottom: $spacing-md;
+}
+
+.matchDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  text-align: center;
+}
+
+// 游戏列表
+.gameGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+}
+
+.gameCard {
+  width: calc(50% - $spacing-md / 2);
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-sm;
+  transition: all $transition-base;
+  
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.gameIcon {
+  width: 64rpx;
+  height: 64rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gameIconText {
+  font-size: 32rpx;
+}
+
+.gameTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.gameDesc {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-align: center;
+  @include text-ellipsis-multi(1);
+}
+
+.gameStatus {
+  font-size: $font-size-xs;
+  color: $color-success;
+  margin-top: $spacing-xs;
+}
+
+.gameDisabled {
+  opacity: 0.5;
+}
+
+// 日记列表
+.diaryList {
+  margin-bottom: $spacing-lg;
+}
+
+// 写日记按钮
+.writeDiaryBtn {
+  position: fixed;
+  right: $page-padding;
+  bottom: 160rpx;
+  width: 96rpx;
+  height: 96rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(255, 107, 157, 0.4);
+  transition: all $transition-base;
+  
+  &:active {
+    transform: scale(0.95);
+    opacity: 0.9;
+  }
+}
+
+.writeDiaryIcon {
+  font-size: 40rpx;
+  color: $color-text-white;
+}

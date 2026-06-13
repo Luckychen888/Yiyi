@@ -1,0 +1,339 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding: 0 $page-padding;
+  padding-bottom: 120rpx;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-md 0;
+  margin-bottom: $spacing-md;
+}
+
+.backIcon {
+  font-size: 40rpx;
+  color: $color-primary;
+  font-weight: bold;
+}
+
+.backText {
+  font-size: $font-size-md;
+  color: $color-primary;
+}
+
+// 作者卡片
+.authorCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.authorInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.authorAvatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  border: 3rpx solid $color-primary-light;
+}
+
+.authorMeta {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.authorName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.publishTime {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.moodBadge {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-button;
+}
+
+.moodIcon {
+  font-size: 24rpx;
+}
+
+.moodText {
+  font-size: $font-size-sm;
+  color: #fff;
+  font-weight: $font-weight-medium;
+}
+
+// 内容区域
+.contentSection {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.contentText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  line-height: 1.8;
+  word-break: break-all;
+}
+
+// 图片网格
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.imageItem {
+  aspect-ratio: 1;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: $color-bg-hover;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+}
+
+// 位置和天气
+.metaInfo {
+  display: flex;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+}
+
+.metaIcon {
+  font-size: 24rpx;
+}
+
+.metaText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+// 互动栏
+.actionBar {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.actionItem {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+  
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.actionLiked {
+  background: rgba(255, 107, 157, 0.1);
+}
+
+.actionIcon {
+  font-size: 32rpx;
+}
+
+.actionText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+// 评论输入
+.commentInput {
+  display: flex;
+  gap: $spacing-md;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.input {
+  flex: 1;
+  height: 80rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.sendButton {
+  width: 140rpx;
+  height: 80rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-md;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sendButtonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}
+
+// 评论区域
+.commentSection {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.commentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-border;
+}
+
+.commentTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.commentCount {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.commentEmpty {
+  padding: $spacing-xl 0;
+  text-align: center;
+}
+
+.commentEmptyText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.commentList {
+  display: flex;
+  flex-direction: column;
+}
+
+.commentItem {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md 0;
+  
+  &:not(:last-child) {
+    border-bottom: 1rpx solid $color-border;
+  }
+}
+
+.commentAvatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  flex-shrink: 0;
+}
+
+.commentContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.commentMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.commentAuthor {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.commentTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.commentText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}
+
+// 空状态
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+
+.emptyIcon {
+  font-size: 100rpx;
+  margin-bottom: $spacing-lg;
+}
+
+.emptyText {
+  font-size: $font-size-lg;
+  color: $color-text-secondary;
+}
+
+// 底部留白
+.bottomSpace {
+  height: 100rpx;
+}

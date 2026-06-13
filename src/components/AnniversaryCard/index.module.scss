@@ -1,0 +1,64 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  display: flex;
+  align-items: center;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-sm;
+}
+
+.iconWrapper {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-md;
+}
+
+.icon {
+  font-size: 32rpx;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.date {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: $spacing-xs;
+}
+
+.daysLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: $spacing-sm;
+  min-width: 64rpx;
+}
+
+.daysValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.daysLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}

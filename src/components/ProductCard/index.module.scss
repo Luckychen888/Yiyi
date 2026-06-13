@@ -1,0 +1,92 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.iconWrapper {
+  width: 80rpx;
+  height: 80rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-md;
+}
+
+.icon {
+  font-size: 40rpx;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.description {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  @include text-ellipsis-multi(1);
+}
+
+.stats {
+  margin-top: $spacing-xs;
+}
+
+.statsText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+}
+
+.priceValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-accent;
+}
+
+.priceLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-left: $spacing-xs;
+}
+
+.exchangeBtn {
+  @include button-reset;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  border-radius: $radius-button;
+  padding: $spacing-sm $spacing-lg;
+  min-width: 100rpx;
+  
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}

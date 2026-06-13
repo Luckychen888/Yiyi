@@ -1,0 +1,550 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: 120rpx;
+  background: $color-bg-page;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: $spacing-xl;
+}
+
+.headerTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.headerDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.statsCard {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.statItem {
+  flex: 1;
+  text-align: center;
+}
+
+.statValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.statLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: $spacing-xs;
+}
+
+.listSection {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.listTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.addButton {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-md;
+  border: none;
+  padding: $spacing-sm $spacing-md;
+}
+
+.addButtonText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx $spacing-lg;
+}
+
+.emptyIcon {
+  font-size: 80rpx;
+  margin-bottom: $spacing-md;
+}
+
+.emptyText {
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.emptyDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+  
+  &:active {
+    background: $color-bg-hover;
+  }
+  
+  &:not(:last-child) {
+    border-bottom: 1rpx solid $color-border;
+  }
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.itemIcon {
+  width: 72rpx;
+  height: 72rpx;
+  background: linear-gradient(135deg, $color-primary-light 0%, #FFF0F3 100%);
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.itemIconText {
+  font-size: 32rpx;
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.itemTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.itemDate {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.itemRight {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.daysContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80rpx;
+}
+
+.daysValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.daysLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.itemActions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.actionIcon {
+  font-size: 28rpx;
+  padding: $spacing-xs;
+  
+  &:active {
+    opacity: 0.6;
+  }
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  width: 100%;
+  max-height: 80vh;
+  background: $color-bg-card;
+  border-radius: $radius-lg $radius-lg 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg;
+  border-bottom: 1rpx solid $color-border;
+}
+
+.modalTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.modalClose {
+  font-size: 32rpx;
+  color: $color-text-tertiary;
+  padding: $spacing-sm;
+}
+
+.modalBody {
+  flex: 1;
+  padding: $spacing-lg;
+  max-height: 60vh;
+}
+
+.modalFooter {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-lg;
+  border-top: 1rpx solid $color-border;
+}
+
+.cancelButton {
+  flex: 1;
+  height: 88rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  border: none;
+}
+
+.cancelButtonText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.confirmButton {
+  flex: 1;
+  height: 88rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-md;
+  border: none;
+}
+
+.confirmButtonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}
+
+.formItem {
+  margin-bottom: $spacing-lg;
+}
+
+.formLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-sm;
+  display: block;
+}
+
+.input {
+  width: 100%;
+  height: 88rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  border: 2rpx solid transparent;
+  
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+.datePicker {
+  width: 100%;
+  height: 88rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  display: flex;
+  align-items: center;
+}
+
+.datePickerText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.typeSelector {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.typeOption {
+  flex: 1;
+  height: 72rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid transparent;
+}
+
+.typeActive {
+  background: linear-gradient(135deg, $color-primary-light 0%, #FFF0F3 100%);
+  border-color: $color-primary;
+}
+
+.typeOptionText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.iconGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.iconOption {
+  width: calc(20% - 12rpx);
+  height: 80rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid transparent;
+}
+
+.iconActive {
+  background: linear-gradient(135deg, $color-primary-light 0%, #FFF0F3 100%);
+  border-color: $color-primary;
+}
+
+.iconOptionText {
+  font-size: 32rpx;
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.switch {
+  transform: scale(0.8);
+}
+
+.remindDaysSelector {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.remindDayOption {
+  flex: 1;
+  height: 72rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2rpx solid transparent;
+}
+
+.remindDayActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-color: $color-primary;
+}
+
+.remindDayText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  
+  .remindDayActive & {
+    color: $color-text-white;
+  }
+}
+
+// 描述文本框
+.textarea {
+  width: 100%;
+  min-height: 120rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  border: 2rpx solid transparent;
+  line-height: 1.6;
+  
+  &:focus {
+    border-color: $color-primary;
+    background: #fff;
+  }
+}
+
+// 日期选择器触发器
+.pickerTrigger {
+  width: 100%;
+  height: 88rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 2rpx solid transparent;
+  
+  &:active {
+    background: #fff;
+    border-color: $color-primary;
+  }
+}
+
+.pickerTriggerText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.pickerArrow {
+  font-size: 24rpx;
+  color: $color-text-tertiary;
+}
+
+// 提醒时间选择器
+.remindTimeSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.remindTimeOption {
+  padding: $spacing-sm $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  border: 2rpx solid transparent;
+}
+
+.remindTimeActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-color: $color-primary;
+}
+
+.remindTimeText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  
+  .remindTimeActive & {
+    color: $color-text-white;
+  }
+}
+
+// 提醒预览
+.remindPreview {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  background: linear-gradient(135deg, $color-primary-light 0%, #FFF0F3 100%);
+  border-radius: $radius-md;
+  margin-top: $spacing-md;
+}
+
+.remindPreviewIcon {
+  font-size: 28rpx;
+}
+
+.remindPreviewText {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  flex: 1;
+}
+
+// 描述显示
+.itemDesc {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-top: $spacing-xs;
+}
+
+// 元信息行
+.itemMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-top: $spacing-xs;
+}
+
+// 提醒徽章
+.remindBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2rpx 8rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-sm;
+}
+
+.remindBadgeText {
+  font-size: 16rpx;
+  color: #fff;
+}
+
+// 提示文字
+.formTip {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+  display: block;
+}

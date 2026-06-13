@@ -1,0 +1,104 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+  
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.completed {
+  background: linear-gradient(135deg, rgba(255, 107, 157, 0.1) 0%, rgba(255, 182, 193, 0.1) 100%);
+}
+
+.photoWrapper {
+  position: relative;
+  margin-bottom: $spacing-md;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.photo {
+  width: 100%;
+  height: 200rpx;
+  border-radius: $radius-md;
+}
+
+.completedBadge {
+  position: absolute;
+  top: $spacing-sm;
+  right: $spacing-sm;
+  width: 48rpx;
+  height: 48rpx;
+  background: $color-success;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badgeText {
+  font-size: 24rpx;
+  color: $color-text-white;
+  font-weight: $font-weight-bold;
+}
+
+.content {
+  flex: 1;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.icon {
+  font-size: 28rpx;
+}
+
+.categoryTag {
+  background: $color-tag-bg;
+  border-radius: $radius-sm;
+  padding: $spacing-xs $spacing-sm;
+}
+
+.categoryText {
+  font-size: $font-size-xs;
+  color: $color-primary;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+  @include text-ellipsis;
+}
+
+.description {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  @include text-ellipsis-multi(2);
+}
+
+.actionHint {
+  display: flex;
+  justify-content: center;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-border;
+}
+
+.hintText {
+  font-size: $font-size-sm;
+  color: $color-primary;
+}

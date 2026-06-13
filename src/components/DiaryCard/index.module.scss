@@ -1,0 +1,139 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+  
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.avatar {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: $radius-round;
+  margin-right: $spacing-sm;
+}
+
+.authorInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.authorName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.time {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+}
+
+.moodTag {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  border-radius: $radius-round;
+  padding: $spacing-xs $spacing-sm;
+}
+
+.moodEmoji {
+  font-size: 20rpx;
+}
+
+.moodLabel {
+  font-size: $font-size-xs;
+  color: $color-text-white;
+}
+
+.content {
+  margin-bottom: $spacing-md;
+}
+
+.text {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  line-height: $line-height-loose;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  margin-top: $spacing-sm;
+}
+
+.locationIcon {
+  font-size: 20rpx;
+}
+
+.locationText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.images {
+  @include scroll-x-container;
+  white-space: nowrap;
+  margin-bottom: $spacing-md;
+}
+
+.image {
+  @include scroll-x-item(200rpx);
+  height: 200rpx;
+  border-radius: $radius-md;
+  margin-right: $spacing-sm;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-border;
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.likesIcon {
+  font-size: 24rpx;
+}
+
+.likesCount {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.comments {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.commentsIcon {
+  font-size: 24rpx;
+}
+
+.commentsCount {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}

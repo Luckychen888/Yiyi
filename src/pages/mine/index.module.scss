@@ -1,0 +1,232 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  padding: 0 $page-padding;
+  padding-bottom: 120rpx;
+  background: $color-bg-page;
+}
+
+// 用户信息卡片
+.userCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 4rpx 16rpx rgba(255, 107, 157, 0.3);
+}
+
+.userHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.userAvatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  border: 3rpx solid rgba(255, 255, 255, 0.5);
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.userStatus {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: $spacing-xs;
+}
+
+.coupleInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-md;
+}
+
+.partnerAvatar {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: $radius-round;
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
+}
+
+.heartIcon {
+  font-size: 24rpx;
+  color: $color-text-white;
+}
+
+.partnerName {
+  font-size: $font-size-md;
+  color: $color-text-white;
+}
+
+// 数据统计
+.statsCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.statsTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.statsGrid {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.statItem {
+  flex: 1;
+  text-align: center;
+  padding: $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+}
+
+.statValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-top: $spacing-xs;
+}
+
+// 功能列表
+.menuList {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-sm;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+  
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.menuIcon {
+  width: 48rpx;
+  height: 48rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-md;
+}
+
+.menuIconText {
+  font-size: 24rpx;
+}
+
+.menuContent {
+  flex: 1;
+}
+
+.menuTitle {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.menuDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: $spacing-xs;
+}
+
+.menuArrow {
+  font-size: 20rpx;
+  color: $color-text-tertiary;
+}
+
+.menuDivider {
+  height: 1rpx;
+  background: $color-border;
+  margin: $spacing-sm $spacing-md;
+}
+
+// 设置列表
+.settingList {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-sm;
+  box-shadow: $shadow-card;
+}
+
+.settingItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  
+  &:active {
+    background: $color-bg-hover;
+  }
+}
+
+.settingLeft {
+  display: flex;
+  align-items: center;
+}
+
+.settingIcon {
+  width: 48rpx;
+  height: 48rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-md;
+}
+
+.settingIconText {
+  font-size: 24rpx;
+}
+
+.settingTitle {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.settingTitleDanger {
+  font-size: $font-size-md;
+  color: #FF4D4F;
+}
+
+.settingValue {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
