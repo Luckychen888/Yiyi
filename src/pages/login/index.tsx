@@ -3,6 +3,7 @@ import { View, Text, Image, Button, Input } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useCoupleStore } from '../../store/useCoupleStore';
+import { userService, coupleService } from '../../services/api';
 
 const LoginPage: React.FC = () => {
   const { setCouple, setBound, setCurrentUser } = useCoupleStore();
@@ -33,46 +34,44 @@ const LoginPage: React.FC = () => {
 
     try {
       const { code } = await Taro.login();
-      
-      const userId = 'user_' + Date.now();
-      
-      const mockUserInfo = {
-        id: userId,
+
+      // 调用后端登录接口
+      const loginRes: any = await userService.login({
         nickname: nickname.trim(),
         avatar: avatar,
-        code: code,
-        openid: 'mock_openid_' + Date.now()
-      };
+        code: code
+      });
 
-      const mockCouple = {
-        id: 'couple_' + Date.now(),
-        user1Id: mockUserInfo.id,
-        user2Id: '',
-        user1Name: mockUserInfo.nickname,
-        user2Name: '',
-        user1Avatar: mockUserInfo.avatar,
-        user2Avatar: '',
-        startDate: new Date().toISOString().split('T')[0],
-        inviteCode: 'LOVE' + Math.random().toString(36).substr(2, 6).toUpperCase(),
-        createdAt: new Date().toISOString().split('T')[0]
-      };
+      if (!loginRes.success) {
+        Taro.showToast({ title: loginRes.message || '登录失败', icon: 'none' });
+        return;
+      }
+
+      const userInfo = loginRes.data;
+
+      // 查询是否已有情侣关系
+      const coupleRes: any = await coupleService.getCoupleInfoByUser(userInfo.id);
+      const coupleData = coupleRes.success ? coupleRes.data : null;
 
       // 保存到状态管理
-      setCurrentUser(userId);
-      setCouple(mockCouple);
-      setBound(true);
+      setCurrentUser(userInfo.id, userInfo.nickname, userInfo.avatar);
 
-      // 持久化保存到本地存储（关键修复）
-      Taro.setStorageSync('userId', userId);
-      Taro.setStorageSync('userName', nickname.trim());
-      Taro.setStorageSync('userAvatar', avatar);
-      Taro.setStorageSync('userInfo', mockUserInfo);
-      Taro.setStorageSync('coupleData', mockCouple);
-      Taro.setStorageSync('isBound', true);
+      if (coupleData) {
+        setCouple(coupleData);
+        setBound(true);
+      }
+
+      // 持久化保存到本地存储
+      Taro.setStorageSync('userId', userInfo.id);
+      Taro.setStorageSync('userName', userInfo.nickname);
+      Taro.setStorageSync('userAvatar', userInfo.avatar);
+      Taro.setStorageSync('userInfo', userInfo);
+      Taro.setStorageSync('coupleData', coupleData || {});
+      Taro.setStorageSync('isBound', !!coupleData);
       Taro.setStorageSync('isLogin', true);
 
       Taro.showToast({ title: '登录成功', icon: 'success' });
-      
+
       setTimeout(() => {
         Taro.switchTab({ url: '/pages/home/index' });
       }, 1500);

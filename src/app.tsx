@@ -7,8 +7,17 @@ import { useCoupleStore } from './store/useCoupleStore';
 function App(props) {
   const { setCouple, setBound, setCurrentUser } = useCoupleStore();
 
-  // 小程序显示时恢复状态（不跳转，只恢复数据）
+  // 初始化云开发
   useDidShow(() => {
+    try {
+      if (typeof wx !== 'undefined' && wx.cloud) {
+        wx.cloud.init({
+          env: 'prod-d1gssem8n4896288b'
+        });
+      }
+    } catch (e) {
+      console.log('云开发初始化:', e);
+    }
     restoreState();
   });
 
