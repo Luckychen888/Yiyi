@@ -5,6 +5,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const mysql = require('mysql2/promise');
 const routes = require('./routes');
 const cronService = require('./utils/cron');
@@ -17,6 +18,9 @@ const PORT = process.env.PORT || 80;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 静态文件服务
+app.use(express.static(path.join(__dirname, 'public')));
 
 // 请求日志
 app.use((req, res, next) => {
