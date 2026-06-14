@@ -6,187 +6,269 @@
 <title>恋人空间 - 管理后台</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💕</text></svg>">
 <style>
-:root{--pri:#FF6B9D;--pri-l:#FF8FB1;--pri-d:#E55A8A;--sec:#A29BFE;--acc:#74B9FF;--ok:#00B894;--warn:#FDCB6E;--err:#FF7675;--bg:#F8F9FC;--card:#FFF;--tx1:#1A1A2E;--tx2:#6C757D;--tx3:#ADB5BD;--brd:#E9ECEF;--brd-l:#F1F3F5;--sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);--sh2:0 10px 40px rgba(0,0,0,.1);--r:12px;--rs:8px}
+:root{--pri:#FF6B9D;--pri-l:#FF8FB1;--pri-d:#E55A8A;--sec:#A29BFE;--acc:#74B9FF;--ok:#10B981;--warn:#F59E0B;--err:#EF4444;--bg:#F8FAFC;--card:#FFF;--tx1:#0F172A;--tx2:#64748B;--tx3:#94A3B8;--brd:#E2E8F0;--brd-l:#F1F5F9;--sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);--sh2:0 10px 40px rgba(0,0,0,.12);--r:12px;--rs:8px;--ease:cubic-bezier(.4,0,.2,1)}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--tx1);min-height:100vh;display:flex}
-::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#D0D5DD;border-radius:3px}
-/* Sidebar */
-.side{width:220px;background:#fff;border-right:1px solid var(--brd);position:fixed;top:0;bottom:0;left:0;z-index:100;display:flex;flex-direction:column;transition:width .3s}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:3px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+
+.side{width:220px;background:#fff;border-right:1px solid var(--brd);position:fixed;top:0;bottom:0;left:0;z-index:100;display:flex;flex-direction:column;transition:width .3s var(--ease)}
 .side-logo{padding:20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--brd-l)}
-.side-logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--pri),var(--sec));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.side-logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--pri),var(--sec));border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;animation:pulse 3s ease-in-out infinite}
+.side-logo-icon svg{width:22px;height:22px;color:#fff}
 .side-logo h1{font-size:16px;font-weight:700;color:var(--tx1)}
 .side-logo p{font-size:11px;color:var(--tx2);margin-top:2px}
 .side-nav{flex:1;padding:12px 0;overflow-y:auto}
-.side-section{padding:8px 16px;font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-top:8px}
-.side-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:2px 8px;border-radius:var(--rs);cursor:pointer;transition:all .15s;font-size:13px;color:var(--tx2);text-decoration:none}
-.side-item:hover{background:var(--brd-l);color:var(--tx1)}
-.side-item.on{background:linear-gradient(135deg,rgba(255,107,157,.1),rgba(162,155,254,.1));color:var(--pri);font-weight:500}
-.side-item i{font-size:18px;width:22px;text-align:center;flex-shrink:0}
+.side-section{padding:8px 20px;font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:8px}
+.side-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:2px 8px;border-radius:var(--rs);cursor:pointer;transition:all .2s var(--ease);font-size:13px;color:var(--tx2);text-decoration:none}
+.side-item:hover{background:var(--brd-l);color:var(--tx1);transform:translateX(2px)}
+.side-item.on{background:linear-gradient(135deg,rgba(255,107,157,.1),rgba(162,155,254,.1));color:var(--pri);font-weight:600;box-shadow:inset 3px 0 0 var(--pri)}
+.side-item svg{width:18px;height:18px;flex-shrink:0;transition:transform .2s var(--ease)}
+.side-item:hover svg{transform:scale(1.1)}
+.side-item.on svg{filter:drop-shadow(0 0 4px rgba(255,107,157,.4))}
 .side-footer{padding:16px;border-top:1px solid var(--brd-l);font-size:11px;color:var(--tx3);text-align:center}
-/* Main */
-.main{flex:1;margin-left:220px;padding:24px;min-height:100vh}
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+
+.main{flex:1;margin-left:220px;padding:24px;min-height:100vh;animation:fadeIn .4s var(--ease)}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;animation:slideIn .5s var(--ease)}
 .topbar h2{font-size:22px;font-weight:700;color:var(--tx1)}
 .topbar-right{display:flex;align-items:center;gap:12px}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:500}
-.badge-ok{background:#E6F9F1;color:var(--ok)}.badge-err{background:#FEE;color:var(--err)}.badge-warn{background:#FFF8E1;color:#E67E22}.badge-info{background:#E8F4FD;color:#1976D2}.badge-pri{background:linear-gradient(135deg,#FFE0EB,#FFC1D3);color:var(--pri)}
-.dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;transition:all .2s var(--ease)}
+.badge:hover{transform:translateY(-1px)}
+.badge-ok{background:#ECFDF5;color:var(--ok)}.badge-err{background:#FEF2F2;color:var(--err)}.badge-warn{background:#FFFBEB;color:#D97706}.badge-info{background:#EFF6FF;color:#2563EB}.badge-pri{background:linear-gradient(135deg,#FFF0F5,#FFE0EB);color:var(--pri)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;animation:pulse 2s ease-in-out infinite}
 .dot-ok{background:var(--ok)}.dot-err{background:var(--err)}.dot-warn{background:var(--warn)}
-/* Cards */
+
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
-.stat{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--sh);border:1px solid var(--brd-l);transition:all .2s}
-.stat:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.stat{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--sh);border:1px solid var(--brd-l);transition:all .3s var(--ease);animation:fadeUp .5s var(--ease) both}
+.stat:nth-child(1){animation-delay:.05s}.stat:nth-child(2){animation-delay:.1s}.stat:nth-child(3){animation-delay:.15s}.stat:nth-child(4){animation-delay:.2s}.stat:nth-child(5){animation-delay:.25s}
+.stat:hover{box-shadow:var(--sh2);transform:translateY(-4px)}
 .stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
-.stat-icon.pk{background:#FFF0F5}.stat-icon.pp{background:#F3EEFF}.stat-icon.bl{background:#EBF5FF}.stat-icon.gn{background:#E6F9F1}.stat-icon.og{background:#FFF8E1}
+.stat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;transition:transform .3s var(--ease)}
+.stat:hover .stat-icon{transform:scale(1.1) rotate(-5deg)}
+.stat-icon svg{width:22px;height:22px}
+.stat-icon.pk{background:#FFF0F5;color:var(--pri)}.stat-icon.pp{background:#F3EEFF;color:var(--sec)}.stat-icon.bl{background:#EFF6FF;color:var(--acc)}.stat-icon.gn{background:#ECFDF5;color:var(--ok)}.stat-icon.og{background:#FFFBEB;color:#D97706}
 .stat-label{font-size:12px;color:var(--tx2);margin-bottom:4px}
 .stat-value{font-size:28px;font-weight:700;color:var(--tx1);line-height:1.1}
 .stat-sub{font-size:11px;color:var(--tx3);margin-top:6px}
-/* Card */
-.card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);border:1px solid var(--brd-l);margin-bottom:20px}
+
+.card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);border:1px solid var(--brd-l);margin-bottom:20px;animation:fadeUp .5s var(--ease) both}
 .card-h{padding:16px 20px;border-bottom:1px solid var(--brd-l);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-.card-t{font-size:15px;font-weight:600;color:var(--tx1)}
+.card-t{font-size:15px;font-weight:600;color:var(--tx1);display:flex;align-items:center;gap:8px}
+.card-t svg{width:18px;height:18px;color:var(--pri)}
 .card-acts{display:flex;gap:8px;align-items:center}
 .card-b{padding:0 20px 20px;overflow-x:auto}
-/* Table */
+
 table{width:100%;border-collapse:collapse}
-th{padding:10px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--brd);background:var(--bg);white-space:nowrap}
-td{padding:12px;font-size:13px;border-bottom:1px solid var(--brd-l);vertical-align:middle}
-tbody tr:hover{background:#FAFBFC}
-/* Search */
-.search{position:relative}.search::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px}
-.search input{padding:8px 12px 8px 32px;border:1px solid var(--brd);border-radius:var(--rs);font-size:13px;width:220px;background:var(--bg);transition:.2s}
+th{padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--brd);background:var(--bg);white-space:nowrap}
+td{padding:12px;font-size:13px;border-bottom:1px solid var(--brd-l);vertical-align:middle;transition:background .15s var(--ease)}
+tbody tr{transition:all .2s var(--ease)}
+tbody tr:hover{background:#F8FAFC;transform:scale(1.002)}
+
+.search{position:relative}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--tx3);pointer-events:none;transition:color .2s var(--ease)}
+.search input{padding:8px 12px 8px 36px;border:1px solid var(--brd);border-radius:var(--rs);font-size:13px;width:220px;background:var(--bg);transition:all .3s var(--ease)}
 .search input:focus{outline:none;border-color:var(--pri);background:#fff;box-shadow:0 0 0 3px rgba(255,107,157,.1)}
-/* Buttons */
-.btn{padding:7px 14px;border:none;border-radius:var(--rs);cursor:pointer;font-size:12px;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
-.btn-p{background:var(--pri);color:#fff}.btn-p:hover{background:var(--pri-d)}
-.btn-g{background:var(--bg);color:var(--tx2);border:1px solid var(--brd)}.btn-g:hover{background:var(--brd-l)}
-.btn-d{background:#FFF0F0;color:var(--err);border:1px solid #FFD4D4}.btn-d:hover{background:#FFE8E8}
-.btn-s{background:#E6F9F1;color:var(--ok);border:1px solid #B8E6CC}.btn-s:hover{background:#D0F0E3}
-.btn-sm{padding:4px 10px;font-size:11px}
+.search input:focus+svg,.search:focus-within svg{color:var(--pri)}
+
+.btn{padding:7px 14px;border:none;border-radius:var(--rs);cursor:pointer;font-size:12px;font-weight:500;transition:all .2s var(--ease);display:inline-flex;align-items:center;gap:5px}
+.btn svg{width:14px;height:14px}
+.btn-p{background:var(--pri);color:#fff}.btn-p:hover{background:var(--pri-d);transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,107,157,.3)}
+.btn-g{background:var(--bg);color:var(--tx2);border:1px solid var(--brd)}.btn-g:hover{background:var(--brd-l);border-color:#CBD5E1}
+.btn-d{background:#FEF2F2;color:var(--err);border:1px solid #FECACA}.btn-d:hover{background:#FEE2E2;transform:translateY(-1px)}
+.btn-s{background:#ECFDF5;color:var(--ok);border:1px solid #A7F3D0}.btn-s:hover{background:#D1FAE5;transform:translateY(-1px)}
+.btn-sm{padding:5px 10px;font-size:11px}
 .btn-acts{display:flex;gap:4px}
-/* Avatar */
-.av{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--brd)}
+
+.av{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--brd-l);transition:all .2s var(--ease)}
+tr:hover .av{border-color:var(--pri);box-shadow:0 0 0 3px rgba(255,107,157,.15)}
 .av-sm{width:28px;height:28px}
-/* Empty */
+
 .empty{text-align:center;padding:60px 20px;color:var(--tx3)}
-.empty i{font-size:48px;display:block;margin-bottom:12px}
+.empty svg{width:56px;height:56px;margin-bottom:16px;opacity:.4}
 .empty p{font-size:14px;color:var(--tx2)}
-/* Loading */
+
 .ld{display:flex;align-items:center;justify-content:center;padding:60px}
-.sp{width:32px;height:32px;border:3px solid var(--brd);border-top-color:var(--pri);border-radius:50%;animation:sp .7s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-/* Modal */
-.mo{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);justify-content:center;align-items:center;z-index:200;backdrop-filter:blur(4px)}
+.sp{width:32px;height:32px;border:3px solid var(--brd);border-top-color:var(--pri);border-radius:50%;animation:spin .7s linear infinite}
+
+.mo{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);justify-content:center;align-items:center;z-index:200;backdrop-filter:blur(6px);animation:fadeIn .2s var(--ease)}
 .mo.on{display:flex}
-.mo-c{background:#fff;border-radius:var(--r);padding:24px;width:90%;max-width:520px;max-height:85vh;overflow-y:auto;box-shadow:var(--sh2)}
+.mo-c{background:#fff;border-radius:16px;padding:28px;width:90%;max-width:520px;max-height:85vh;overflow-y:auto;box-shadow:var(--sh2);animation:scaleIn .3s var(--ease)}
 .mo-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.mo-h h3{font-size:17px;font-weight:600}
-.mo-x{font-size:20px;cursor:pointer;color:var(--tx3);padding:4px;border-radius:var(--rs)}.mo-x:hover{background:var(--bg);color:var(--tx1)}
+.mo-h h3{font-size:18px;font-weight:700}
+.mo-x{width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tx3);border-radius:var(--rs);transition:all .2s var(--ease);background:var(--bg)}
+.mo-x:hover{background:var(--err);color:#fff}
+.mo-x svg{width:18px;height:18px}
 .fg{margin-bottom:14px}
-.fg label{display:block;margin-bottom:5px;font-size:12px;color:var(--tx2);font-weight:500}
-.fg input,.fg textarea,.fg select{width:100%;padding:9px 12px;border:1px solid var(--brd);border-radius:var(--rs);font-size:13px;transition:.2s}
+.fg label{display:block;margin-bottom:5px;font-size:12px;color:var(--tx2);font-weight:600}
+.fg input,.fg textarea,.fg select{width:100%;padding:10px 14px;border:1px solid var(--brd);border-radius:var(--rs);font-size:13px;transition:all .2s var(--ease)}
 .fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(255,107,157,.1)}
 .fg textarea{resize:vertical;min-height:80px}
-.fa{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
-/* SQL */
+.fa{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--brd-l)}
+
 .sql-wrap{display:flex;gap:8px;margin-bottom:14px}
-.sql-wrap input{flex:1;padding:10px 14px;border:1px solid var(--brd);border-radius:var(--rs);font-size:13px;font-family:'SF Mono',Monaco,monospace}
+.sql-wrap input{flex:1;padding:10px 14px;border:1px solid var(--brd);border-radius:var(--rs);font-size:13px;font-family:'SF Mono',Monaco,monospace;transition:all .2s var(--ease)}
 .sql-wrap input:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(255,107,157,.1)}
-/* Tabs */
+
 .tab-bar{display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid var(--brd);padding-bottom:0}
-.tab-btn{padding:10px 16px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--tx2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.15s}
+.tab-btn{padding:10px 16px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;color:var(--tx2);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s var(--ease)}
 .tab-btn:hover{color:var(--tx1)}
 .tab-btn.on{color:var(--pri);border-bottom-color:var(--pri)}
-/* Toast */
-.toast{position:fixed;top:20px;right:20px;padding:12px 20px;background:var(--tx1);color:#fff;border-radius:var(--rs);font-size:13px;z-index:300;animation:fi .3s;box-shadow:var(--sh2)}
+
+.toast{position:fixed;top:20px;right:20px;padding:12px 20px;background:var(--tx1);color:#fff;border-radius:var(--rs);font-size:13px;z-index:300;animation:slideIn .3s var(--ease);box-shadow:var(--sh2);display:flex;align-items:center;gap:8px}
+.toast svg{width:16px;height:16px}
 .toast.ok{background:var(--ok)}.toast.er{background:var(--err)}
-/* Login */
+
 .login-wrap{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,var(--pri),var(--sec));z-index:1000;justify-content:center;align-items:center}
 .login-wrap.on{display:flex}
-.login-box{background:#fff;border-radius:16px;padding:40px;width:380px;box-shadow:var(--sh2);text-align:center}
-.login-icon{font-size:48px;margin-bottom:16px}
+.login-box{background:#fff;border-radius:20px;padding:44px;width:380px;box-shadow:var(--sh2);text-align:center;animation:scaleIn .5s var(--ease)}
+.login-icon{width:64px;height:64px;margin:0 auto 20px;background:linear-gradient(135deg,var(--pri),var(--sec));border-radius:50%;display:flex;align-items:center;justify-content:center;animation:pulse 2s ease-in-out infinite}
+.login-icon svg{width:32px;height:32px;color:#fff}
 .login-title{font-size:22px;font-weight:700;color:var(--tx1);margin-bottom:6px}
 .login-desc{font-size:13px;color:var(--tx2);margin-bottom:28px}
-.login-input{width:100%;padding:12px 16px;border:2px solid var(--brd);border-radius:var(--rs);font-size:15px;text-align:center;letter-spacing:4px;transition:.2s;margin-bottom:16px}
-.login-input:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 4px rgba(255,107,157,.1)}
-.login-btn{width:100%;padding:12px;border:none;border-radius:var(--rs);background:linear-gradient(135deg,var(--pri),var(--sec));color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:.2s}
-.login-btn:hover{opacity:.9;transform:translateY(-1px)}
+.login-input{width:100%;padding:14px 18px;border:2px solid var(--brd);border-radius:var(--rs);font-size:15px;text-align:center;letter-spacing:4px;transition:all .3s var(--ease);margin-bottom:16px}
+.login-input:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 4px rgba(255,107,157,.15)}
+.login-btn{width:100%;padding:14px;border:none;border-radius:var(--rs);background:linear-gradient(135deg,var(--pri),var(--sec));color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s var(--ease);display:flex;align-items:center;justify-content:center;gap:8px}
+.login-btn svg{width:18px;height:18px}
+.login-btn:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,157,.35)}
 .login-btn:active{transform:translateY(0)}
 .login-err{color:var(--err);font-size:12px;margin-top:8px;min-height:18px}
 .login-remember{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px;font-size:12px;color:var(--tx2)}
 .login-remember input{accent-color:var(--pri)}
-/* User dropdown */
-.user-menu{position:relative;display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 12px;border-radius:var(--rs);transition:.15s}
+
+.user-menu{position:relative;display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 12px;border-radius:var(--rs);transition:.15s var(--ease)}
 .user-menu:hover{background:rgba(255,255,255,.2)}
 .user-menu-name{font-size:13px;color:#fff;font-weight:500}
-.user-dropdown{display:none;position:absolute;top:100%;right:0;margin-top:4px;background:#fff;border-radius:var(--rs);box-shadow:var(--sh2);min-width:140px;z-index:200;overflow:hidden}
+.user-dropdown{display:none;position:absolute;top:100%;right:0;margin-top:4px;background:#fff;border-radius:var(--rs);box-shadow:var(--sh2);min-width:140px;z-index:200;overflow:hidden;animation:slideIn .2s var(--ease)}
 .user-dropdown.on{display:block}
-.user-dropdown-item{padding:10px 16px;font-size:13px;color:var(--tx2);cursor:pointer;transition:.15s;display:flex;align-items:center;gap:8px}
+.user-dropdown-item{padding:10px 16px;font-size:13px;color:var(--tx2);cursor:pointer;transition:.15s var(--ease);display:flex;align-items:center;gap:8px}
 .user-dropdown-item:hover{background:var(--bg);color:var(--tx1)}
+
+@keyframes confetti{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(-60px) rotate(180deg);opacity:0}}
+
 @media(max-width:768px){.login-box{width:90%;padding:28px 20px}}
-/* Responsive */
-@media(max-width:768px){.side{width:60px}.side-logo h1,.side-logo p,.side-section,.side-item span,.side-footer{display:none}.side-item{justify-content:center;padding:10px;margin:2px 8px}.main{margin-left:60px;padding:16px}}
+@media(max-width:768px){.side{width:60px}.side-logo h1,.side-logo p,.side-section,.side-item span,.side-footer span:first-child{display:none}.side-item{justify-content:center;padding:10px;margin:2px 8px}.side-item svg{width:20px;height:20px}.main{margin-left:60px;padding:16px}}
 </style>
 </head>
 <body>
 
-<!-- Login Screen -->
 <div class="login-wrap on" id="loginScreen">
 <div class="login-box">
-<div class="login-icon">💕</div>
+<div class="login-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+</div>
 <div class="login-title">恋人空间管理后台</div>
 <div class="login-desc">请输入管理密码登录</div>
 <input class="login-input" id="loginPwd" type="password" placeholder="请输入密码" maxlength="20">
-<button class="login-btn" onclick="doLogin()">登 录</button>
+<button class="login-btn" onclick="doLogin()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+登 录
+</button>
 <div class="login-err" id="loginErr"></div>
 <label class="login-remember"><input type="checkbox" id="loginRemember" checked> 记住登录状态</label>
 </div>
 </div>
 
-<!-- Main App -->
 <aside class="side" id="sideApp">
 <div class="side-logo">
-<div class="side-logo-icon">💕</div>
+<div class="side-logo-icon">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+</div>
 <div><h1>恋人空间</h1><p>管理后台</p></div>
 </div>
 <nav class="side-nav">
 <div class="side-section">数据管理</div>
-<a class="side-item on" data-t="dashboard"><i>📊</i><span>仪表盘</span></a>
-<a class="side-item" data-t="users"><i>👥</i><span>用户管理</span></a>
-<a class="side-item" data-t="couples"><i>💑</i><span>情侣管理</span></a>
-<a class="side-item" data-t="diaries"><i>📝</i><span>日记管理</span></a>
-<a class="side-item" data-t="wishes"><i>⭐</i><span>愿望管理</span></a>
-<a class="side-item" data-t="anniversaries"><i>📅</i><span>纪念日</span></a>
+<a class="side-item on" data-t="dashboard">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+<span>仪表盘</span></a>
+<a class="side-item" data-t="users">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+<span>用户管理</span></a>
+<a class="side-item" data-t="couples">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+<span>情侣管理</span></a>
+<a class="side-item" data-t="diaries">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+<span>日记管理</span></a>
+<a class="side-item" data-t="wishes">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+<span>愿望管理</span></a>
+<a class="side-item" data-t="anniversaries">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+<span>纪念日</span></a>
 <div class="side-section">功能模块</div>
-<a class="side-item" data-t="bills"><i>💰</i><span>账单管理</span></a>
-<a class="side-item" data-t="letters"><i>💌</i><span>情书管理</span></a>
-<a class="side-item" data-t="albums"><i>📷</i><span>相册管理</span></a>
-<a class="side-item" data-t="messages"><i>💬</i><span>消息日志</span></a>
+<a class="side-item" data-t="bills">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+<span>账单管理</span></a>
+<a class="side-item" data-t="letters">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+<span>情书管理</span></a>
+<a class="side-item" data-t="albums">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+<span>相册管理</span></a>
+<a class="side-item" data-t="messages">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+<span>消息日志</span></a>
 <div class="side-section">系统</div>
-<a class="side-item" data-t="status"><i>🖥️</i><span>服务状态</span></a>
-<a class="side-item" data-t="database"><i>🗄️</i><span>数据库</span></a>
-<a class="side-item" data-t="logs"><i>📋</i><span>操作日志</span></a>
+<a class="side-item" data-t="status">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+<span>服务状态</span></a>
+<a class="side-item" data-t="database">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+<span>数据库</span></a>
+<a class="side-item" data-t="logs">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+<span>操作日志</span></a>
 </nav>
 <div class="side-footer" style="display:flex;justify-content:space-between;align-items:center">
 <span>v1.2.0</span>
-<span style="cursor:pointer;color:var(--err);font-size:12px" onclick="doLogout()">退出登录</span>
+<span style="cursor:pointer;color:var(--err);font-size:12px;display:flex;align-items:center;gap:4px" onclick="doLogout()">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+退出
+</span>
 </div>
 </aside>
 
 <main class="main" id="main"></main>
 
 <div class="mo" id="modal"><div class="mo-c">
-<div class="mo-h"><h3 id="moTitle"></h3><span class="mo-x" onclick="closeMo()">×</span></div>
+<div class="mo-h"><h3 id="moTitle"></h3><span class="mo-x" onclick="closeMo()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span></div>
 <div id="moBody"></div>
 <div class="fa"><button class="btn btn-g" onclick="closeMo()">取消</button><button class="btn btn-p" id="moSave">保存</button></div>
 </div></div>
 
 <script>
 const API='/api';let curTab='dashboard',curDbTable='users',curDbPage=1;
-const ADMIN_PWD='yiyi2024'; // 管理密码
+const ADMIN_PWD='yiyi2024';
 
-// Auth
+const icon={
+dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
+users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>',
+couples:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+diaries:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+wishes:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+anniversaries:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>',
+bills:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+letters:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+albums:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+messages:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+status:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+database:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>',
+logs:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+delete:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+view:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+empty:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'
+};
+
 function checkLogin(){return localStorage.getItem('admin_logged_in')==='true'}
 function doLogin(){
 const pwd=document.getElementById('loginPwd').value;
@@ -204,218 +286,195 @@ location.reload();
 document.getElementById('loginPwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 if(checkLogin())document.getElementById('loginScreen').classList.remove('on');
 
-// Utils
-function toast(m,t=''){const d=document.createElement('div');d.className='toast '+t;d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),3000)}
+function toast(m,t=''){const d=document.createElement('div');d.className='toast '+t;d.innerHTML=(t==='ok'?icon.check:icon.alert)+' '+m;document.body.appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transform='translateY(-10px)';d.style.transition='all .3s';setTimeout(()=>d.remove(),300)},3000)}
 async function f(p){try{const r=await fetch(API+p);const j=await r.json();return j.success?j.data:null}catch(e){return null}}
 async function fm(p,m,b){try{const r=await fetch(API+p,{method:m,headers:{'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});return(await r.json()).success}catch(e){return false}}
 function fd(s){if(!s)return'-';const d=new Date(s);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function ft(s){if(!s)return'-';const d=new Date(s);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}
 function days(s){if(!s)return'-';const t=new Date(s),n=new Date();t.setHours(0,0,0,0);n.setHours(0,0,0,0);const d=Math.ceil((t-n)/864e5);return d<0?'已过':d}
-const moods={happy:'😊开心',love:'🥰甜蜜',sad:'😢难过',angry:'😤生气',miss:'🥺想你',shy:'😳害羞'};
-const types={love:'💕恋爱',birthday:'🎂生日',custom:'📌自定义'};
+const moods={happy:'😊 开心',love:'🥰 甜蜜',sad:'😢 难过',angry:'😤 生气',miss:'🥺 想你',shy:'😳 害羞'};
+const types={love:'💕 恋爱',birthday:'🎂 生日',custom:'📌 自定义'};
 
-// Modal
 function openMo(t,body,save){document.getElementById('moTitle').textContent=t;document.getElementById('moBody').innerHTML=body;document.getElementById('modal').classList.add('on');document.getElementById('moSave').onclick=save}
 function closeMo(){document.getElementById('modal').classList.remove('on')}
 document.getElementById('modal').onclick=e=>{if(e.target===document.getElementById('modal'))closeMo()};
 
-// Nav
 document.querySelectorAll('.side-item').forEach(b=>b.onclick=()=>{
 document.querySelectorAll('.side-item').forEach(x=>x.classList.remove('on'));b.classList.add('on');
 curTab=b.dataset.t;loadTab(curTab)});
 
-// Layout helpers
 const M=document.getElementById('main');
 function mkTop(title,extra){return`<div class="topbar"><h2>${title}</h2>${extra?`<div class="topbar-right">${extra}</div>`:''}</div>`}
 function mkStats(items){return`<div class="cards">${items.map(i=>`<div class="stat"><div class="stat-top"><div class="stat-icon ${i.c}">${i.e}</div></div><div class="stat-label">${i.l}</div><div class="stat-value">${i.v}</div>${i.s?`<div class="stat-sub">${i.s}</div>`:''}</div>`).join('')}</div>`}
-function mkCard(title,extra,body){return`<div class="card"><div class="card-h"><div class="card-t">${title}</div>${extra?`<div class="card-acts">${extra}</div>`:''}</div><div class="card-b">${body}</div></div>`}
-function mkTable(heads,rows){return`<table><thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.join(''):`<tr><td colspan="${heads.length}"><div class="empty"><i>📭</i><p>暂无数据</p></div></td></tr>`}</tbody></table>`}
+function mkCard(title,extra,body){return`<div class="card"><div class="card-h"><div class="card-t">${icon[curTab]||''} ${title}</div>${extra?`<div class="card-acts">${extra}</div>`:''}</div><div class="card-b">${body}</div></div>`}
+function mkTable(heads,rows){return`<table><thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.join(''):`<tr><td colspan="${heads.length}"><div class="empty">${icon.empty}<p>暂无数据</p></div></td></tr>`}</tbody></table>`}
 
-// Tab loader
 async function loadTab(t){
 M.innerHTML='<div class="ld"><div class="sp"></div></div>';
 const loader={dashboard:loadDash,users:loadUsers,couples:loadCouples,diaries:loadDiaries,wishes:loadWishes,anniversaries:loadAnni,bills:loadBills,letters:loadLetters,albums:loadAlbums,messages:loadMsgs,status:loadStatus,database:loadDatabase,logs:loadLogs};
 if(loader[t])await loader[t]();
 }
 
-// ===== Dashboard =====
 async function loadDash(){
 const[u,c,d,w,a]=await Promise.all([f('/admin/users'),f('/admin/couples'),f('/admin/diaries'),f('/admin/wishes'),f('/admin/anniversaries')]);
 const bc=c?.filter(x=>x.user2_id).length||0;
 const cw=w?.filter(x=>x.is_completed).length||0;
 M.innerHTML=mkTop('仪表盘','<span class="badge badge-ok"><span class="dot dot-ok"></span>系统运行正常</span>')+
 mkStats([
-{e:'👥',l:'注册用户',v:u?.length||0,c:'pk',s:'累计注册'},
-{e:'💑',l:'绑定情侣',v:bc,c:'pp',s:`${c?.length||0} 对情侣`},
-{e:'📝',l:'日记总数',v:d?.length||0,c:'bl',s:'甜蜜记录'},
-{e:'⭐',l:'愿望达成',v:`${cw}/${w?.length||0}`,c:'gn',s:'完成率 '+(w?.length?Math.round(cw/w.length*100):0)+'%'},
-{e:'📅',l:'纪念日',v:a?.length||0,c:'og',s:'重要日子'}
+{e:icon.users,l:'注册用户',v:u?.length||0,c:'pk',s:'累计注册'},
+{e:icon.couples,l:'绑定情侣',v:bc,c:'pp',s:`${c?.length||0} 对情侣`},
+{e:icon.diaries,l:'日记总数',v:d?.length||0,c:'bl',s:'甜蜜记录'},
+{e:icon.wishes,l:'愿望达成',v:`${cw}/${w?.length||0}`,c:'gn',s:'完成率 '+(w?.length?Math.round(cw/w.length*100):0)+'%'},
+{e:icon.anniversaries,l:'纪念日',v:a?.length||0,c:'og',s:'重要日子'}
 ])+
-mkCard('📈 数据概览','',`<div style="padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-<div style="background:linear-gradient(135deg,#FFF0F5,#FFE0EB);border-radius:10px;padding:20px;text-align:center"><div style="font-size:36px;margin-bottom:8px">💑</div><div style="font-size:24px;font-weight:700;color:#D63384">${bc}</div><div style="font-size:12px;color:#8B4558;margin-top:4px">已绑定情侣</div></div>
-<div style="background:linear-gradient(135deg,#E6F9F1,#D0F5E9);border-radius:10px;padding:20px;text-align:center"><div style="font-size:36px;margin-bottom:8px">✨</div><div style="font-size:24px;font-weight:700;color:#00B894">${cw}</div><div style="font-size:12px;color:#1E6F50;margin-top:4px">愿望已达成</div></div>
-<div style="background:linear-gradient(135deg,#F3EEFF,#E8DEFF);border-radius:10px;padding:20px;text-align:center"><div style="font-size:36px;margin-bottom:8px">📝</div><div style="font-size:24px;font-weight:700;color:#6C5CE7">${d?.length||0}</div><div style="font-size:12px;color:#5B4A8A;margin-top:4px">日记总数</div></div>
-</div>`)}
+mkCard('数据概览','',`<div style="padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+<div style="background:linear-gradient(135deg,#FFF0F5,#FFE0EB);border-radius:12px;padding:20px;text-align:center;transition:transform .3s var(--ease)" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='none'"><div style="width:48px;height:48px;margin:0 auto 12px;background:rgba(255,107,157,.15);border-radius:50%;display:flex;align-items:center;justify-content:center">${icon.couples}</div><div style="font-size:24px;font-weight:700;color:#D63384">${bc}</div><div style="font-size:12px;color:#8B4558;margin-top:4px">已绑定情侣</div></div>
+<div style="background:linear-gradient(135deg,#ECFDF5,#D1FAE5);border-radius:12px;padding:20px;text-align:center;transition:transform .3s var(--ease)" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='none'"><div style="width:48px;height:48px;margin:0 auto 12px;background:rgba(16,185,129,.15);border-radius:50%;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" style="width:24px;height:24px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div style="font-size:24px;font-weight:700;color:#10B981">${cw}</div><div style="font-size:12px;color:#065F46;margin-top:4px">愿望已达成</div></div>
+<div style="background:linear-gradient(135deg,#F3EEFF,#E8DEFF);border-radius:12px;padding:20px;text-align:center;transition:transform .3s var(--ease)" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='none'"><div style="width:48px;height:48px;margin:0 auto 12px;background:rgba(162,155,254,.15);border-radius:50%;display:flex;align-items:center;justify-content:center">${icon.diaries}</div><div style="font-size:24px;font-weight:700;color:#6C5CE7">${d?.length||0}</div><div style="font-size:12px;color:#5B4A8A;margin-top:4px">日记总数</div></div>
+</div>`);}
 
-// ===== Users =====
 async function loadUsers(){
 const d=await f('/admin/users')||[];
-M.innerHTML=mkTop('用户管理',`<span class="badge badge-pri">${d.length} 用户</span>`)+
-mkCard('用户列表',`<div class="search"><input placeholder="搜索用户..." oninput="filterT(this,'uBody')"></div>`,
+M.innerHTML=mkTop('用户管理',`<span class="badge badge-pri">${icon.users} ${d.length} 用户</span>`)+
+mkCard('用户列表',`<div class="search">${icon.search}<input placeholder="搜索用户..." oninput="filterT(this,'uBody')"></div>`,
 mkTable(['用户','OpenID','创建时间','操作'],d.map(u=>`<tr>
 <td><div style="display:flex;align-items:center;gap:10px"><img class="av" src="${u.avatar||''}" onerror="this.style.display='none'"><div><div style="font-weight:500">${u.nickname||'未设置'}</div><div style="font-size:11px;color:var(--tx3)">${u.id}</div></div></div></td>
-<td><code style="background:var(--bg);padding:3px 6px;border-radius:4px;font-size:11px">${u.openid?u.openid.substring(0,16)+'...':'-'}</code></td>
+<td><code style="background:var(--bg);padding:3px 8px;border-radius:4px;font-size:11px">${u.openid?u.openid.substring(0,16)+'...':'-'}</code></td>
 <td style="color:var(--tx2)">${fd(u.created_at)}</td>
-<td><div class="btn-acts"><button class="btn btn-sm btn-s" onclick="viewUser('${u.id}')">详情</button><button class="btn btn-sm btn-p" onclick='editUser(${JSON.stringify(u)})'>编辑</button><button class="btn btn-sm btn-d" onclick="delItem('/admin/users/${u.id}','用户')">删除</button></div></td>
+<td><div class="btn-acts"><button class="btn btn-sm btn-s" onclick="viewUser('${u.id}')">${icon.view} 详情</button><button class="btn btn-sm btn-p" onclick='editUser(${JSON.stringify(u)})'>${icon.edit} 编辑</button><button class="btn btn-sm btn-d" onclick="delItem('/admin/users/${u.id}','用户')">${icon.delete} 删除</button></div></td>
 </tr>`)));}
 
 async function viewUser(uid){
 const d=await f('/admin/users/'+uid+'/detail');
 if(!d){toast('获取用户详情失败','er');return;}
-const u=d.user;
-const c=d.couple;
-const s=d.stats;
+const u=d.user;const c=d.couple;const s=d.stats;
 openMo('用户详情 - '+u.nickname,`
 <div style="max-height:60vh;overflow-y:auto">
-<div style="display:flex;gap:16px;align-items:center;padding:16px;background:var(--bg);border-radius:10px;margin-bottom:16px">
-<img class="av" src="${u.avatar||''}" style="width:64px;height:64px;border:2px solid var(--pri)" onerror="this.style.display='none'">
+<div style="display:flex;gap:16px;align-items:center;padding:16px;background:var(--bg);border-radius:12px;margin-bottom:16px">
+<img class="av" src="${u.avatar||''}" style="width:64px;height:64px;border:3px solid var(--pri)" onerror="this.style.display='none'">
 <div><div style="font-size:16px;font-weight:600">${u.nickname||'未设置'}</div>
 <div style="font-size:12px;color:var(--tx2);margin-top:4px">ID: ${u.id}</div>
 <div style="font-size:12px;color:var(--tx2)">OpenID: ${u.openid||'未绑定'}</div>
 <div style="font-size:12px;color:var(--tx2)">注册时间: ${u.created_at}</div></div>
 </div>
-
-${c?`<div style="padding:14px;background:linear-gradient(135deg,#FFF0F5,#F3EEFF);border-radius:10px;margin-bottom:16px">
-<div style="font-size:13px;font-weight:600;margin-bottom:10px">💑 情侣关系</div>
+${c?`<div style="padding:14px;background:linear-gradient(135deg,#FFF0F5,#F3EEFF);border-radius:12px;margin-bottom:16px">
+<div style="font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px">${icon.couples} 情侣关系</div>
 <div style="display:flex;align-items:center;gap:12px;font-size:13px">
-<span>${c.user1_name||'-'}</span><span style="color:var(--pri)">❤️</span><span>${c.user2_name||'待绑定'}</span>
+<span>${c.user1_name||'-'}</span><span style="color:var(--pri)">${icon.heart}</span><span>${c.user2_name||'待绑定'}</span>
 </div>
 <div style="font-size:12px;color:var(--tx2);margin-top:8px">恋爱天数: <strong>${d.loveDays}</strong> 天 · 积分: <strong>${c.points||0}</strong> · 邀请码: <code>${c.invite_code||'-'}</code></div>
-</div>`:'<div style="padding:14px;background:var(--bg);border-radius:10px;margin-bottom:16px;text-align:center;color:var(--tx3)">暂未绑定情侣</div>'}
-
+</div>`:'<div style="padding:14px;background:var(--bg);border-radius:12px;margin-bottom:16px;text-align:center;color:var(--tx3)">暂未绑定情侣</div>'}
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
-<div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--pri)">${s.diaryCount}</div><div style="font-size:11px;color:var(--tx2)">日记</div></div>
-<div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--ok)">${s.wishCompleted}/${s.wishCount}</div><div style="font-size:11px;color:var(--tx2)">愿望</div></div>
-<div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--sec)">${s.anniversaryCount}</div><div style="font-size:11px;color:var(--tx2)">纪念日</div></div>
+<div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--pri)">${s.diaryCount}</div><div style="font-size:11px;color:var(--tx2)">日记</div></div>
+<div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--ok)">${s.wishCompleted}/${s.wishCount}</div><div style="font-size:11px;color:var(--tx2)">愿望</div></div>
+<div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;font-weight:700;color:var(--sec)">${s.anniversaryCount}</div><div style="font-size:11px;color:var(--tx2)">纪念日</div></div>
 </div>
-
-${d.recentDiaries.length?`<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">📝 最近日记</div>
-${d.recentDiaries.slice(0,3).map(di=>`<div style="padding:10px;background:var(--bg);border-radius:8px;margin-bottom:6px;font-size:12px"><div style="display:flex;justify-content:space-between;color:var(--tx3);margin-bottom:4px"><span>${moods[di.mood]||''}</span><span>${fd(di.created_at)}</span></div><div style="color:var(--tx1)">${di.content?.substring(0,80)}${di.content?.length>80?'...':''}</div></div>`).join('')}</div>`:''}
-
-${d.wishes.length?`<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">⭐ 愿望列表</div>
-${d.wishes.slice(0,5).map(w=>`<div style="padding:8px 10px;background:var(--bg);border-radius:6px;margin-bottom:4px;font-size:12px;display:flex;align-items:center;gap:8px"><span>${w.icon||'✨'}</span><span style="flex:1">${w.title}</span>${w.is_completed?'<span class="badge badge-ok" style="font-size:10px">已完成</span>':'<span class="badge badge-warn" style="font-size:10px">进行中</span>'}</div>`).join('')}</div>`:''}
-
-${d.anniversaries.length?`<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">📅 纪念日</div>
-${d.anniversaries.map(a=>`<div style="padding:8px 10px;background:var(--bg);border-radius:6px;margin-bottom:4px;font-size:12px;display:flex;align-items:center;gap:8px"><span>${a.icon||'🎂'}</span><span style="flex:1">${a.title}</span><span style="color:var(--tx3)">${a.date}</span><strong>${days(a.date)}天</strong></div>`).join('')}</div>`:''}
-
-${d.letters.length?`<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;margin-bottom:8px">💌 情书</div>
-${d.letters.slice(0,3).map(l=>`<div style="padding:8px 10px;background:var(--bg);border-radius:6px;margin-bottom:4px;font-size:12px;display:flex;align-items:center;gap:8px"><span style="flex:1"><strong>${l.title}</strong> <span style="color:var(--tx3)">by ${l.from_name}</span></span>${l.music_url?'🎵':''}${l.is_opened?'<span class="badge badge-ok" style="font-size:10px">已读</span>':'<span class="badge badge-info" style="font-size:10px">未读</span>'}</div>`).join('')}</div>`:''}
+${d.recentDiaries.length?`<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px">${icon.diaries} 最近日记</div>
+${d.recentDiaries.slice(0,3).map(di=>`<div style="padding:10px;background:var(--bg);border-radius:10px;margin-bottom:6px;font-size:12px"><div style="display:flex;justify-content:space-between;color:var(--tx3);margin-bottom:4px"><span>${moods[di.mood]||''}</span><span>${fd(di.created_at)}</span></div><div style="color:var(--tx1)">${di.content?.substring(0,80)}${di.content?.length>80?'...':''}</div></div>`).join('')}</div>`:''}
+${d.wishes.length?`<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px">${icon.wishes} 愿望列表</div>
+${d.wishes.slice(0,5).map(w=>`<div style="padding:8px 10px;background:var(--bg);border-radius:8px;margin-bottom:4px;font-size:12px;display:flex;align-items:center;gap:8px"><span style="flex:1">${w.title}</span>${w.is_completed?'<span class="badge badge-ok" style="font-size:10px">已完成</span>':'<span class="badge badge-warn" style="font-size:10px">进行中</span>'}</div>`).join('')}</div>`:''}
+${d.anniversaries.length?`<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px">${icon.anniversaries} 纪念日</div>
+${d.anniversaries.map(a=>`<div style="padding:8px 10px;background:var(--bg);border-radius:8px;margin-bottom:4px;font-size:12px;display:flex;align-items:center;gap:8px"><span style="flex:1">${a.title}</span><span style="color:var(--tx3)">${a.date}</span><strong>${days(a.date)}天</strong></div>`).join('')}</div>`:''}
+${d.letters.length?`<div style="margin-bottom:16px"><div style="font-size:13px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px">${icon.letters} 情书</div>
+${d.letters.slice(0,3).map(l=>`<div style="padding:8px 10px;background:var(--bg);border-radius:8px;margin-bottom:4px;font-size:12px;display:flex;align-items:center;gap:8px"><span style="flex:1"><strong>${l.title}</strong> <span style="color:var(--tx3)">by ${l.from_name}</span></span>${l.is_opened?'<span class="badge badge-ok" style="font-size:10px">已读</span>':'<span class="badge badge-info" style="font-size:10px">未读</span>'}</div>`).join('')}</div>`:''}
 </div>`,null);
 document.getElementById('moSave').style.display='none';}
 function editUser(u){openMo('编辑用户',`<div class="fg"><label>昵称</label><input id="eNick" value="${u.nickname||''}"></div><div class="fg"><label>头像URL</label><input id="eAv" value="${u.avatar||''}"></div>`,async()=>{if(await fm('/admin/users/'+u.id,'PUT',{nickname:document.getElementById('eNick').value,avatar:document.getElementById('eAv').value})){toast('更新成功','ok');closeMo();loadUsers()}else toast('更新失败','er')})}
 
-// ===== Couples =====
 async function loadCouples(){
 const d=await f('/admin/couples')||[];
-M.innerHTML=mkTop('情侣管理',`<span class="badge badge-pri">${d.length} 对</span>`)+
-mkCard('情侣列表',`<div class="search"><input placeholder="搜索情侣..." oninput="filterT(this,'cBody')"></div>`,
+M.innerHTML=mkTop('情侣管理',`<span class="badge badge-pri">${icon.couples} ${d.length} 对</span>`)+
+mkCard('情侣列表',`<div class="search">${icon.search}<input placeholder="搜索情侣..." oninput="filterT(this,'cBody')"></div>`,
 mkTable(['用户1','用户2','邀请码','恋爱天数','积分','创建时间','操作'],d.map(c=>`<tr>
 <td><div style="display:flex;align-items:center;gap:8px"><img class="av av-sm" src="${c.user1_avatar||''}" onerror="this.style.display='none'"><span>${c.user1_name||'-'}</span></div></td>
 <td><div style="display:flex;align-items:center;gap:8px"><img class="av av-sm" src="${c.user2_avatar||''}" onerror="this.style.display='none'"><span>${c.user2_name||'<span style=color:var(--tx3)>待绑定</span>'}</span></div></td>
-<td><code style="background:#FFF0F5;padding:3px 8px;border-radius:4px;font-size:12px;color:var(--pri);font-weight:600">${c.invite_code||'-'}</code></td>
+<td><code style="background:#FFF0F5;padding:3px 8px;border-radius:6px;font-size:12px;color:var(--pri);font-weight:600">${c.invite_code||'-'}</code></td>
 <td><strong>${c.start_date?days(c.start_date):'-'}</strong> 天</td>
 <td style="color:var(--pri);font-weight:600">${c.points||0}</td>
 <td style="color:var(--tx2)">${fd(c.created_at)}</td>
-<td><div class="btn-acts"><button class="btn btn-sm btn-p" onclick='editCouple(${JSON.stringify(c).replace(/'/g,"\\'")})'>编辑</button><button class="btn btn-sm btn-d" onclick="delItem('/admin/couples/${c.id}','情侣')">删除</button></div></td>
+<td><div class="btn-acts"><button class="btn btn-sm btn-p" onclick='editCouple(${JSON.stringify(c).replace(/'/g,"\\'")})'>${icon.edit} 编辑</button><button class="btn btn-sm btn-d" onclick="delItem('/admin/couples/${c.id}','情侣')">${icon.delete} 删除</button></div></td>
 </tr>`)));}
 function editCouple(c){openMo('编辑情侣',`<div class="fg"><label>用户1昵称</label><input id="ec1" value="${c.user1_name||''}"></div><div class="fg"><label>用户2昵称</label><input id="ec2" value="${c.user2_name||''}"></div><div class="fg"><label>在一起日期</label><input id="ec3" type="date" value="${c.start_date||''}"></div><div class="fg"><label>积分</label><input id="ec4" type="number" value="${c.points||0}"></div>`,async()=>{if(await fm('/admin/couples/'+c.id,'PUT',{user1_name:document.getElementById('ec1').value,user2_name:document.getElementById('ec2').value,start_date:document.getElementById('ec3').value,points:parseInt(document.getElementById('ec4').value)||0})){toast('更新成功','ok');closeMo();loadCouples()}else toast('更新失败','er')})}
 
-// ===== Diaries =====
 async function loadDiaries(){
 const d=await f('/admin/diaries')||[];
-M.innerHTML=mkTop('日记管理',`<span class="badge badge-pri">${d.length} 篇</span>`)+
-mkCard('日记列表',`<div class="search"><input placeholder="搜索日记..." oninput="filterT(this,'dBody')"></div>`,
+M.innerHTML=mkTop('日记管理',`<span class="badge badge-pri">${icon.diaries} ${d.length} 篇</span>`)+
+mkCard('日记列表',`<div class="search">${icon.search}<input placeholder="搜索日记..." oninput="filterT(this,'dBody')"></div>`,
 mkTable(['作者','内容','心情','点赞','评论','时间','操作'],d.map(di=>`<tr>
 <td><div style="display:flex;align-items:center;gap:8px"><img class="av av-sm" src="${di.author_avatar||''}" onerror="this.style.display='none'"><span>${di.author_name||'-'}</span></div></td>
 <td><div style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${di.content||'-'}</div></td>
 <td>${moods[di.mood]||di.mood||'-'}</td>
-<td>❤️ ${di.likes||0}</td>
-<td>💬 ${di.comment_count||0}</td>
+<td style="display:flex;align-items:center;gap:4px"><span style="color:var(--err)">${icon.heart}</span> ${di.likes||0}</td>
+<td style="display:flex;align-items:center;gap:4px">${icon.messages} ${di.comment_count||0}</td>
 <td style="color:var(--tx2)">${fd(di.created_at)}</td>
-<td><div class="btn-acts"><button class="btn btn-sm btn-p" onclick='editDiary(${JSON.stringify(di).replace(/'/g,"\\'")})'>编辑</button><button class="btn btn-sm btn-d" onclick="delItem('/admin/diaries/${di.id}','日记')">删除</button></div></td>
+<td><div class="btn-acts"><button class="btn btn-sm btn-p" onclick='editDiary(${JSON.stringify(di).replace(/'/g,"\\'")})'>${icon.edit} 编辑</button><button class="btn btn-sm btn-d" onclick="delItem('/admin/diaries/${di.id}','日记')">${icon.delete} 删除</button></div></td>
 </tr>`)));}
 function editDiary(d){openMo('编辑日记',`<div class="fg"><label>内容</label><textarea id="edC">${d.content||''}</textarea></div><div class="fg"><label>心情</label><select id="edM"><option value="">无</option>${Object.entries(moods).map(([k,v])=>`<option value="${k}" ${d.mood===k?'selected':''}>${v}</option>`).join('')}</select></div><div class="fg"><label>位置</label><input id="edL" value="${d.location||''}"></div>`,async()=>{if(await fm('/admin/diaries/'+d.id,'PUT',{content:document.getElementById('edC').value,mood:document.getElementById('edM').value,location:document.getElementById('edL').value,weather:''})){toast('更新成功','ok');closeMo();loadDiaries()}else toast('更新失败','er')})}
 
-// ===== Wishes =====
 async function loadWishes(){
 const d=await f('/admin/wishes')||[];
-M.innerHTML=mkTop('愿望管理',`<span class="badge badge-pri">${d.length} 个</span>`)+
+M.innerHTML=mkTop('愿望管理',`<span class="badge badge-pri">${icon.wishes} ${d.length} 个</span>`)+
 mkCard('愿望列表','',mkTable(['标题','描述','状态','完成时间','操作'],d.map(w=>`<tr>
 <td><span style="margin-right:4px">${w.icon||'✨'}</span> ${w.title}</td>
 <td style="color:var(--tx2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${w.description||'-'}</td>
 <td>${w.is_completed?'<span class="badge badge-ok">已完成</span>':'<span class="badge badge-warn">进行中</span>'}</td>
 <td style="color:var(--tx2)">${w.completed_at?fd(w.completed_at):'-'}</td>
-<td><div class="btn-acts"><button class="btn btn-sm btn-p" onclick='editWish(${JSON.stringify(w).replace(/'/g,"\\'")})'>编辑</button><button class="btn btn-sm btn-d" onclick="delItem('/admin/wishes/${w.id}','愿望')">删除</button></div></td>
+<td><div class="btn-acts"><button class="btn btn-sm btn-p" onclick='editWish(${JSON.stringify(w).replace(/'/g,"\\'")})'>${icon.edit} 编辑</button><button class="btn btn-sm btn-d" onclick="delItem('/admin/wishes/${w.id}','愿望')">${icon.delete} 删除</button></div></td>
 </tr>`)));}
 function editWish(w){openMo('编辑愿望',`<div class="fg"><label>标题</label><input id="ewT" value="${w.title||''}"></div><div class="fg"><label>描述</label><textarea id="ewD">${w.description||''}</textarea></div><div class="fg"><label>图标</label><input id="ewI" value="${w.icon||''}"></div><div class="fg"><label>状态</label><select id="ewS"><option value="0" ${!w.is_completed?'selected':''}>进行中</option><option value="1" ${w.is_completed?'selected':''}>已完成</option></select></div>`,async()=>{if(await fm('/admin/wishes/'+w.id,'PUT',{title:document.getElementById('ewT').value,description:document.getElementById('ewD').value,icon:document.getElementById('ewI').value,is_completed:document.getElementById('ewS').value==='1'})){toast('更新成功','ok');closeMo();loadWishes()}else toast('更新失败','er')})}
 
-// ===== Anniversaries =====
 async function loadAnni(){
 const d=await f('/admin/anniversaries')||[];
-M.innerHTML=mkTop('纪念日管理',`<span class="badge badge-pri">${d.length} 个</span>`)+
+M.innerHTML=mkTop('纪念日管理',`<span class="badge badge-pri">${icon.anniversaries} ${d.length} 个</span>`)+
 mkCard('纪念日列表','',mkTable(['标题','日期','类型','提醒','倒计时','操作'],d.map(a=>`<tr>
 <td><span style="margin-right:4px">${a.icon||'🎂'}</span> ${a.title}</td>
 <td>${a.date}</td>
 <td><span class="badge badge-info">${types[a.type]||a.type}</span></td>
 <td>${a.is_remind?'<span class="badge badge-ok">开启</span>':'<span class="badge badge-warn">关闭</span>'}</td>
 <td><strong>${days(a.date)}</strong> 天</td>
-<td><div class="btn-acts"><button class="btn btn-sm btn-p" onclick='editAnni(${JSON.stringify(a).replace(/'/g,"\\'")})'>编辑</button><button class="btn btn-sm btn-d" onclick="delItem('/admin/anniversaries/${a.id}','纪念日')">删除</button></div></td>
+<td><div class="btn-acts"><button class="btn btn-sm btn-p" onclick='editAnni(${JSON.stringify(a).replace(/'/g,"\\'")})'>${icon.edit} 编辑</button><button class="btn btn-sm btn-d" onclick="delItem('/admin/anniversaries/${a.id}','纪念日')">${icon.delete} 删除</button></div></td>
 </tr>`)));}
 function editAnni(a){openMo('编辑纪念日',`<div class="fg"><label>标题</label><input id="eaT" value="${a.title||''}"></div><div class="fg"><label>日期</label><input id="eaDt" type="date" value="${a.date||''}"></div><div class="fg"><label>类型</label><select id="eaTp">${Object.entries(types).map(([k,v])=>`<option value="${k}" ${a.type===k?'selected':''}>${v}</option>`).join('')}</select></div><div class="fg"><label>图标</label><input id="eaI" value="${a.icon||''}"></div><div class="fg"><label>提醒</label><select id="eaR"><option value="0" ${!a.is_remind?'selected':''}>关闭</option><option value="1" ${a.is_remind?'selected':''}>开启</option></select></div>`,async()=>{if(await fm('/admin/anniversaries/'+a.id,'PUT',{title:document.getElementById('eaT').value,description:'',date:document.getElementById('eaDt').value,type:document.getElementById('eaTp').value,icon:document.getElementById('eaI').value,is_remind:document.getElementById('eaR').value==='1',remind_days:0,remind_time:'09:00'})){toast('更新成功','ok');closeMo();loadAnni()}else toast('更新失败','er')})}
 
-// ===== Bills =====
 async function loadBills(){
 const d=await f('/admin/bills')||[];
 const total=d.reduce((s,b)=>s+Number(b.amount),0);
-M.innerHTML=mkTop('账单管理',`<span class="badge badge-pri">¥${total.toFixed(0)} 总额</span>`)+
+M.innerHTML=mkTop('账单管理',`<span class="badge badge-pri">${icon.bills} ¥${total.toFixed(0)} 总额</span>`)+
 mkCard('账单列表','',mkTable(['分类','描述','金额','付款者','日期','操作'],d.map(b=>`<tr>
 <td><span style="margin-right:4px">${b.category_icon||'💰'}</span> ${b.category||'-'}</td>
 <td>${b.description||b.sweet_word||'-'}</td>
 <td style="color:var(--pri);font-weight:600">¥${Number(b.amount).toFixed(2)}</td>
 <td>${b.paid_by_name||'-'}</td>
 <td style="color:var(--tx2)">${fd(b.bill_date||b.created_at)}</td>
-<td><button class="btn btn-sm btn-d" onclick="delItem('/admin/bills/${b.id}','账单')">删除</button></td>
+<td><button class="btn btn-sm btn-d" onclick="delItem('/admin/bills/${b.id}','账单')">${icon.delete} 删除</button></td>
 </tr>`)));}
 
-// ===== Letters =====
 async function loadLetters(){
 const d=await f('/admin/letters')||[];
-M.innerHTML=mkTop('情书管理',`<span class="badge badge-pri">${d.length} 封</span>`)+
+M.innerHTML=mkTop('情书管理',`<span class="badge badge-pri">${icon.letters} ${d.length} 封</span>`)+
 mkCard('情书列表','',mkTable(['标题','发送者','状态','音乐','发送时间','操作'],d.map(l=>`<tr>
 <td><strong>${l.title}</strong></td>
 <td>${l.from_name||'-'}</td>
 <td>${l.is_opened?'<span class="badge badge-ok">已读</span>':'<span class="badge badge-info">未读</span>'}</td>
-<td>${l.music_url?'<span class="badge badge-pri">🎵 '+l.music_name+'</span>':'-'}</td>
+<td>${l.music_url?`<span class="badge badge-pri">🎵 ${l.music_name}</span>`:'-'}</td>
 <td style="color:var(--tx2)">${fd(l.send_at||l.created_at)}</td>
-<td><button class="btn btn-sm btn-d" onclick="delItem('/admin/letters/${l.id}','情书')">删除</button></td>
+<td><button class="btn btn-sm btn-d" onclick="delItem('/admin/letters/${l.id}','情书')">${icon.delete} 删除</button></td>
 </tr>`)));}
 
-// ===== Albums =====
 async function loadAlbums(){
 const d=await f('/admin/albums')||[];
-M.innerHTML=mkTop('相册管理',`<span class="badge badge-pri">${d.length} 张</span>`)+
+M.innerHTML=mkTop('相册管理',`<span class="badge badge-pri">${icon.albums} ${d.length} 张</span>`)+
 mkCard('相册列表','',mkTable(['照片','描述','上传者','时间','操作'],d.map(p=>`<tr>
-<td><img src="${p.url}" style="width:50px;height:50px;border-radius:8px;object-fit:cover" onerror="this.style.display='none'"></td>
+<td><img src="${p.url}" style="width:50px;height:50px;border-radius:8px;object-fit:cover;border:1px solid var(--brd-l)" onerror="this.style.display='none'"></td>
 <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.description||'-'}</td>
 <td>${p.uploaded_by_name||'-'}</td>
 <td style="color:var(--tx2)">${fd(p.created_at)}</td>
-<td><button class="btn btn-sm btn-d" onclick="delItem('/admin/albums/${p.id}','照片')">删除</button></td>
+<td><button class="btn btn-sm btn-d" onclick="delItem('/admin/albums/${p.id}','照片')">${icon.delete} 删除</button></td>
 </tr>`)));}
 
-// ===== Messages =====
 async function loadMsgs(){
 const d=(await fetch(API+'/message/logs').then(r=>r.json())).data||[];
-M.innerHTML=mkTop('消息日志',`<span class="badge badge-pri">${d.length} 条</span>`)+
+M.innerHTML=mkTop('消息日志',`<span class="badge badge-pri">${icon.messages} ${d.length} 条</span>`)+
 mkCard('消息记录','',mkTable(['用户','类型','纪念日','状态','时间'],d.slice(0,50).map(m=>`<tr>
 <td>${m.user_id||'-'}</td>
 <td><span class="badge badge-info">${m.message_type||'-'}</span></td>
@@ -424,43 +483,41 @@ mkCard('消息记录','',mkTable(['用户','类型','纪念日','状态','时间
 <td style="color:var(--tx2)">${ft(m.created_at)}</td>
 </tr>`)));}
 
-// ===== Status =====
 async function loadStatus(){
 const d=await f('/admin/status');
-if(!d){M.innerHTML=mkTop('服务状态')+'<div class="empty"><i>❌</i><p>无法获取服务状态</p></div>';return;}
+if(!d){M.innerHTML=mkTop('服务状态')+'<div class="empty">'+icon.alert+'<p>无法获取服务状态</p></div>';return;}
 M.innerHTML=mkTop('服务状态',`<span class="badge badge-ok"><span class="dot dot-ok"></span>运行中</span>`)+
 mkStats([
-{e:'⏱️',l:'运行时间',v:d.uptimeFormatted,c:'gn'},
-{e:'💾',l:'堆内存',v:d.memory.heap,c:'bl',s:`总计 ${d.memory.heapTotal}`},
-{e:'📦',l:'RSS内存',v:d.memory.rss,c:'pp'},
-{e:'🟢',l:'Node版本',v:d.nodeVersion,c:'og',s:d.platform}
+{e:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',l:'运行时间',v:d.uptimeFormatted,c:'gn'},
+{e:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>',l:'堆内存',v:d.memory.heap,c:'bl',s:`总计 ${d.memory.heapTotal}`},
+{e:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>',l:'RSS内存',v:d.memory.rss,c:'pp'},
+{e:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',l:'Node版本',v:d.nodeVersion,c:'og',s:d.platform}
 ])+
 mkCard('服务器详情','',`<div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
-<div style="background:var(--bg);border-radius:10px;padding:18px">
-<h3 style="font-size:14px;margin-bottom:14px">📦 基本信息</h3>
+<div style="background:var(--bg);border-radius:12px;padding:18px">
+<h3 style="font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" style="width:16px;height:16px"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/></svg> 基本信息</h3>
 <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd-l)"><span style="color:var(--tx2);font-size:13px">版本</span><strong style="font-size:13px">${d.version}</strong></div>
 <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd-l)"><span style="color:var(--tx2);font-size:13px">环境</span><span class="badge badge-ok">${d.env}</span></div>
 <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd-l)"><span style="color:var(--tx2);font-size:13px">平台</span><span style="font-size:13px">${d.platform}</span></div>
 <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--tx2);font-size:13px">运行时间</span><strong style="font-size:13px">${d.uptimeFormatted}</strong></div>
 </div>
-<div style="background:var(--bg);border-radius:10px;padding:18px">
-<h3 style="font-size:14px;margin-bottom:14px">🗄️ 数据库</h3>
+<div style="background:var(--bg);border-radius:12px;padding:18px">
+<h3 style="font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:6px">${icon.database} 数据库</h3>
 <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd-l)"><span style="color:var(--tx2);font-size:13px">主机</span><span style="font-size:13px">${d.dbHost}</span></div>
 <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd-l)"><span style="color:var(--tx2);font-size:13px">数据库</span><strong style="font-size:13px">${d.dbName}</strong></div>
 <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--tx2);font-size:13px">表数量</span><strong style="font-size:13px">${d.tableStats?.length||0} 个</strong></div>
 </div>
 </div>
-${d.tableStats?`<div style="padding:0 20px 20px"><h3 style="font-size:14px;margin-bottom:12px">📊 数据表统计</h3><div style="display:flex;flex-wrap:wrap;gap:8px">${d.tableStats.map(t=>`<div style="background:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;border:1px solid var(--brd-l)"><strong>${t.name}</strong> <span style="color:var(--tx3)">${t.count>=0?t.count+' 条':'-'}</span></div>`).join('')}</div></div>`:''}`);}
+${d.tableStats?`<div style="padding:0 20px 20px"><h3 style="font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" fill="none" stroke="var(--pri)" stroke-width="2" style="width:16px;height:16px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 数据表统计</h3><div style="display:flex;flex-wrap:wrap;gap:8px">${d.tableStats.map(t=>`<div style="background:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;border:1px solid var(--brd-l);transition:all .2s var(--ease)" onmouseover="this.style.borderColor='var(--pri)'" onmouseout="this.style.borderColor='var(--brd-l)'"><strong>${t.name}</strong> <span style="color:var(--tx3)">${t.count>=0?t.count+' 条':'-'}</span></div>`).join('')}</div></div>`:''}`);}
 
-// ===== Database =====
 async function loadDatabase(){
 const tables=await f('/admin/db/tables')||[];
-if(!tables.length){M.innerHTML=mkTop('数据库管理')+'<div class="empty"><i>🗄️</i><p>无法连接数据库</p></div>';return;}
+if(!tables.length){M.innerHTML=mkTop('数据库管理')+'<div class="empty">'+icon.database+'<p>无法连接数据库</p></div>';return;}
 const totalRows=tables.reduce((s,t)=>s+(t.count||0),0);
-M.innerHTML=mkTop('数据库管理',`<span class="badge badge-pri">${tables.length} 张表 · ${totalRows} 条记录</span>`)+
-`<div class="card"><div class="card-h"><div class="card-t">表数据浏览</div>
+M.innerHTML=mkTop('数据库管理',`<span class="badge badge-pri">${icon.database} ${tables.length} 张表 · ${totalRows} 条记录</span>`)+
+`<div class="card"><div class="card-h"><div class="card-t">${icon.database} 表数据浏览</div>
 <div class="card-acts" style="gap:4px;flex-wrap:wrap">${tables.map(t=>`<button class="btn btn-sm ${t.name===curDbTable?'btn-p':'btn-g'}" onclick="switchDbTable('${t.name}')">${t.name} <span style="color:var(--tx3)">${t.count}</span></button>`).join('')}</div></div>
-<div class="card-b"><div class="sql-wrap"><input id="sqlInput" placeholder="输入SQL查询（仅SELECT）..." onkeydown="if(event.key==='Enter')runSql()"><button class="btn btn-p" onclick="runSql()">执行</button></div>
+<div class="card-b"><div class="sql-wrap"><input id="sqlInput" placeholder="输入SQL查询（仅SELECT）..." onkeydown="if(event.key==='Enter')runSql()"><button class="btn btn-p" onclick="runSql()">${icon.check} 执行</button></div>
 <div id="dbContent"><div class="ld"><div class="sp"></div></div></div></div></div>`;
 loadTableData(curDbTable);}
 
@@ -485,29 +542,25 @@ const el=document.getElementById('dbContent');el.innerHTML='<div class="ld"><div
 try{
 const r=await fetch(API+'/admin/db/sql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql})});
 const d=await r.json();
-if(!d.success){el.innerHTML=`<div style="background:#FEE;padding:12px;border-radius:8px;color:var(--err);font-size:13px">❌ ${d.message}</div>`;return;}
-el.innerHTML=`<div style="margin-bottom:10px;font-size:12px;color:var(--tx2)">✅ 查询成功 · ${d.data.rowCount} 行 · ${d.data.duration}ms</div>`+
+if(!d.success){el.innerHTML=`<div style="background:#FEF2F2;padding:12px;border-radius:8px;color:var(--err);font-size:13px;display:flex;align-items:center;gap:8px">${icon.alert} ${d.message}</div>`;return;}
+el.innerHTML=`<div style="margin-bottom:10px;font-size:12px;color:var(--ok);display:flex;align-items:center;gap:6px">${icon.check} 查询成功 · ${d.data.rowCount} 行 · ${d.data.duration}ms</div>`+
 mkTable(d.data.columns,d.data.rows.map(r=>`<tr>${d.data.columns.map(c=>`<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${String(r[c]||'')}">${r[c]===null?'NULL':typeof r[c]==='object'?JSON.stringify(r[c]):String(r[c])}</td>`).join('')}</tr>`));
-}catch(e){el.innerHTML=`<div style="background:#FEE;padding:12px;border-radius:8px;color:var(--err);font-size:13px">❌ ${e.message}</div>`;}}
+}catch(e){el.innerHTML=`<div style="background:#FEF2F2;padding:12px;border-radius:8px;color:var(--err);font-size:13px;display:flex;align-items:center;gap:8px">${icon.alert} ${e.message}</div>`;}}
 
-// ===== Logs =====
 async function loadLogs(){
 const d=await f('/admin/logs?limit=100')||[];
-const srcIcon={message:'💬',diary:'📝',user:'👤',couple:'💑'};
 const srcBadge={message:'info',diary:'info',user:'pri',couple:'pri'};
-M.innerHTML=mkTop('操作日志',`<span class="badge badge-pri">${d.length} 条</span>`)+
-mkCard('最近操作',`<div class="search"><input placeholder="搜索日志..." oninput="filterT(this,'logBody')"></div>`,
+M.innerHTML=mkTop('操作日志',`<span class="badge badge-pri">${icon.logs} ${d.length} 条</span>`)+
+mkCard('最近操作',`<div class="search">${icon.search}<input placeholder="搜索日志..." oninput="filterT(this,'logBody')"></div>`,
 mkTable(['类型','详情','时间'],d.map(l=>`<tr>
-<td><span class="badge badge-${srcBadge[l.source]||'info'}">${srcIcon[l.source]||'📋'} ${l.source}</span></td>
+<td><span class="badge badge-${srcBadge[l.source]||'info'}">${l.source}</span></td>
 <td>${l.detail||l.author||'-'}</td>
 <td style="color:var(--tx2)">${ft(l.time)}</td>
 </tr>`)));}
 
-// ===== Shared =====
 async function delItem(p,n){if(!confirm(`确定删除该${n}吗？此操作不可恢复。`))return;if(await fm(p,'DELETE')){toast('删除成功','ok');loadTab(curTab)}else toast('删除失败','er')}
 function filterT(el,id){const s=el.value.toLowerCase();document.querySelectorAll('#'+id+' tr').forEach(r=>r.style.display=r.textContent.toLowerCase().includes(s)?'':'none')}
 
-// Init
 if(checkLogin())loadDash();
 </script>
 </body>
