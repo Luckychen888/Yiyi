@@ -66,14 +66,19 @@ async function initDB() {
 
 // ==================== 路由 ====================
 
-// 健康检查
-app.get('/', (req, res) => {
+// 健康检查（API）
+app.get('/api/health', (req, res) => {
   res.json({
     success: true,
     message: '恋人空间 API 服务运行中 💕',
     version: '1.0.0',
     timestamp: new Date().toISOString()
   });
+});
+
+// 首页重定向到管理后台
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // API 路由
