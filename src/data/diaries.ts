@@ -25,7 +25,7 @@ export const diariesData: Diary[] = [
     authorId: 'user_001',
     authorName: '小怿',
     authorAvatar: 'https://picsum.photos/id/64/200/200',
-    createdAt: '2024-06-10 18:30:00',
+    createdAt: '2024-06-10T18:30:00',
     likes: 12,
     comments: [
       {
@@ -34,7 +34,7 @@ export const diariesData: Diary[] = [
         authorId: 'user_002',
         authorName: '小爱',
         authorAvatar: 'https://picsum.photos/id/91/200/200',
-        createdAt: '2024-06-10 19:00:00'
+        createdAt: '2024-06-10T19:00:00'
       }
     ]
   },
@@ -48,7 +48,7 @@ export const diariesData: Diary[] = [
     authorId: 'user_002',
     authorName: '小爱',
     authorAvatar: 'https://picsum.photos/id/91/200/200',
-    createdAt: '2024-06-09 08:00:00',
+    createdAt: '2024-06-09T08:00:00',
     likes: 8,
     comments: []
   },
@@ -61,7 +61,7 @@ export const diariesData: Diary[] = [
     authorId: 'user_001',
     authorName: '小怿',
     authorAvatar: 'https://picsum.photos/id/64/200/200',
-    createdAt: '2024-06-08 22:00:00',
+    createdAt: '2024-06-08T22:00:00',
     likes: 15,
     comments: [
       {
@@ -70,7 +70,7 @@ export const diariesData: Diary[] = [
         authorId: 'user_002',
         authorName: '小爱',
         authorAvatar: 'https://picsum.photos/id/91/200/200',
-        createdAt: '2024-06-08 22:30:00'
+        createdAt: '2024-06-08T22:30:00'
       }
     ]
   },
@@ -87,7 +87,7 @@ export const diariesData: Diary[] = [
     authorId: 'user_001',
     authorName: '小怿',
     authorAvatar: 'https://picsum.photos/id/64/200/200',
-    createdAt: '2024-06-01 15:00:00',
+    createdAt: '2024-06-01T15:00:00',
     likes: 20,
     comments: []
   },
@@ -99,7 +99,7 @@ export const diariesData: Diary[] = [
     authorId: 'user_002',
     authorName: '小爱',
     authorAvatar: 'https://picsum.photos/id/91/200/200',
-    createdAt: '2024-05-28 20:00:00',
+    createdAt: '2024-05-28T20:00:00',
     likes: 6,
     comments: []
   }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, Button } from '@tarojs/components';
+import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import DiaryCard from '../../components/DiaryCard';
@@ -8,7 +8,7 @@ import { gamesData, loveTreeData, treeStages, getMatchScore } from '../../data/i
 import { useCoupleStore } from '../../store/useCoupleStore';
 
 const InteractPage: React.FC = () => {
-  const { couple, diaries } = useCoupleStore();
+  const { diaries } = useCoupleStore();
   const matchScore = getMatchScore();
 
   // 获取当前树阶段

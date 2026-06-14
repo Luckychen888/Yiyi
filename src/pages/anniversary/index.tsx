@@ -28,7 +28,7 @@ const AnniversaryPage: React.FC = () => {
   useShareAppMessage(() => {
     const upcomingAnni = anniversaries[0];
     const title = upcomingAnni 
-      ? `${upcomingAnni.daysLeft || 0}天后是我们${upcomingAnni.title}的日子 ❤️`
+      ? `${getDaysUntil(upcomingAnni.date)}天后是我们${upcomingAnni.title}的日子 ❤️`
       : '我们的纪念日 - 恋人空间';
     return {
       title,
@@ -41,7 +41,7 @@ const AnniversaryPage: React.FC = () => {
   useShareTimeline(() => {
     const upcomingAnni = anniversaries[0];
     const title = upcomingAnni 
-      ? `${upcomingAnni.daysLeft || 0}天后是我们${upcomingAnni.title}的日子 ❤️`
+      ? `${getDaysUntil(upcomingAnni.date)}天后是我们${upcomingAnni.title}的日子 ❤️`
       : '我们的纪念日 - 恋人空间';
     return {
       title,

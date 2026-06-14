@@ -92,7 +92,7 @@ export const loveTreeData: LoveTree = {
   maxExp: 1000,
   waterCount: 28,
   fertilizerCount: 12,
-  lastWaterAt: '2024-06-10 08:00:00',
+  lastWaterAt: '2024-06-10T08:00:00',
   stage: 2 // 1-7 阶段
 };
 

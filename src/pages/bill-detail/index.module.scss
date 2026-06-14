@@ -2,23 +2,431 @@
 
 .page {
   min-height: 100vh;
-  padding: $spacing-xl $page-padding;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: 160rpx;
   background: $color-bg-page;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
-.title {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-semibold;
+.header {
+  text-align: center;
+  margin-bottom: $spacing-xl;
+}
+
+.headerTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
   color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.headerDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.statsCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.statsMain {
+  text-align: center;
   margin-bottom: $spacing-md;
 }
 
-.desc {
+.statsLabel {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.statsValue {
+  font-size: 56rpx;
+  font-weight: $font-weight-bold;
+  color: #fff;
+  margin-top: $spacing-xs;
+}
+
+.statsRow {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: $radius-md;
+  padding: $spacing-md;
+}
+
+.statsItem {
+  flex: 1;
+  text-align: center;
+}
+
+.statsItemLabel {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.statsItemValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: #fff;
+  margin-top: $spacing-xs;
+}
+
+.statsDivider {
+  width: 1rpx;
+  height: 60rpx;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 0 $spacing-md;
+}
+
+.settlement {
+  margin-top: $spacing-md;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-md;
+  padding: $spacing-sm;
+}
+
+.settlementText {
+  font-size: $font-size-sm;
+  color: #fff;
+}
+
+.categoryScroll {
+  margin-bottom: $spacing-lg;
+  white-space: nowrap;
+}
+
+.categoryList {
+  display: inline-flex;
+  gap: $spacing-sm;
+}
+
+.categoryItem {
+  display: inline-flex;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-button;
+  background: $color-bg-card;
+  box-shadow: $shadow-card;
+}
+
+.categoryActive {
+  background: $color-primary;
+}
+
+.categoryText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.categoryTextActive {
+  color: #fff;
+}
+
+.billList {
+  margin-bottom: $spacing-xl;
+}
+
+.emptyState {
+  text-align: center;
+  padding: $spacing-xl;
+}
+
+.emptyIcon {
+  font-size: 80rpx;
+}
+
+.emptyText {
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  margin-top: $spacing-md;
+}
+
+.emptyDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: $spacing-sm;
+}
+
+.billCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  margin-bottom: $spacing-sm;
+  box-shadow: $shadow-card;
+}
+
+.billLeft {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.billIcon {
+  font-size: 48rpx;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.billInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.billTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.billSweet {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  margin-top: $spacing-xs;
+  @include text-ellipsis;
+}
+
+.billMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-top: $spacing-xs;
+}
+
+.billDate {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.billPayer {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.billRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: $spacing-md;
+  flex-shrink: 0;
+}
+
+.billAmount {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.billDelete {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: $spacing-xs;
+}
+
+.addButtonWrapper {
+  position: fixed;
+  bottom: 40rpx;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 $spacing-xl;
+}
+
+.addButton {
+  width: 100%;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  border: none;
+  box-shadow: 0 8rpx 24rpx rgba($color-primary, 0.4);
+}
+
+.addButtonText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: #fff;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  z-index: 1000;
+}
+
+.modalContent {
+  width: 100%;
+  max-height: 85vh;
+  background: $color-bg-card;
+  border-radius: $radius-xl $radius-xl 0 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg;
+  border-bottom: 1rpx solid $color-border;
+}
+
+.modalTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.modalClose {
+  font-size: $font-size-xl;
+  color: $color-text-tertiary;
+  padding: $spacing-sm;
+}
+
+.modalBody {
+  flex: 1;
+  padding: $spacing-lg;
+  max-height: 60vh;
+}
+
+.formItem {
+  margin-bottom: $spacing-lg;
+}
+
+.formLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.amountInput {
+  display: flex;
+  align-items: center;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+}
+
+.amountPrefix {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin-right: $spacing-sm;
+}
+
+.amountField {
+  flex: 1;
+  font-size: 48rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.categoryGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.categoryOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  background: $color-bg-page;
+  min-width: 120rpx;
+}
+
+.categoryOptionActive {
+  background: rgba($color-primary, 0.1);
+  border: 2rpx solid $color-primary;
+}
+
+.categoryOptionIcon {
+  font-size: 40rpx;
+  margin-bottom: $spacing-xs;
+}
+
+.categoryOptionText {
+  font-size: $font-size-xs;
+  color: $color-text-primary;
+}
+
+.input {
+  width: 100%;
+  height: $button-height-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  box-sizing: border-box;
+}
+
+.pickerTrigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: $button-height-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+}
+
+.pickerText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+}
+
+.pickerArrow {
+  font-size: $font-size-lg;
+  color: $color-text-tertiary;
+}
+
+.modalFooter {
+  display: flex;
+  padding: $spacing-lg;
+  gap: $spacing-md;
+  border-top: 1rpx solid $color-border;
+}
+
+.cancelButton {
+  flex: 1;
+  height: $button-height-md;
+  background: $color-bg-page;
+  border-radius: $radius-button;
+  border: none;
+}
+
+.cancelButtonText {
   font-size: $font-size-md;
   color: $color-text-secondary;
-  text-align: center;
+}
+
+.confirmButton {
+  flex: 1;
+  height: $button-height-md;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  border: none;
+}
+
+.confirmButtonText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: #fff;
 }

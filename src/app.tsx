@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDidShow } from '@tarojs/taro';
-import Taro from '@tarojs/taro';
 import './app.scss';
 import { useCoupleStore } from './store/useCoupleStore';
 

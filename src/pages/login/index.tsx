@@ -6,7 +6,7 @@ import { useCoupleStore } from '../../store/useCoupleStore';
 import { userService, coupleService } from '../../services/api';
 
 const LoginPage: React.FC = () => {
-  const { setCouple, setBound, setCurrentUser, initFromStorage } = useCoupleStore();
+  const { setCouple, setBound, setCurrentUser } = useCoupleStore();
   const [avatar, setAvatar] = useState('');
   const [nickname, setNickname] = useState('');
   const [isLoading, setIsLoading] = useState(false);

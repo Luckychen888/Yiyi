@@ -9,7 +9,7 @@ import { diaryService } from '../../services/api';
 const defaultMood = { label: '', emoji: '', color: '#ccc' };
 
 const DiaryDetailPage: React.FC = () => {
-  const { diaries, loadDiaries, likeDiary, addDiary, addComment } = useCoupleStore();
+  const { likeDiary, addComment } = useCoupleStore();
   const [diary, setDiary] = useState<any>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [commentText, setCommentText] = useState('');

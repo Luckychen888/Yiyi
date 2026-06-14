@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import Taro from '@tarojs/taro';
 import type { Couple, Anniversary } from '../types/couple';
-import type { Diary, Comment } from '../types/diary';
+import type { Diary } from '../types/diary';
 import type { Wish } from '../types/wish';
 import { 
   diaryService, 

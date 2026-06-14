@@ -2,23 +2,225 @@
 
 .page {
   min-height: 100vh;
-  padding: $spacing-xl $page-padding;
+  padding: $spacing-lg $page-padding;
+  padding-bottom: 160rpx;
   background: $color-bg-page;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
-.title {
+.header {
+  text-align: center;
+  margin-bottom: $spacing-xl;
+}
+
+.headerTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.headerDesc {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.photoCount {
+  margin-top: $spacing-sm;
+}
+
+.photoCountText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.emptyState {
+  text-align: center;
+  padding: $spacing-xl;
+}
+
+.emptyIcon {
+  font-size: 80rpx;
+}
+
+.emptyText {
+  font-size: $font-size-lg;
+  color: $color-text-primary;
+  margin-top: $spacing-md;
+}
+
+.emptyDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.uploadEmptyBtn {
+  width: 300rpx;
+  height: $button-height-md;
+  background: $color-primary;
+  border-radius: $radius-button;
+  border: none;
+  margin: 0 auto;
+}
+
+.uploadEmptyText {
+  font-size: $font-size-md;
+  color: #fff;
+}
+
+.dateGroup {
+  margin-bottom: $spacing-lg;
+}
+
+.dateHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+}
+
+.dateText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.dateCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.photoGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.photoItem {
+  width: calc((100% - #{$spacing-sm} * 2) / 3);
+  aspect-ratio: 1;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: $color-bg-card;
+}
+
+.photoImage {
+  width: 100%;
+  height: 100%;
+}
+
+.addButtonWrapper {
+  position: fixed;
+  bottom: 40rpx;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 $spacing-xl;
+}
+
+.addButton {
+  width: 100%;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  border: none;
+  box-shadow: 0 8rpx 24rpx rgba($color-primary, 0.4);
+}
+
+.addButtonText {
   font-size: $font-size-lg;
   font-weight: $font-weight-semibold;
+  color: #fff;
+}
+
+.previewPage {
+  min-height: 100vh;
+  background: #000;
+  padding: $spacing-lg $page-padding;
+}
+
+.previewHeader {
+  margin-bottom: $spacing-lg;
+}
+
+.previewBack {
+  font-size: $font-size-lg;
+  color: #fff;
+}
+
+.previewImageWrapper {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  margin-bottom: $spacing-lg;
+}
+
+.previewImage {
+  width: 100%;
+  height: 100%;
+}
+
+.previewInfo {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+}
+
+.previewDesc {
+  font-size: $font-size-md;
   color: $color-text-primary;
   margin-bottom: $spacing-md;
 }
 
-.desc {
-  font-size: $font-size-md;
+.previewMeta {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+}
+
+.previewUploader {
+  font-size: $font-size-sm;
   color: $color-text-secondary;
-  text-align: center;
+}
+
+.previewTime {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.previewLocation {
+  display: flex;
+  align-items: center;
+  margin-top: $spacing-sm;
+}
+
+.previewLocationIcon {
+  font-size: $font-size-sm;
+  margin-right: $spacing-xs;
+}
+
+.previewLocationText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.previewActions {
+  margin-top: $spacing-md;
+}
+
+.previewDeleteBtn {
+  width: 100%;
+  height: $button-height-md;
+  background: transparent;
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: $radius-button;
+}
+
+.previewDeleteText {
+  font-size: $font-size-md;
+  color: rgba(255, 255, 255, 0.7);
 }

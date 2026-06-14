@@ -101,7 +101,7 @@ export const tasksData: Task[] = [
     points: 10,
     type: 'daily',
     isCompleted: true,
-    completedAt: '2024-06-10 08:00:00',
+    completedAt: '2024-06-10T08:00:00',
     icon: '🌅'
   },
   {
@@ -129,7 +129,7 @@ export const tasksData: Task[] = [
     points: 20,
     type: 'daily',
     isCompleted: true,
-    completedAt: '2024-06-10 21:00:00',
+    completedAt: '2024-06-10T21:00:00',
     icon: '📝'
   },
   {
@@ -139,7 +139,7 @@ export const tasksData: Task[] = [
     points: 5,
     type: 'daily',
     isCompleted: true,
-    completedAt: '2024-06-10 19:00:00',
+    completedAt: '2024-06-10T19:00:00',
     icon: '❤️'
   },
   {
