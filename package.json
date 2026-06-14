@@ -1,14 +1,9 @@
 {
-  "name": "taro_template",
+  "name": "yiyi",
   "version": "1.0.0",
   "private": true,
-  "description": "taro_template",
-  "templateInfo": {
-    "name": "react",
-    "typescript": true,
-    "css": "Sass",
-    "framework": "React"
-  },
+  "description": "恋人空间小程序 - 前端(Taro) + 后端(Express)",
+  "main": "backend/app.js",
   "scripts": {
     "build:weapp": "taro build --type weapp",
     "build:swan": "taro build --type swan",
@@ -27,14 +22,14 @@
     "dev:rn": "npm run build:rn -- --watch",
     "dev:qq": "npm run build:qq -- --watch",
     "dev:jd": "npm run build:jd -- --watch",
-    "dev:quickapp": "npm run build:quickapp -- --watch"
+    "start": "node backend/app.js",
+    "dev:server": "nodemon backend/app.js"
   },
   "browserslist": [
     "last 3 versions",
     "Android >= 4.1",
     "ios >= 8"
   ],
-  "author": "",
   "dependencies": {
     "@babel/runtime": "^7.21.5",
     "@tarojs/components": "4.1.9",
@@ -51,7 +46,10 @@
     "@tarojs/taro": "4.1.9",
     "ajv": "^8.20.0",
     "classnames": "^2.5.0",
+    "cors": "^2.8.5",
     "dayjs": "^1.11.10",
+    "express": "^4.18.2",
+    "mysql2": "^3.6.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "zustand": "^4.5.0"
@@ -78,6 +76,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "minidev": "^2.2.5",
     "miniprogram-ci": "^2.1.26",
+    "nodemon": "^3.0.0",
     "postcss": "^8.4.18",
     "react-refresh": "^0.11.0",
     "stylelint": "^14.4.0",
@@ -86,5 +85,8 @@
     "tt-ide-cli": "^0.1.31",
     "typescript": "^5.1.0",
     "webpack": "5.78.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
