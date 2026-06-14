@@ -1098,13 +1098,13 @@ router.delete('/bill/:id', async (req, res) => {
 router.post('/letter', async (req, res) => {
   try {
     const db = getDB(req);
-    const { coupleId, title, content, images, voiceUrl, fromId, fromName, fromAvatar, toId, openAt } = req.body;
+    const { coupleId, title, content, images, voiceUrl, fromId, fromName, fromAvatar, toId, openAt, musicUrl, musicName } = req.body;
     const letterId = generateId('letter');
     
     await db.query(
-      `INSERT INTO letters (id, couple_id, title, content, images, voice_url, from_id, from_name, from_avatar, to_id, open_at, created_at) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
-      [letterId, coupleId, title, content || null, JSON.stringify(images || []), voiceUrl || null, fromId, fromName, fromAvatar, toId || null, openAt || null]
+      `INSERT INTO letters (id, couple_id, title, content, images, voice_url, music_url, music_name, from_id, from_name, from_avatar, to_id, open_at, created_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [letterId, coupleId, title, content || null, JSON.stringify(images || []), voiceUrl || null, musicUrl || null, musicName || null, fromId, fromName, fromAvatar, toId || null, openAt || null]
     );
     
     const letter = {
