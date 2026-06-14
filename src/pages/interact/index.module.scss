@@ -262,3 +262,43 @@
   font-size: 40rpx;
   color: $color-text-white;
 }
+
+// 匹配进度条
+.matchProgressBar {
+  height: 12rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.matchProgressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF6B9D, #FF8FB1);
+  border-radius: 6rpx;
+  transition: width 0.5s ease;
+}
+
+// 树操作次数
+.treeActionCount {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: $spacing-xs;
+}
+
+// 空日记状态
+.emptyDiary {
+  text-align: center;
+  padding: $spacing-xl;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+}
+
+.emptyDiaryIcon {
+  font-size: 48rpx;
+}
+
+.emptyDiaryText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: $spacing-sm;
+}
