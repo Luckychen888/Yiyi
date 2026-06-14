@@ -1,0 +1,63 @@
+-- 恋人空间 - V2迁移脚本
+-- 新增账单、时光胶囊、相册表
+
+-- 账单表
+CREATE TABLE IF NOT EXISTS bills (
+  id VARCHAR(50) PRIMARY KEY COMMENT '账单ID',
+  couple_id VARCHAR(50) DEFAULT NULL COMMENT '情侣ID',
+  amount DECIMAL(10,2) NOT NULL COMMENT '金额',
+  category VARCHAR(50) DEFAULT NULL COMMENT '分类',
+  category_icon VARCHAR(10) DEFAULT '💰' COMMENT '分类图标',
+  description TEXT DEFAULT NULL COMMENT '描述',
+  sweet_word VARCHAR(100) DEFAULT NULL COMMENT '甜蜜备注',
+  paid_by VARCHAR(50) DEFAULT NULL COMMENT '付款者ID',
+  paid_by_name VARCHAR(50) DEFAULT NULL COMMENT '付款者昵称',
+  paid_by_avatar VARCHAR(500) DEFAULT NULL COMMENT '付款者头像',
+  bill_date DATE DEFAULT NULL COMMENT '账单日期',
+  bill_type VARCHAR(20) DEFAULT 'common' COMMENT '类型: common/personal',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  INDEX idx_couple (couple_id),
+  INDEX idx_date (bill_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='账单表';
+
+-- 时光胶囊/情书表
+CREATE TABLE IF NOT EXISTS letters (
+  id VARCHAR(50) PRIMARY KEY COMMENT '情书ID',
+  couple_id VARCHAR(50) DEFAULT NULL COMMENT '情侣ID',
+  title VARCHAR(100) NOT NULL COMMENT '标题',
+  content TEXT COMMENT '内容',
+  images JSON COMMENT '图片列表',
+  voice_url VARCHAR(500) DEFAULT NULL COMMENT '语音URL',
+  from_id VARCHAR(50) DEFAULT NULL COMMENT '发送者ID',
+  from_name VARCHAR(50) DEFAULT NULL COMMENT '发送者昵称',
+  from_avatar VARCHAR(500) DEFAULT NULL COMMENT '发送者头像',
+  to_id VARCHAR(50) DEFAULT NULL COMMENT '接收者ID',
+  send_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '发送时间',
+  open_at DATETIME DEFAULT NULL COMMENT '可打开时间',
+  is_opened TINYINT(1) DEFAULT 0 COMMENT '是否已打开',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  INDEX idx_couple (couple_id),
+  INDEX idx_from (from_id),
+  INDEX idx_to (to_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='时光胶囊表';
+
+-- 相册表
+CREATE TABLE IF NOT EXISTS albums (
+  id VARCHAR(50) PRIMARY KEY COMMENT '照片ID',
+  couple_id VARCHAR(50) DEFAULT NULL COMMENT '情侣ID',
+  url VARCHAR(500) NOT NULL COMMENT '照片URL',
+  thumbnail VARCHAR(500) DEFAULT NULL COMMENT '缩略图URL',
+  description TEXT DEFAULT NULL COMMENT '描述',
+  location VARCHAR(100) DEFAULT NULL COMMENT '拍摄地点',
+  taken_at DATETIME DEFAULT NULL COMMENT '拍摄时间',
+  uploaded_by VARCHAR(50) DEFAULT NULL COMMENT '上传者ID',
+  uploaded_by_name VARCHAR(50) DEFAULT NULL COMMENT '上传者昵称',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  INDEX idx_couple (couple_id),
+  INDEX idx_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='相册表';
+
+SELECT 'V2迁移完成!' AS message;
