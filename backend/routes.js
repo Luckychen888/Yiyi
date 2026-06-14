@@ -1319,4 +1319,191 @@ router.get('/admin/anniversaries', async (req, res) => {
   }
 });
 
+// ==================== Admin CRUD API ====================
+
+// 更新用户
+router.put('/admin/users/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { nickname, avatar } = req.body;
+    await db.query('UPDATE users SET nickname = ?, avatar = ? WHERE id = ?', [nickname, avatar, req.params.id]);
+    res.json({ success: true, message: '更新成功' });
+  } catch (error) {
+    console.error('更新用户失败:', error);
+    res.status(500).json({ success: false, message: '更新失败' });
+  }
+});
+
+// 删除用户
+router.delete('/admin/users/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query('DELETE FROM users WHERE id = ?', [req.params.id]);
+    res.json({ success: true, message: '删除成功' });
+  } catch (error) {
+    console.error('删除用户失败:', error);
+    res.status(500).json({ success: false, message: '删除失败' });
+  }
+});
+
+// 更新情侣
+router.put('/admin/couples/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { user1_name, user2_name, start_date, points } = req.body;
+    await db.query(
+      'UPDATE couples SET user1_name = ?, user2_name = ?, start_date = ?, points = ? WHERE id = ?',
+      [user1_name, user2_name, start_date, points, req.params.id]
+    );
+    res.json({ success: true, message: '更新成功' });
+  } catch (error) {
+    console.error('更新情侣失败:', error);
+    res.status(500).json({ success: false, message: '更新失败' });
+  }
+});
+
+// 删除情侣
+router.delete('/admin/couples/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query('DELETE FROM couples WHERE id = ?', [req.params.id]);
+    res.json({ success: true, message: '删除成功' });
+  } catch (error) {
+    console.error('删除情侣失败:', error);
+    res.status(500).json({ success: false, message: '删除失败' });
+  }
+});
+
+// 更新日记
+router.put('/admin/diaries/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { content, mood, location, weather } = req.body;
+    await db.query(
+      'UPDATE diaries SET content = ?, mood = ?, location = ?, weather = ? WHERE id = ?',
+      [content, mood, location, weather, req.params.id]
+    );
+    res.json({ success: true, message: '更新成功' });
+  } catch (error) {
+    console.error('更新日记失败:', error);
+    res.status(500).json({ success: false, message: '更新失败' });
+  }
+});
+
+// 更新愿望
+router.put('/admin/wishes/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { title, description, icon, is_completed } = req.body;
+    await db.query(
+      'UPDATE wishes SET title = ?, description = ?, icon = ?, is_completed = ? WHERE id = ?',
+      [title, description, icon, is_completed ? 1 : 0, req.params.id]
+    );
+    res.json({ success: true, message: '更新成功' });
+  } catch (error) {
+    console.error('更新愿望失败:', error);
+    res.status(500).json({ success: false, message: '更新失败' });
+  }
+});
+
+// 删除愿望
+router.delete('/admin/wishes/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query('DELETE FROM wishes WHERE id = ?', [req.params.id]);
+    res.json({ success: true, message: '删除成功' });
+  } catch (error) {
+    console.error('删除愿望失败:', error);
+    res.status(500).json({ success: false, message: '删除失败' });
+  }
+});
+
+// 更新纪念日
+router.put('/admin/anniversaries/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { title, description, date, type, icon, is_remind, remind_days, remind_time } = req.body;
+    await db.query(
+      'UPDATE anniversaries SET title = ?, description = ?, date = ?, type = ?, icon = ?, is_remind = ?, remind_days = ?, remind_time = ? WHERE id = ?',
+      [title, description, date, type, icon, is_remind ? 1 : 0, remind_days || 0, remind_time || '09:00', req.params.id]
+    );
+    res.json({ success: true, message: '更新成功' });
+  } catch (error) {
+    console.error('更新纪念日失败:', error);
+    res.status(500).json({ success: false, message: '更新失败' });
+  }
+});
+
+// 删除纪念日
+router.delete('/admin/anniversaries/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query('DELETE FROM anniversaries WHERE id = ?', [req.params.id]);
+    res.json({ success: true, message: '删除成功' });
+  } catch (error) {
+    console.error('删除纪念日失败:', error);
+    res.status(500).json({ success: false, message: '删除失败' });
+  }
+});
+
+// 获取所有账单
+router.get('/admin/bills', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [bills] = await db.query('SELECT * FROM bills ORDER BY created_at DESC');
+    res.json({ success: true, data: bills });
+  } catch (error) {
+    console.error('获取账单失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+// 获取所有情书
+router.get('/admin/letters', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [letters] = await db.query('SELECT * FROM letters ORDER BY created_at DESC');
+    res.json({ success: true, data: letters.map(l => ({ ...l, images: JSON.parse(l.images || '[]') })) });
+  } catch (error) {
+    console.error('获取情书失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+// 删除情书
+router.delete('/admin/letters/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query('DELETE FROM letters WHERE id = ?', [req.params.id]);
+    res.json({ success: true, message: '删除成功' });
+  } catch (error) {
+    console.error('删除情书失败:', error);
+    res.status(500).json({ success: false, message: '删除失败' });
+  }
+});
+
+// 获取所有照片
+router.get('/admin/albums', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [photos] = await db.query('SELECT * FROM albums ORDER BY created_at DESC');
+    res.json({ success: true, data: photos });
+  } catch (error) {
+    console.error('获取照片失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+// 删除照片
+router.delete('/admin/albums/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query('DELETE FROM albums WHERE id = ?', [req.params.id]);
+    res.json({ success: true, message: '删除成功' });
+  } catch (error) {
+    console.error('删除照片失败:', error);
+    res.status(500).json({ success: false, message: '删除失败' });
+  }
+});
+
 module.exports = router;
