@@ -1346,6 +1346,99 @@ router.delete('/admin/users/:id', async (req, res) => {
   }
 });
 
+// 获取用户详情（含关联数据）
+router.get('/admin/users/:id/detail', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const userId = req.params.id;
+
+    // 用户基本信息
+    const [users] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
+    if (users.length === 0) {
+      return res.status(404).json({ success: false, message: '用户不存在' });
+    }
+    const user = users[0];
+
+    // 情侣关系
+    const [couples] = await db.query(
+      'SELECT * FROM couples WHERE user1_id = ? OR user2_id = ?',
+      [userId, userId]
+    );
+
+    // 日记
+    const [diaries] = await db.query(
+      'SELECT * FROM diaries WHERE author_id = ? ORDER BY created_at DESC LIMIT 20',
+      [userId]
+    );
+
+    // 纪念日（通过情侣关系）
+    let anniversaries = [];
+    if (couples.length > 0) {
+      const [anni] = await db.query(
+        'SELECT * FROM anniversaries WHERE couple_id = ? ORDER BY date ASC',
+        [couples[0].id]
+      );
+      anniversaries = anni;
+    }
+
+    // 愿望
+    let wishes = [];
+    if (couples.length > 0) {
+      const [wish] = await db.query(
+        'SELECT * FROM wishes WHERE couple_id = ? ORDER BY created_at DESC',
+        [couples[0].id]
+      );
+      wishes = wish;
+    }
+
+    // 情书
+    let letters = [];
+    if (couples.length > 0) {
+      const [letter] = await db.query(
+        'SELECT * FROM letters WHERE couple_id = ? ORDER BY created_at DESC',
+        [couples[0].id]
+      );
+      letters = letter;
+    }
+
+    // 消息日志
+    const [messages] = await db.query(
+      'SELECT * FROM message_logs WHERE user_id = ? ORDER BY created_at DESC LIMIT 20',
+      [userId]
+    );
+
+    // 计算统计数据
+    const loveDays = couples.length > 0 && couples[0].start_date
+      ? Math.ceil((new Date() - new Date(couples[0].start_date)) / 86400000)
+      : 0;
+
+    res.json({
+      success: true,
+      data: {
+        user,
+        couple: couples[0] || null,
+        loveDays,
+        stats: {
+          diaryCount: diaries.length,
+          wishCount: wishes.length,
+          wishCompleted: wishes.filter(w => w.is_completed).length,
+          anniversaryCount: anniversaries.length,
+          letterCount: letters.length,
+          messageCount: messages.length
+        },
+        recentDiaries: diaries,
+        anniversaries,
+        wishes,
+        letters,
+        messages
+      }
+    });
+  } catch (error) {
+    console.error('获取用户详情失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
 // 更新情侣
 router.put('/admin/couples/:id', async (req, res) => {
   try {
