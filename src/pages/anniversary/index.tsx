@@ -5,6 +5,42 @@ import styles from './index.module.scss';
 import { useCoupleStore } from '../../store/useCoupleStore';
 import type { Anniversary } from '../../types/couple';
 
+// 日期解析：支持多种格式自动转换为 yyyy-MM-dd
+function parseDateInput(input: string): string | null {
+  if (!input) return null;
+  const trimmed = input.trim();
+  const now = new Date();
+  const year = now.getFullYear();
+
+  // yyyy-MM-dd / yyyy.MM.dd / yyyy/MM/dd
+  let m = trimmed.match(/^(\d{4})[-.\/](\d{1,2})[-.\/](\d{1,2})$/);
+  if (m) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+
+  // MM-dd / MM.dd / MM/dd (当年)
+  m = trimmed.match(/^(\d{1,2})[-.\/](\d{1,2})$/);
+  if (m) return `${year}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`;
+
+  // 4位数字 MMdd（如 0101, 1225）
+  m = trimmed.match(/^(\d{4})$/);
+  if (m) {
+    const mm = m[1].substring(0, 2);
+    const dd = m[1].substring(2, 4);
+    return `${year}-${mm}-${dd}`;
+  }
+
+  // 2位数字 MMdd
+  m = trimmed.match(/^(\d{1,2})(\d{2})$/);
+  if (m && parseInt(m[1]) >= 1 && parseInt(m[1]) <= 12) {
+    return `${year}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`;
+  }
+
+  // 中文 X月X日
+  m = trimmed.match(/^(\d{1,2})月(\d{1,2})[日号]?$/);
+  if (m) return `${year}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`;
+
+  return null;
+}
+
 const AnniversaryPage: React.FC = () => {
   const { anniversaries, loadAnniversaries, addAnniversary, updateAnniversary, deleteAnniversary } = useCoupleStore();
   const [showAddModal, setShowAddModal] = useState(false);
@@ -377,12 +413,36 @@ const AnniversaryPage: React.FC = () => {
               {/* 日期选择 */}
               <View className={styles.formItem}>
                 <Text className={styles.formLabel}>日期 *</Text>
-                <Picker mode="date" value={formData.date} onChange={(e: any) => setFormData({ ...formData, date: e.detail.value })}>
-                  <View className={styles.pickerTrigger}>
-                    <Text className={styles.pickerTriggerText}>{formData.date || '请选择日期'}</Text>
-                    <Text className={styles.pickerArrow}>›</Text>
-                  </View>
-                </Picker>
+                <View className={styles.dateInputWrap}>
+                  <Input
+                    className={styles.dateInput}
+                    placeholder="如：2024-01-01 或 1月1日 或 0101"
+                    value={formData.date}
+                    onInput={(e: any) => {
+                      const val = e.detail.value;
+                      const parsed = parseDateInput(val);
+                      setFormData({ ...formData, date: parsed || val });
+                    }}
+                    onBlur={(e: any) => {
+                      const val = e.detail.value;
+                      if (val) {
+                        const parsed = parseDateInput(val);
+                        if (parsed) {
+                          setFormData({ ...formData, date: parsed });
+                        }
+                      }
+                    }}
+                    maxLength={20}
+                  />
+                  <Picker mode="date" value={formData.date} onChange={(e: any) => setFormData({ ...formData, date: e.detail.value })}>
+                    <View className={styles.datePickerBtn}>
+                      <Text>📅</Text>
+                    </View>
+                  </Picker>
+                </View>
+                {formData.date && (
+                  <Text className={styles.datePreview}>已选择：{formData.date}</Text>
+                )}
               </View>
 
               {/* 类型 */}

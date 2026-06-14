@@ -463,6 +463,50 @@
   color: $color-text-tertiary;
 }
 
+// 日期输入框
+.dateInputWrap {
+  display: flex;
+  gap: $spacing-sm;
+  align-items: center;
+}
+
+.dateInput {
+  flex: 1;
+  height: 88rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  font-size: $font-size-md;
+  border: 2rpx solid transparent;
+
+  &:focus {
+    border-color: $color-primary;
+    background: #fff;
+  }
+}
+
+.datePickerBtn {
+  width: 88rpx;
+  height: 88rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+
+  &:active {
+    background: $color-primary-light;
+  }
+}
+
+.datePreview {
+  font-size: $font-size-xs;
+  color: $color-primary;
+  margin-top: $spacing-xs;
+  display: block;
+}
+
 // 提醒时间选择器
 .remindTimeSelector {
   display: flex;
