@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Button } from '@tarojs/components';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, Button, Picker } from '@tarojs/components';
 import Taro, { useShareAppMessage, useShareTimeline } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useCoupleStore } from '../../store/useCoupleStore';
 import type { Anniversary } from '../../types/couple';
 
 const AnniversaryPage: React.FC = () => {
-  const { anniversaries, addAnniversary, updateAnniversary, deleteAnniversary } = useCoupleStore();
+  const { anniversaries, loadAnniversaries, addAnniversary, updateAnniversary, deleteAnniversary } = useCoupleStore();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingItem, setEditingItem] = useState<Anniversary | null>(null);
   const [formData, setFormData] = useState({
@@ -19,6 +19,10 @@ const AnniversaryPage: React.FC = () => {
     isRemind: false,
     remindTime: '09:00'
   });
+
+  useEffect(() => {
+    loadAnniversaries();
+  }, []);
 
   // 分享给朋友
   useShareAppMessage(() => {
@@ -142,13 +146,12 @@ const AnniversaryPage: React.FC = () => {
   // 保存订阅状态到服务器
   const saveRemindSubscription = async () => {
     try {
-      const token = Taro.getStorageSync('userToken');
+      const BASE_URL = 'https://yiyi-269720-9-1442837704.sh.run.tcloudbase.com';
       const response = await Taro.request({
-        url: '/api/message/subscribe',
+        url: `${BASE_URL}/api/message/subscribe`,
         method: 'POST',
         header: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         data: {
           anniversaryId: editingItem?.id || '',
@@ -172,12 +175,14 @@ const AnniversaryPage: React.FC = () => {
     return `${date.getMonth() + 1}月${date.getDate()}日`;
   };
 
+  const today = new Date().toISOString().split('T')[0];
+
   const handleOpenAddModal = () => {
     setEditingItem(null);
     setFormData({
       title: '',
       description: '',
-      date: '',
+      date: today,
       type: 'custom',
       icon: '🎂',
       remindDays: 0,
@@ -374,12 +379,12 @@ const AnniversaryPage: React.FC = () => {
               {/* 日期选择 */}
               <View className={styles.formItem}>
                 <Text className={styles.formLabel}>日期 *</Text>
-                <picker mode="date" value={formData.date} onChange={(e: any) => setFormData({ ...formData, date: e.detail.value })}>
+                <Picker mode="date" value={formData.date} onChange={(e: any) => setFormData({ ...formData, date: e.detail.value })}>
                   <View className={styles.pickerTrigger}>
                     <Text className={styles.pickerTriggerText}>{formData.date || '请选择日期'}</Text>
                     <Text className={styles.pickerArrow}>›</Text>
                   </View>
-                </picker>
+                </Picker>
               </View>
 
               {/* 类型 */}

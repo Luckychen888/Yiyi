@@ -1,21 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Button, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
-import { productsData, tasksData, getTodayTaskStats } from '../../data/shop';
+import { useCoupleStore } from '../../store/useCoupleStore';
+import { taskService } from '../../services/api';
+import { productsData } from '../../data/shop';
 
 const ShopPage: React.FC = () => {
+  const { couple } = useCoupleStore();
   const [activeTab, setActiveTab] = useState<'shop' | 'task'>('shop');
-  const taskStats = getTodayTaskStats();
-  const totalPoints = taskStats.points + 500; // 模拟总积分
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [points, setPoints] = useState(0);
 
-  // 兑换商品
+  useEffect(() => {
+    if (couple) {
+      loadTasks();
+      loadPoints();
+    }
+  }, [couple?.id]);
+
+  const loadTasks = async () => {
+    try {
+      const response: any = await taskService.getTasks(couple!.id);
+      if (response.success && response.data) {
+        setTasks(response.data);
+      }
+    } catch (error) {
+      console.error('加载任务失败:', error);
+    }
+  };
+
+  const loadPoints = async () => {
+    try {
+      const response: any = await taskService.getPoints(couple!.id);
+      if (response.success && response.data) {
+        setPoints(response.data.points || 0);
+      }
+    } catch (error) {
+      console.error('加载积分失败:', error);
+    }
+  };
+
+  const completedTasks = tasks.filter(t => t.is_completed).length;
+  const totalTasks = tasks.length;
+
   const handleExchange = (productId: string) => {
     const product = productsData.find(p => p.id === productId);
     if (!product) return;
     
-    if (totalPoints < product.price) {
+    if (points < product.price) {
       Taro.showToast({ title: '积分不足', icon: 'none' });
       return;
     }
@@ -23,12 +57,17 @@ const ShopPage: React.FC = () => {
     Taro.showToast({ title: '兑换成功！', icon: 'success' });
   };
 
-  // 完成任务
-  const handleCompleteTask = (taskId: string) => {
-    const task = tasksData.find(t => t.id === taskId);
-    if (!task) return;
-    
-    Taro.showToast({ title: `获得 ${task.points} 积分！`, icon: 'success' });
+  const handleCompleteTask = async (taskId: string) => {
+    try {
+      const response: any = await taskService.completeTask(taskId, couple!.id);
+      if (response.success) {
+        Taro.showToast({ title: `获得 ${response.points || 0} 积分！`, icon: 'success' });
+        loadTasks();
+        loadPoints();
+      }
+    } catch (error) {
+      Taro.showToast({ title: '操作失败', icon: 'none' });
+    }
   };
 
   return (
@@ -43,7 +82,7 @@ const ShopPage: React.FC = () => {
         <View className={styles.pointsHeader}>
           <Text className={styles.pointsTitle}>我的积分</Text>
           <View className={styles.pointsValueWrapper}>
-            <Text className={styles.pointsValue}>{totalPoints}</Text>
+            <Text className={styles.pointsValue}>{points}</Text>
             <Text className={styles.pointsUnit}>积分</Text>
           </View>
         </View>
@@ -114,19 +153,19 @@ const ShopPage: React.FC = () => {
           <View className={styles.taskHeader}>
             <Text className={styles.taskTitle}>今日任务</Text>
             <Text className={styles.taskStats}>
-              已完成 {taskStats.completed}/{taskStats.total}
+              已完成 {completedTasks}/{totalTasks}
             </Text>
           </View>
-          {tasksData.map(task => (
+          {tasks.map(task => (
             <View 
               key={task.id}
               className={classnames(
                 styles.taskCard,
-                task.isCompleted && styles.taskCardCompleted
+                task.is_completed && styles.taskCardCompleted
               )}
             >
               <View className={styles.taskIconWrapper}>
-                <Text className={styles.taskIcon}>{task.icon}</Text>
+                <Text className={styles.taskIcon}>{task.icon || '📋'}</Text>
               </View>
               <View className={styles.taskContent}>
                 <Text className={styles.taskTitleText}>{task.title}</Text>
@@ -136,7 +175,7 @@ const ShopPage: React.FC = () => {
                 <View className={styles.taskPoints}>
                   <Text className={styles.taskPointsValue}>+{task.points}</Text>
                 </View>
-                {task.isCompleted ? (
+                {task.is_completed ? (
                   <View className={styles.completedTag}>
                     <Text className={styles.completedText}>已完成</Text>
                   </View>

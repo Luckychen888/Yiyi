@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>恋人空间 - 管理后台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 头部样式 */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px 30px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .status-online {
+            background: #2ed573;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* 导航样式 */
+        .nav {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav button {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav button:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .nav button.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        /* 内容区域 */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        /* 主内容 */
+        .main-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .content-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-header h2 {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            width: 250px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            width: 300px;
+        }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* 统计卡片 */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 16px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .stat-card-icon {
+            font-size: 32px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card .change {
+            font-size: 12px;
+            margin-top: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card .change.up {
+            color: #7bed9f;
+        }
+
+        .stat-card .change.down {
+            color: #ff6b6b;
+        }
+
+        /* 表格样式 */
+        .table-container {
+            padding: 20px 25px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        th {
+            background: #fafafa;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff6b7a;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #7c8eea;
+        }
+
+        .btn-success {
+            background: #2ed573;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #48e08a;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .sidebar-card h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 最近活动 */
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* 快捷操作 */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .quick-action-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .quick-action-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .action-icon {
+            font-size: 24px;
+        }
+
+        .btn-purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            color: white;
+        }
+
+        .btn-orange {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            color: #2d3436;
+        }
+
+        /* 空状态 */
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        /* 标签页内容 */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .pagination button.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 徽章 */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .badge-warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .badge-info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        /* 头像 */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #f0f0f0;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .nav button {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <div>
+                    <h1>💑 恋人空间 - 管理后台</h1>
+                    <p>实时监控 · 数据管理 · 系统配置</p>
+                </div>
+                <div class="header-right">
+                    <span class="status-badge">运行中</span>
+                    <span class="status-online">ONLINE</span>
+                </div>
+            </div>
+            <div class="nav">
+                <button class="active" data-tab="dashboard">📊 仪表盘</button>
+                <button data-tab="users">👥 用户管理</button>
+                <button data-tab="couples">💑 情侣管理</button>
+                <button data-tab="diaries">📝 日记管理</button>
+                <button data-tab="anniversaries">📅 纪念日管理</button>
+                <button data-tab="messages">💬 消息日志</button>
+                <button data-tab="system">⚙️ 系统设置</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="main-content">
+                <!-- 仪表盘 -->
+                <div id="dashboard" class="tab-content active">
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-card-icon">👥</div>
+                            <h3>用户总数</h3>
+                            <div class="number" id="userCount">1,234</div>
+                            <div class="change up">↑ +12% 本周</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">💑</div>
+                            <h3>绑定情侣数</h3>
+                            <div class="number" id="coupleCount">567</div>
+                            <div class="change up">↑ +8% 本周</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">📝</div>
+                            <h3>日记总数</h3>
+                            <div class="number" id="diaryCount">4,521</div>
+                            <div class="change up">↑ +15% 本周</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">✨</div>
+                            <h3>愿望总数</h3>
+                            <div class="number" id="wishCount">1,892</div>
+                            <div class="change up">↑ +5% 本周</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">📅</div>
+                            <div class="number" id="anniCount">893</div>
+                            <h3>纪念日总数</h3>
+                            <div class="change up">↑ +23% 本周</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-card-icon">💬</div>
+                            <h3>消息发送</h3>
+                            <div class="number" id="msgCount">2,341</div>
+                            <div class="change down">↓ -2% 本周</div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-header">
+                        <h2>📊 最近趋势</h2>
+                    </div>
+                    <div class="table-container">
+                        <div style="height: 200px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius: 12px;">
+                            <div style="text-align: center; color: #999;">
+                                <div style="font-size: 48px; margin-bottom: 10px;">📈</div>
+                                <p>图表展示区域</p>
+                                <p style="font-size: 12px;">用户增长趋势 · 活跃数据统计</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 用户管理 -->
+                <div id="users" class="tab-content">
+                    <div class="content-header">
+                        <h2>👥 用户列表</h2>
+                        <div class="search-box">
+                            <input type="text" placeholder="搜索用户昵称或ID..." id="userSearch">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="usersTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>昵称</th>
+                                    <th>头像</th>
+                                    <th>OpenID</th>
+                                    <th>状态</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>user_20240601001</td>
+                                    <td>小怿</td>
+                                    <td><img src="https://picsum.photos/id/64/40/40" class="avatar"/></td>
+                                    <td>o123456789...</td>
+                                    <td><span class="badge badge-success">活跃</span></td>
+                                    <td>2024-06-01 10:30:00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">编辑</button>
+                                        <button class="btn btn-sm btn-danger">删除</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>user_20240602002</td>
+                                    <td>小爱</td>
+                                    <td><img src="https://picsum.photos/id/91/40/40" class="avatar"/></td>
+                                    <td>o987654321...</td>
+                                    <td><span class="badge badge-success">活跃</span></td>
+                                    <td>2024-06-02 14:20:00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">编辑</button>
+                                        <button class="btn btn-sm btn-danger">删除</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>user_20240603003</td>
+                                    <td>阳光男孩</td>
+                                    <td><img src="https://picsum.photos/id/1/40/40" class="avatar"/></td>
+                                    <td>o555555555...</td>
+                                    <td><span class="badge badge-info">游客</span></td>
+                                    <td>2024-06-03 09:15:00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">编辑</button>
+                                        <button class="btn btn-sm btn-danger">删除</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>user_20240604004</td>
+                                    <td>甜蜜女孩</td>
+                                    <td><img src="https://picsum.photos/id/2/40/40" class="avatar"/></td>
+                                    <td>o666666666...</td>
+                                    <td><span class="badge badge-success">活跃</span></td>
+                                    <td>2024-06-04 16:45:00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">编辑</button>
+                                        <button class="btn btn-sm btn-danger">删除</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>user_20240605005</td>
+                                    <td>幸福恋人</td>
+                                    <td><img src="https://picsum.photos/id/3/40/40" class="avatar"/></td>
+                                    <td>o777777777...</td>
+                                    <td><span class="badge badge-warning">离线</span></td>
+                                    <td>2024-06-05 11:00:00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">编辑</button>
+                                        <button class="btn btn-sm btn-danger">删除</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <button disabled>«</button>
+                        <button class="active">1</button>
+                        <button>2</button>
+                        <button>3</button>
+                        <button>4</button>
+                        <button>5</button>
+                        <button>»</button>
+                    </div>
+                </div>
+
+                <!-- 情侣管理 -->
+                <div id="couples" class="tab-content">
+                    <div class="content-header">
+                        <h2>💑 情侣列表</h2>
+                        <div class="search-box">
+                            <input type="text" placeholder="搜索邀请码或昵称..." id="coupleSearch">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="couplesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>用户1</th>
+                                    <th>用户2</th>
+                                    <th>邀请码</th>
+                                    <th>在一起时间</th>
+                                    <th>恋爱天数</th>
+                                    <th>积分</th>
+                                    <th>创建时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>couple_001</td>
+                                    <td>小怿</td>
+                                    <td>小爱</td>
+                                    <td>LOVEA1B2</td>
+                                    <td>2024-01-01</td>
+                                    <td><strong>165</strong> 天</td>
+                                    <td>1,250</td>
+                                    <td>2024-01-01 00:00:00</td>
+                                </tr>
+                                <tr>
+                                    <td>couple_002</td>
+                                    <td>阳光男孩</td>
+                                    <td>甜蜜女孩</td>
+                                    <td>LOVEC3D4</td>
+                                    <td>2024-03-15</td>
+                                    <td><strong>82</strong> 天</td>
+                                    <td>890</td>
+                                    <td>2024-03-15 10:00:00</td>
+                                </tr>
+                                <tr>
+                                    <td>couple_003</td>
+                                    <td>幸福恋人</td>
+                                    <td>温柔天使</td>
+                                    <td>LOVEE5F6</td>
+                                    <td>2024-05-20</td>
+                                    <td><strong>25</strong> 天</td>
+                                    <td>320</td>
+                                    <td>2024-05-20 14:30:00</td>
+                                </tr>
+                                <tr>
+                                    <td>couple_004</td>
+                                    <td>浪漫先生</td>
+                                    <td>优雅小姐</td>
+                                    <td>LOVEG7H8</td>
+                                    <td>2024-02-14</td>
+                                    <td><strong>119</strong> 天</td>
+                                    <td>2,100</td>
+                                    <td>2024-02-14 09:00:00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <button disabled>«</button>
+                        <button class="active">1</button>
+                        <button>2</button>
+                        <button>3</button>
+                        <button>»</button>
+                    </div>
+                </div>
+
+                <!-- 日记管理 -->
+                <div id="diaries" class="tab-content">
+                    <div class="content-header">
+                        <h2>📝 日记列表</h2>
+                        <div class="search-box">
+                            <input type="text" placeholder="搜索日记内容..." id="diarySearch">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="diariesTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>作者</th>
+                                    <th>内容预览</th>
+                                    <th>心情</th>
+                                    <th>图片</th>
+                                    <th>点赞</th>
+                                    <th>评论</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>diary_001</td>
+                                    <td>小怿</td>
+                                    <td>今天和小爱一起去看电影了，超级开心...</td>
+                                    <td>😊 开心</td>
+                                    <td><span class="badge badge-info">3张</span></td>
+                                    <td>15</td>
+                                    <td>3</td>
+                                    <td>2024-06-10 20:30:00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">查看</button>
+                                        <button class="btn btn-sm btn-danger">删除</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>diary_002</td>
+                                    <td>小爱</td>
+                                    <td>收到了小怿送的礼物，超级喜欢！💕</td>
+                                    <td>💕 甜蜜</td>
+                                    <td><span class="badge badge-info">1张</span></td>
+                                    <td>8</td>
+                                    <td>2</td>
+                                    <td>2024-06-09 15:00:00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">查看</button>
+                                        <button class="btn btn-sm btn-danger">删除</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>diary_003</td>
+                                    <td>阳光男孩</td>
+                                    <td>今天天气真好，和女朋友去公园散步...</td>
+                                    <td>🌞 愉快</td>
+                                    <td>-</td>
+                                    <td>12</td>
+                                    <td>5</td>
+                                    <td>2024-06-08 18:45:00</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary">查看</button>
+                                        <button class="btn btn-sm btn-danger">删除</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <button disabled>«</button>
+                        <button class="active">1</button>
+                        <button>2</button>
+                        <button>3</button>
+                        <button>4</button>
+                        <button>5</button>
+                        <button>6</button>
+                        <button>»</button>
+                    </div>
+                </div>
+
+                <!-- 纪念日管理 -->
+                <div id="anniversaries" class="tab-content">
+                    <div class="content-header">
+                        <h2>📅 纪念日列表</h2>
+                        <div class="search-box">
+                            <input type="text" placeholder="搜索纪念日名称..." id="anniSearch">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="anniTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>情侣</th>
+                                    <th>名称</th>
+                                    <th>日期</th>
+                                    <th>类型</th>
+                                    <th>提醒</th>
+                                    <th>倒计时</th>
+                                    <th>创建时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>anni_001</td>
+                                    <td>小怿 & 小爱</td>
+                                    <td>💕 恋爱一周年</td>
+                                    <td>2025-01-01</td>
+                                    <td><span class="badge badge-success">恋爱</span></td>
+                                    <td><span class="badge badge-success">开启</span></td>
+                                    <td><strong>204</strong> 天</td>
+                                    <td>2024-06-01 10:00:00</td>
+                                </tr>
+                                <tr>
+                                    <td>anni_002</td>
+                                    <td>阳光男孩 & 甜蜜女孩</td>
+                                    <td>🎂 女友生日</td>
+                                    <td>2024-08-15</td>
+                                    <td><span class="badge badge-warning">生日</span></td>
+                                    <td><span class="badge badge-success">开启</span></td>
+                                    <td><strong>62</strong> 天</td>
+                                    <td>2024-06-05 14:30:00</td>
+                                </tr>
+                                <tr>
+                                    <td>anni_003</td>
+                                    <td>浪漫先生 & 优雅小姐</td>
+                                    <td>💍 求婚纪念日</td>
+                                    <td>2024-02-14</td>
+                                    <td><span class="badge badge-info">自定义</span></td>
+                                    <td><span class="badge badge-warning">关闭</span></td>
+                                    <td>已过</td>
+                                    <td>2024-02-14 09:00:00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <button disabled>«</button>
+                        <button class="active">1</button>
+                        <button>2</button>
+                        <button>»</button>
+                    </div>
+                </div>
+
+                <!-- 消息日志 -->
+                <div id="messages" class="tab-content">
+                    <div class="content-header">
+                        <h2>💬 消息发送日志</h2>
+                        <div class="search-box">
+                            <input type="text" placeholder="搜索用户ID或消息类型..." id="msgSearch">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="msgTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>用户ID</th>
+                                    <th>消息类型</th>
+                                    <th>纪念日ID</th>
+                                    <th>状态</th>
+                                    <th>创建时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>log_001</td>
+                                    <td>user_001</td>
+                                    <td><span class="badge badge-success">bind_notify</span></td>
+                                    <td>-</td>
+                                    <td><span class="badge badge-success">已发送</span></td>
+                                    <td>2024-06-14 09:00:00</td>
+                                </tr>
+                                <tr>
+                                    <td>log_002</td>
+                                    <td>user_002</td>
+                                    <td><span class="badge badge-success">bind_notify</span></td>
+                                    <td>-</td>
+                                    <td><span class="badge badge-success">已发送</span></td>
+                                    <td>2024-06-14 09:00:01</td>
+                                </tr>
+                                <tr>
+                                    <td>log_003</td>
+                                    <td>user_003</td>
+                                    <td><span class="badge badge-info">anniversary_remind</span></td>
+                                    <td>anni_001</td>
+                                    <td><span class="badge badge-success">已发送</span></td>
+                                    <td>2024-06-14 09:05:00</td>
+                                </tr>
+                                <tr>
+                                    <td>log_004</td>
+                                    <td>user_004</td>
+                                    <td><span class="badge badge-info">anniversary_remind</span></td>
+                                    <td>anni_002</td>
+                                    <td><span class="badge badge-warning">发送中</span></td>
+                                    <td>2024-06-14 09:06:00</td>
+                                </tr>
+                                <tr>
+                                    <td>log_005</td>
+                                    <td>user_005</td>
+                                    <td><span class="badge badge-info">anniversary_remind</span></td>
+                                    <td>anni_003</td>
+                                    <td><span class="badge badge-danger">失败</span></td>
+                                    <td>2024-06-14 09:07:00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <button disabled>«</button>
+                        <button class="active">1</button>
+                        <button>2</button>
+                        <button>3</button>
+                        <button>»</button>
+                    </div>
+                </div>
+
+                <!-- 系统设置 -->
+                <div id="system" class="tab-content">
+                    <div class="content-header">
+                        <h2>⚙️ 系统设置</h2>
+                    </div>
+                    <div class="table-container" style="padding: 25px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="sidebar-card" style="margin: 0;">
+                                <h3>🔧 微信配置</h3>
+                                <div style="space-y: 15px;">
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 5px;">AppID</label>
+                                        <input type="text" value="wxc148a9c24090a2bb" readonly style="background: #f5f5f5;"/>
+                                    </div>
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 5px;">AppSecret</label>
+                                        <input type="text" value="****************" readonly style="background: #f5f5f5;"/>
+                                    </div>
+                                    <button class="btn btn-primary" style="width: 100%;">保存配置</button>
+                                </div>
+                            </div>
+                            
+                            <div class="sidebar-card" style="margin: 0;">
+                                <h3>📱 消息模板</h3>
+                                <div style="space-y: 15px;">
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 5px;">绑定通知模板</label>
+                                        <input type="text" value="ye6sttAhDmQPb_KxXUIsnpoUH87dn1BAUSsUHMLVoo0" readonly style="background: #f5f5f5;"/>
+                                    </div>
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 5px;">纪念日提醒模板</label>
+                                        <input type="text" value="EzWVVfGH0hfcou80ekmjrsqwVzQobr_So4eJwH30xMA" readonly style="background: #f5f5f5;"/>
+                                    </div>
+                                    <button class="btn btn-primary" style="width: 100%;">更新模板</button>
+                                </div>
+                            </div>
+
+                            <div class="sidebar-card" style="margin: 0;">
+                                <h3>⏰ 定时任务</h3>
+                                <div style="space-y: 15px;">
+                                    <div style="margin-bottom: 15px;">
+                                        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 5px;">提醒时间</label>
+                                        <input type="time" value="09:00"/>
+                                    </div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #e8f5e9; border-radius: 8px;">
+                                        <span style="color: #2e7d32;">定时任务状态</span>
+                                        <span class="status-online">运行中</span>
+                                    </div>
+                                    <button class="btn btn-secondary" style="width: 100%;">重启定时任务</button>
+                                </div>
+                            </div>
+
+                            <div class="sidebar-card" style="margin: 0;">
+                                <h3>📊 数据统计</h3>
+                                <div style="space-y: 10px;">
+                                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                        <span style="color: #666;">服务启动时间</span>
+                                        <span>2024-06-14 08:00:00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                        <span style="color: #666;">在线用户数</span>
+                                        <span>156</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                        <span style="color: #666;">今日请求数</span>
+                                        <span>3,421</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                        <span style="color: #666;">平均响应时间</span>
+                                        <span>23ms</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 侧边栏 -->
+            <div class="sidebar">
+                <div class="sidebar-card">
+                    <h3>⚡ 快捷操作</h3>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn btn-purple" onclick="showModal('addUser')">
+                            <span class="action-icon">➕</span>
+                            <span>新增用户</span>
+                        </button>
+                        <button class="quick-action-btn btn-blue" onclick="showModal('addCouple')">
+                            <span class="action-icon">💑</span>
+                            <span>新增情侣</span>
+                        </button>
+                        <button class="quick-action-btn btn-green">
+                            <span class="action-icon">📤</span>
+                            <span>发送消息</span>
+                        </button>
+                        <button class="quick-action-btn btn-orange">
+                            <span class="action-icon">📊</span>
+                            <span>导出数据</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3>📢 最近活动</h3>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            用户 <strong>幸福恋人</strong> 创建了新日记
+                            <div class="activity-time">2分钟前</div>
+                        </li>
+                        <li class="activity-item">
+                            <strong>阳光男孩 & 甜蜜女孩</strong> 绑定成功
+                            <div class="activity-time">15分钟前</div>
+                        </li>
+                        <li class="activity-item">
+                            用户 <strong>浪漫先生</strong> 设置了纪念日提醒
+                            <div class="activity-time">30分钟前</div>
+                        </li>
+                        <li class="activity-item">
+                            <strong>12</strong> 条消息成功发送
+                            <div class="activity-time">1小时前</div>
+                        </li>
+                        <li class="activity-item">
+                            用户 <strong>优雅小姐</strong> 完成了愿望
+                            <div class="activity-time">2小时前</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-card">
+                    <h3>📈 今日统计</h3>
+                    <div style="space-y: 10px;">
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                            <span style="color: #666;">新增用户</span>
+                            <span style="font-weight: 600;">28</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                            <span style="color: #666;">新增情侣</span>
+                            <span style="font-weight: 600;">12</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                            <span style="color: #666;">新增日记</span>
+                            <span style="font-weight: 600;">45</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span style="color: #666;">消息发送</span>
+                            <span style="font-weight: 600;">156</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">标题</h3>
+                <span class="modal-close" onclick="closeModal()">×</span>
+            </div>
+            <div id="modalContent">
+                <div class="form-group">
+                    <label>昵称</label>
+                    <input type="text" placeholder="请输入昵称"/>
+                </div>
+                <div class="form-group">
+                    <label>头像URL</label>
+                    <input type="text" placeholder="请输入头像URL"/>
+                </div>
+                <div class="form-group">
+                    <label>备注</label>
+                    <textarea placeholder="请输入备注信息" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary">确认添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 标签页切换
+        document.querySelectorAll('.nav button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // 搜索功能
+        document.getElementById('userSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#usersTable tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('coupleSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#couplesTable tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        document.getElementById('diarySearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#diariesTable tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // 模态框功能
+        function showModal(type) {
+            document.getElementById('modalOverlay').classList.add('active');
+            const titles = {
+                addUser: '新增用户',
+                addCouple: '新增情侣'
+            };
+            document.getElementById('modalTitle').textContent = titles[type] || '标题';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 模拟统计数据更新
+        function updateStats() {
+            const stats = ['userCount', 'coupleCount', 'diaryCount', 'wishCount', 'anniCount', 'msgCount'];
+            stats.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const current = parseInt(el.textContent.replace(/[^0-9]/g, ''));
+                    const change = Math.floor(Math.random() * 10) - 3;
+                    el.textContent = (current + change).toLocaleString();
+                }
+            });
+        }
+
+        // 定时更新统计数据
+        setInterval(updateStats, 10000);
+
+        // 删除确认
+        document.querySelectorAll('.btn-danger').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!confirm('确定要删除吗？此操作不可恢复。')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -2,12 +2,14 @@ import { create } from 'zustand';
 import Taro from '@tarojs/taro';
 import type { Couple, Anniversary } from '../types/couple';
 import type { Diary, Comment } from '../types/diary';
+import type { Wish } from '../types/wish';
 import { 
   diaryService, 
   coupleService, 
-  anniversaryService 
+  anniversaryService,
+  wishService,
+  userService
 } from '../services/api';
-import { diariesData } from '../data/diaries';
 
 interface CoupleStore {
   couple: Couple | null;
@@ -18,6 +20,7 @@ interface CoupleStore {
   loveDays: number;
   anniversaries: Anniversary[];
   diaries: Diary[];
+  wishes: Wish[];
   isLoading: boolean;
   error: string | null;
   
@@ -31,6 +34,7 @@ interface CoupleStore {
   login: (nickname: string, avatar: string, code: string) => Promise<boolean>;
   
   // 情侣操作
+  createCouple: () => Promise<boolean>;
   bindPartner: (inviteCode: string, partnerName: string, partnerAvatar: string) => Promise<boolean>;
   unbindCouple: () => Promise<void>;
   generateInviteCode: () => Promise<string>;
@@ -47,49 +51,25 @@ interface CoupleStore {
   likeDiary: (id: string) => Promise<void>;
   addComment: (diaryId: string, content: string) => Promise<void>;
   
+  // 愿望操作
+  loadWishes: () => Promise<void>;
+  completeWish: (wishId: string) => Promise<void>;
+  
   // 数据初始化
   initFromStorage: () => void;
+  loadAllData: () => Promise<void>;
 }
 
-// 模拟数据（用于本地开发和测试）
-const mockCouple: Couple = {
-  id: 'couple_001',
-  user1Id: 'user_001',
-  user2Id: 'user_002',
-  user1Name: '小怿',
-  user2Name: '小爱',
-  user1Avatar: 'https://picsum.photos/id/64/200/200',
-  user2Avatar: 'https://picsum.photos/id/91/200/200',
-  startDate: '2024-01-01',
-  inviteCode: 'LOVE2024',
-  createdAt: '2024-01-01'
-};
-
-const mockAnniversaries: Anniversary[] = [
-  {
-    id: 'anni_001',
-    title: '恋爱纪念日',
-    date: '2024-01-01',
-    type: 'love',
-    icon: '💕',
-    remindDays: 3,
-    isRemind: true,
-    createdAt: '2024-01-01'
-  }
-];
-
-// 是否使用真实API（设置为false使用模拟数据）
-const USE_API = false;
-
 export const useCoupleStore = create<CoupleStore>((set, get) => ({
-  couple: mockCouple,
-  isBound: true,
-  currentUserId: 'user_001',
-  currentUserName: '小怿',
-  currentUserAvatar: 'https://picsum.photos/id/64/200/200',
+  couple: null,
+  isBound: false,
+  currentUserId: '',
+  currentUserName: '',
+  currentUserAvatar: '',
   loveDays: 0,
-  anniversaries: mockAnniversaries,
-  diaries: diariesData,
+  anniversaries: [],
+  diaries: [],
+  wishes: [],
   isLoading: false,
   error: null,
 
@@ -131,48 +111,26 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
   login: async (nickname, avatar, code) => {
     set({ isLoading: true, error: null });
     
-    if (!USE_API) {
-      // 模拟登录
-      const userId = 'user_' + Date.now();
-      set({
-        currentUserId: userId,
-        currentUserName: nickname,
-        currentUserAvatar: avatar,
-        isLoading: false
-      });
-      
-      // 保存到本地存储
-      Taro.setStorageSync('userId', userId);
-      Taro.setStorageSync('userName', nickname);
-      Taro.setStorageSync('userAvatar', avatar);
-      Taro.setStorageSync('isLogin', true);
-      
-      return true;
-    }
-    
     try {
-      const response = await coupleService.createCouple({
-        user1Id: 'temp_user_id',
-        user1Name: nickname,
-        user1Avatar: avatar
+      const response: any = await userService.login({
+        nickname,
+        avatar,
+        code
       });
       
       if (response.success && response.data) {
-        const userId = response.data.user1Id;
+        const userInfo = response.data;
         set({
-          currentUserId: userId,
-          currentUserName: nickname,
-          currentUserAvatar: avatar,
-          couple: response.data,
-          isBound: false,
+          currentUserId: userInfo.id,
+          currentUserName: userInfo.nickname,
+          currentUserAvatar: userInfo.avatar,
           isLoading: false
         });
         
-        // 保存到本地存储
-        Taro.setStorageSync('userId', userId);
-        Taro.setStorageSync('userName', nickname);
-        Taro.setStorageSync('userAvatar', avatar);
-        Taro.setStorageSync('coupleData', response.data);
+        Taro.setStorageSync('userId', userInfo.id);
+        Taro.setStorageSync('userName', userInfo.nickname);
+        Taro.setStorageSync('userAvatar', userInfo.avatar);
+        Taro.setStorageSync('userInfo', userInfo);
         Taro.setStorageSync('isLogin', true);
         
         return true;
@@ -185,39 +143,46 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
     }
   },
 
+  // 创建情侣关系
+  createCouple: async () => {
+    set({ isLoading: true, error: null });
+    
+    try {
+      const { currentUserId, currentUserName, currentUserAvatar } = get();
+      
+      const response: any = await coupleService.createCouple({
+        user1Id: currentUserId,
+        user1Name: currentUserName,
+        user1Avatar: currentUserAvatar
+      });
+      
+      if (response.success && response.data) {
+        set({
+          couple: response.data,
+          isBound: false,
+          isLoading: false
+        });
+        
+        Taro.setStorageSync('coupleData', response.data);
+        Taro.setStorageSync('isBound', false);
+        
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('创建情侣关系失败:', error);
+      set({ error: '创建失败', isLoading: false });
+      return false;
+    }
+  },
+
   // 绑定伴侣
   bindPartner: async (inviteCode, partnerName, partnerAvatar) => {
     set({ isLoading: true, error: null });
     
-    if (!USE_API) {
-      // 模拟绑定
-      const { couple } = get();
-      if (!couple) return false;
-      
-      const updatedCouple: Couple = {
-        ...couple,
-        user2Id: 'user_' + Date.now(),
-        user2Name: partnerName,
-        user2Avatar: partnerAvatar,
-        startDate: new Date().toISOString().split('T')[0]
-      };
-      
-      set({ 
-        couple: updatedCouple, 
-        isBound: true, 
-        isLoading: false 
-      });
-      
-      // 保存到本地存储
-      Taro.setStorageSync('coupleData', updatedCouple);
-      Taro.setStorageSync('isBound', true);
-      
-      return true;
-    }
-    
     try {
       const { currentUserId } = get();
-      const response = await coupleService.joinCouple({
+      const response: any = await coupleService.joinCouple({
         inviteCode,
         user2Id: currentUserId,
         user2Name: partnerName,
@@ -231,7 +196,6 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
           isLoading: false
         });
         
-        // 保存到本地存储
         Taro.setStorageSync('coupleData', response.data);
         Taro.setStorageSync('isBound', true);
         
@@ -249,33 +213,11 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
   unbindCouple: async () => {
     set({ isLoading: true, error: null });
     
-    if (!USE_API) {
-      const { couple } = get();
-      if (!couple) return;
-      
-      const updatedCouple: Couple = {
-        ...couple,
-        user2Id: '',
-        user2Name: '',
-        user2Avatar: ''
-      };
-      
-      set({ 
-        couple: updatedCouple, 
-        isBound: false, 
-        isLoading: false 
-      });
-      
-      Taro.setStorageSync('coupleData', updatedCouple);
-      Taro.setStorageSync('isBound', false);
-      return;
-    }
-    
     try {
       const { couple } = get();
       if (!couple) return;
       
-      const response = await coupleService.unbindCouple(couple.id, get().currentUserId);
+      const response: any = await coupleService.unbindCouple(couple.id, get().currentUserId);
       
       if (response.success) {
         set({
@@ -295,22 +237,11 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
 
   // 生成新邀请码
   generateInviteCode: async () => {
-    if (!USE_API) {
-      const code = 'LOVE' + Math.random().toString(36).substr(2, 6).toUpperCase();
-      const { couple } = get();
-      if (couple) {
-        const updatedCouple = { ...couple, inviteCode: code };
-        set({ couple: updatedCouple });
-        Taro.setStorageSync('coupleData', updatedCouple);
-      }
-      return code;
-    }
-    
     try {
       const { couple } = get();
       if (!couple) return '';
       
-      const response = await coupleService.regenerateInviteCode(couple.id);
+      const response: any = await coupleService.regenerateInviteCode(couple.id);
       
       if (response.success && response.data) {
         const updatedCouple = { ...couple, inviteCode: response.data.inviteCode };
@@ -327,15 +258,11 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
 
   // 加载纪念日
   loadAnniversaries: async () => {
-    if (!USE_API) {
-      return;
-    }
-    
     try {
       const { couple } = get();
       if (!couple) return;
       
-      const response = await anniversaryService.getAnniversaries(couple.id);
+      const response: any = await anniversaryService.getAnniversaries(couple.id);
       
       if (response.success && response.data) {
         set({ anniversaries: response.data });
@@ -347,21 +274,11 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
 
   // 添加纪念日
   addAnniversary: async (anniversary) => {
-    if (!USE_API) {
-      const newAnniversary: Anniversary = {
-        ...anniversary,
-        id: 'anni_' + Date.now(),
-        createdAt: new Date().toISOString().split('T')[0]
-      };
-      set(state => ({ anniversaries: [...state.anniversaries, newAnniversary] }));
-      return;
-    }
-    
     try {
       const { couple } = get();
       if (!couple) return;
       
-      const response = await anniversaryService.createAnniversary({
+      const response: any = await anniversaryService.createAnniversary({
         ...anniversary,
         coupleId: couple.id
       });
@@ -376,17 +293,8 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
 
   // 更新纪念日
   updateAnniversary: async (id, anniversary) => {
-    if (!USE_API) {
-      set(state => ({
-        anniversaries: state.anniversaries.map(anni =>
-          anni.id === id ? { ...anni, ...anniversary } : anni
-        )
-      }));
-      return;
-    }
-    
     try {
-      const response = await anniversaryService.updateAnniversary(id, anniversary);
+      const response: any = await anniversaryService.updateAnniversary(id, anniversary);
       
       if (response.success) {
         set(state => ({
@@ -402,15 +310,8 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
 
   // 删除纪念日
   deleteAnniversary: async (id) => {
-    if (!USE_API) {
-      set(state => ({
-        anniversaries: state.anniversaries.filter(anni => anni.id !== id)
-      }));
-      return;
-    }
-    
     try {
-      const response = await anniversaryService.deleteAnniversary(id);
+      const response: any = await anniversaryService.deleteAnniversary(id);
       
       if (response.success) {
         set(state => ({
@@ -424,15 +325,11 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
 
   // 加载日记
   loadDiaries: async () => {
-    if (!USE_API) {
-      return;
-    }
-    
     try {
       const { couple } = get();
       if (!couple) return;
       
-      const response = await diaryService.getDiaries(couple.id);
+      const response: any = await diaryService.getDiaries(couple.id);
       
       if (response.success && response.data) {
         set({ diaries: response.data });
@@ -444,29 +341,11 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
 
   // 添加日记
   addDiary: async (diary) => {
-    if (!USE_API) {
-      const { currentUserId, currentUserName, currentUserAvatar } = get();
-      
-      const newDiary: Diary = {
-        ...diary,
-        id: 'diary_' + Date.now(),
-        authorId: currentUserId,
-        authorName: currentUserName,
-        authorAvatar: currentUserAvatar,
-        createdAt: new Date().toISOString(),
-        likes: 0,
-        comments: []
-      };
-      
-      set(state => ({ diaries: [newDiary, ...state.diaries] }));
-      return;
-    }
-    
     try {
       const { couple, currentUserId, currentUserName, currentUserAvatar } = get();
       if (!couple) return;
       
-      const response = await diaryService.createDiary({
+      const response: any = await diaryService.createDiary({
         ...diary,
         coupleId: couple.id,
         authorId: currentUserId,
@@ -484,23 +363,17 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
 
   // 点赞日记
   likeDiary: async (id) => {
-    if (!USE_API) {
-      set(state => ({
-        diaries: state.diaries.map(diary =>
-          diary.id === id ? { ...diary, likes: diary.likes + 1 } : diary
-        )
-      }));
-      return;
-    }
-    
     try {
       const { currentUserId } = get();
-      const response = await diaryService.likeDiary(id, currentUserId);
+      const response: any = await diaryService.likeDiary(id, currentUserId);
       
       if (response.success) {
+        const liked = response.liked;
         set(state => ({
           diaries: state.diaries.map(diary =>
-            diary.id === id ? { ...diary, likes: diary.likes + 1 } : diary
+            diary.id === id 
+              ? { ...diary, likes: diary.likes + (liked ? 1 : -1) } 
+              : diary
           )
         }));
       }
@@ -511,31 +384,9 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
 
   // 添加评论
   addComment: async (diaryId, content) => {
-    if (!USE_API) {
-      const { currentUserId, currentUserName, currentUserAvatar } = get();
-      
-      const newComment: Comment = {
-        id: 'comment_' + Date.now(),
-        content,
-        authorId: currentUserId,
-        authorName: currentUserName,
-        authorAvatar: currentUserAvatar,
-        createdAt: new Date().toISOString()
-      };
-      
-      set(state => ({
-        diaries: state.diaries.map(diary =>
-          diary.id === diaryId
-            ? { ...diary, comments: [...diary.comments, newComment] }
-            : diary
-        )
-      }));
-      return;
-    }
-    
     try {
       const { currentUserId, currentUserName, currentUserAvatar } = get();
-      const response = await diaryService.addComment(diaryId, {
+      const response: any = await diaryService.addComment(diaryId, {
         authorId: currentUserId,
         authorName: currentUserName,
         authorAvatar: currentUserAvatar,
@@ -554,6 +405,54 @@ export const useCoupleStore = create<CoupleStore>((set, get) => ({
     } catch (error) {
       console.error('添加评论失败:', error);
     }
+  },
+
+  // 加载愿望
+  loadWishes: async () => {
+    try {
+      const { couple } = get();
+      if (!couple) return;
+      
+      const response: any = await wishService.getWishes(couple.id);
+      
+      if (response.success && response.data) {
+        set({ wishes: response.data });
+      }
+    } catch (error) {
+      console.error('加载愿望失败:', error);
+    }
+  },
+
+  // 完成愿望
+  completeWish: async (wishId) => {
+    try {
+      const { currentUserId } = get();
+      const response: any = await wishService.completeWish(wishId, currentUserId);
+      
+      if (response.success) {
+        set(state => ({
+          wishes: state.wishes.map(wish =>
+            wish.id === wishId
+              ? { ...wish, isCompleted: true, completedAt: new Date().toISOString() }
+              : wish
+          )
+        }));
+      }
+    } catch (error) {
+      console.error('完成愿望失败:', error);
+    }
+  },
+
+  // 加载所有数据
+  loadAllData: async () => {
+    const { couple } = get();
+    if (!couple) return;
+    
+    await Promise.all([
+      get().loadAnniversaries(),
+      get().loadDiaries(),
+      get().loadWishes()
+    ]);
   },
 
   // 从本地存储初始化

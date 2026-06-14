@@ -5,12 +5,13 @@ import styles from './index.module.scss';
 import { useCoupleStore } from '../../store/useCoupleStore';
 
 const BindPage: React.FC = () => {
-  const { couple, bindPartner, unbindCouple, generateInviteCode } = useCoupleStore();
+  const { couple, createCouple, bindPartner, unbindCouple, generateInviteCode } = useCoupleStore();
   const [activeTab, setActiveTab] = useState<'share' | 'join'>('share');
   const [inviteCode, setInviteCode] = useState('');
   const [partnerName, setPartnerName] = useState('');
   const [partnerAvatar, setPartnerAvatar] = useState('');
   const [copied, setCopied] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   const BIND_TEMPLATE_ID = 'ye6sttAhDmQPb_KxXUIsnpoUH87dn1BAUSsUHMLVoo0';
 
@@ -115,9 +116,8 @@ const BindPage: React.FC = () => {
       console.log('订阅授权跳过:', e);
     }
 
-    const success = bindPartner(inviteCode.trim(), partnerName.trim(), partnerAvatar);
+    const success = await bindPartner(inviteCode.trim(), partnerName.trim(), partnerAvatar);
     if (success) {
-      // 重新获取更新后的情侣数据并保存
       const updatedCouple = useCoupleStore.getState().couple;
       if (updatedCouple) {
         Taro.setStorageSync('coupleData', updatedCouple);
@@ -129,6 +129,22 @@ const BindPage: React.FC = () => {
       }, 1500);
     } else {
       Taro.showToast({ title: '邀请码错误', icon: 'none' });
+    }
+  };
+
+  const handleCreateCouple = async () => {
+    setIsCreating(true);
+    try {
+      const success = await createCouple();
+      if (success) {
+        Taro.showToast({ title: '创建成功', icon: 'success' });
+      } else {
+        Taro.showToast({ title: '创建失败，请重试', icon: 'none' });
+      }
+    } catch (e) {
+      Taro.showToast({ title: '创建失败', icon: 'none' });
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -150,129 +166,38 @@ const BindPage: React.FC = () => {
 
   return (
     <View className={styles.page}>
-      {/* 用户卡片 */}
-      <View className={styles.userCard}>
-        <View className={styles.userHeader}>
-          <Image 
-            className={styles.userAvatar}
-            src={couple?.user1Avatar || ''}
-            mode="aspectFill"
-          />
-          <View className={styles.userInfo}>
-            <Text className={styles.userName}>{couple?.user1Name}</Text>
-            <Text className={styles.userStatus}>
-              {isBound ? '已绑定' : '未绑定'}
-            </Text>
-          </View>
-        </View>
-        
-        {/* 情侣信息 */}
-        <View className={styles.coupleInfo}>
-          <View className={styles.avatarItem}>
-            <Image 
-              className={styles.partnerAvatar}
-              src={couple?.user1Avatar || ''}
-              mode="aspectFill"
-            />
-            <Text className={styles.avatarLabel}>我</Text>
-          </View>
-          <Text className={styles.heartIcon}>❤️</Text>
-          <View className={styles.avatarItem}>
-            <Image 
-              className={styles.partnerAvatar}
-              src={couple?.user2Avatar || ''}
-              mode="aspectFill"
-            />
-            <Text className={styles.avatarLabel}>{couple?.user2Name || 'Ta'}</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Tab切换 */}
-      <View className={styles.tabBar}>
-        <View
-          className={`${styles.tabItem} ${activeTab === 'share' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('share')}
-        >
-          <Text className={styles.tabText}>分享邀请</Text>
-        </View>
-        <View
-          className={`${styles.tabItem} ${activeTab === 'join' ? styles.tabActive : ''}`}
-          onClick={() => setActiveTab('join')}
-        >
-          <Text className={styles.tabText}>加入情侣</Text>
-        </View>
-      </View>
-
-      {/* 分享邀请码 */}
-      {activeTab === 'share' && (
+      {!couple ? (
         <View className={styles.content}>
           <View className={styles.card}>
-            <View className={styles.cardHeader}>
-              <Text className={styles.cardTitle}>我的邀请码</Text>
-              <Button className={styles.refreshButton} onClick={handleRefreshCode}>
-                <Text className={styles.refreshIcon}>🔄</Text>
-              </Button>
-            </View>
-            
-            <View className={styles.codeDisplay}>
-              <Text className={styles.codeText}>{couple?.inviteCode}</Text>
-            </View>
-
-            <View className={styles.buttonGroup}>
-              <Button className={styles.primaryButton} onClick={handleCopyCode}>
+            <View className={styles.createSection}>
+              <Text className={styles.createIcon}>💑</Text>
+              <Text className={styles.createTitle}>创建情侣空间</Text>
+              <Text className={styles.createDesc}>创建后可邀请你的另一半加入</Text>
+              <Button 
+                className={styles.primaryButton} 
+                onClick={handleCreateCouple}
+                loading={isCreating}
+                disabled={isCreating}
+              >
                 <Text className={styles.primaryButtonText}>
-                  {copied ? '✓ 已复制' : '复制邀请码'}
+                  {isCreating ? '创建中...' : '立即创建'}
                 </Text>
               </Button>
-              <Button className={styles.secondaryButton} onClick={handleShare}>
-                <Text className={styles.secondaryButtonText}>📤 分享</Text>
-              </Button>
-            </View>
-
-            <Text className={styles.tipText}>
-              对方点击分享链接即可自动绑定
-            </Text>
-          </View>
-
-          {/* 绑定步骤 */}
-          <View className={styles.card}>
-            <Text className={styles.cardTitle}>绑定步骤</Text>
-            <View className={styles.stepList}>
-              <View className={styles.stepItem}>
-                <Text className={styles.stepNumber}>1</Text>
-                <Text className={styles.stepText}>点击「分享」按钮</Text>
-              </View>
-              <View className={styles.stepItem}>
-                <Text className={styles.stepNumber}>2</Text>
-                <Text className={styles.stepText}>发送给另一半</Text>
-              </View>
-              <View className={styles.stepItem}>
-                <Text className={styles.stepNumber}>3</Text>
-                <Text className={styles.stepText}>Ta打开链接即可绑定</Text>
-              </View>
             </View>
           </View>
-        </View>
-      )}
 
-      {/* 加入情侣 */}
-      {activeTab === 'join' && (
-        <View className={styles.content}>
           <View className={styles.card}>
-            <Text className={styles.cardTitle}>输入邀请码</Text>
-            
+            <Text className={styles.cardTitle}>或加入TA的情侣空间</Text>
             <View className={styles.formItem}>
               <Text className={styles.formLabel}>邀请码</Text>
               <Input
                 className={styles.input}
-                placeholder="请输入10位邀请码"
+                placeholder="请输入邀请码"
                 value={inviteCode}
                 onInput={(e) => setInviteCode(e.detail.value.toUpperCase())}
                 maxLength={10}
               />
             </View>
-
             <View className={styles.formItem}>
               <Text className={styles.formLabel}>昵称</Text>
               <Input
@@ -283,7 +208,6 @@ const BindPage: React.FC = () => {
                 maxLength={20}
               />
             </View>
-
             <View className={styles.formItem}>
               <Text className={styles.formLabel}>头像</Text>
               <button
@@ -300,38 +224,197 @@ const BindPage: React.FC = () => {
                 )}
               </button>
             </View>
-
             <Button className={styles.primaryButton} onClick={handleJoin}>
               <Text className={styles.primaryButtonText}>加入情侣</Text>
             </Button>
           </View>
         </View>
-      )}
-
-      {/* 已绑定 - 显示邀请码 */}
-      {isBound && (
-        <View className={styles.content}>
-          <View className={styles.card}>
-            <Text className={styles.cardTitle}>专属邀请码</Text>
-            <View className={styles.codeDisplay}>
-              <Text className={styles.codeText}>{couple?.inviteCode}</Text>
-            </View>
-            <View className={styles.buttonGroup}>
-              <Button className={styles.primaryButton} onClick={handleCopyCode}>
-                <Text className={styles.primaryButtonText}>
-                  {copied ? '✓ 已复制' : '复制邀请码'}
+      ) : (
+        <>
+          {/* 用户卡片 */}
+          <View className={styles.userCard}>
+            <View className={styles.userHeader}>
+              <Image 
+                className={styles.userAvatar}
+                src={couple?.user1Avatar || ''}
+                mode="aspectFill"
+              />
+              <View className={styles.userInfo}>
+                <Text className={styles.userName}>{couple?.user1Name}</Text>
+                <Text className={styles.userStatus}>
+                  {isBound ? '已绑定' : '未绑定'}
                 </Text>
-              </Button>
-              <Button className={styles.secondaryButton} onClick={handleShare}>
-                <Text className={styles.secondaryButtonText}>📤 分享</Text>
-              </Button>
+              </View>
+            </View>
+            
+            {/* 情侣信息 */}
+            <View className={styles.coupleInfo}>
+              <View className={styles.avatarItem}>
+                <Image 
+                  className={styles.partnerAvatar}
+                  src={couple?.user1Avatar || ''}
+                  mode="aspectFill"
+                />
+                <Text className={styles.avatarLabel}>我</Text>
+              </View>
+              <Text className={styles.heartIcon}>❤️</Text>
+              <View className={styles.avatarItem}>
+                <Image 
+                  className={styles.partnerAvatar}
+                  src={couple?.user2Avatar || ''}
+                  mode="aspectFill"
+                />
+                <Text className={styles.avatarLabel}>{couple?.user2Name || 'Ta'}</Text>
+              </View>
             </View>
           </View>
 
-          <Button className={styles.dangerButton} onClick={handleUnbind}>
-            <Text className={styles.dangerButtonText}>解除绑定</Text>
-          </Button>
-        </View>
+          {/* Tab切换 */}
+          <View className={styles.tabBar}>
+            <View
+              className={`${styles.tabItem} ${activeTab === 'share' ? styles.tabActive : ''}`}
+              onClick={() => setActiveTab('share')}
+            >
+              <Text className={styles.tabText}>分享邀请</Text>
+            </View>
+            <View
+              className={`${styles.tabItem} ${activeTab === 'join' ? styles.tabActive : ''}`}
+              onClick={() => setActiveTab('join')}
+            >
+              <Text className={styles.tabText}>加入情侣</Text>
+            </View>
+          </View>
+
+          {/* 分享邀请码 */}
+          {activeTab === 'share' && (
+            <View className={styles.content}>
+              <View className={styles.card}>
+                <View className={styles.cardHeader}>
+                  <Text className={styles.cardTitle}>我的邀请码</Text>
+                  <Button className={styles.refreshButton} onClick={handleRefreshCode}>
+                    <Text className={styles.refreshIcon}>🔄</Text>
+                  </Button>
+                </View>
+                
+                <View className={styles.codeDisplay}>
+                  <Text className={styles.codeText}>{couple?.inviteCode}</Text>
+                </View>
+
+                <View className={styles.buttonGroup}>
+                  <Button className={styles.primaryButton} onClick={handleCopyCode}>
+                    <Text className={styles.primaryButtonText}>
+                      {copied ? '✓ 已复制' : '复制邀请码'}
+                    </Text>
+                  </Button>
+                  <Button className={styles.secondaryButton} onClick={handleShare}>
+                    <Text className={styles.secondaryButtonText}>📤 分享</Text>
+                  </Button>
+                </View>
+
+                <Text className={styles.tipText}>
+                  对方点击分享链接即可自动绑定
+                </Text>
+              </View>
+
+              {/* 绑定步骤 */}
+              <View className={styles.card}>
+                <Text className={styles.cardTitle}>绑定步骤</Text>
+                <View className={styles.stepList}>
+                  <View className={styles.stepItem}>
+                    <Text className={styles.stepNumber}>1</Text>
+                    <Text className={styles.stepText}>点击「分享」按钮</Text>
+                  </View>
+                  <View className={styles.stepItem}>
+                    <Text className={styles.stepNumber}>2</Text>
+                    <Text className={styles.stepText}>发送给另一半</Text>
+                  </View>
+                  <View className={styles.stepItem}>
+                    <Text className={styles.stepNumber}>3</Text>
+                    <Text className={styles.stepText}>Ta打开链接即可绑定</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+          )}
+
+          {/* 加入情侣 */}
+          {activeTab === 'join' && (
+            <View className={styles.content}>
+              <View className={styles.card}>
+                <Text className={styles.cardTitle}>输入邀请码</Text>
+                
+                <View className={styles.formItem}>
+                  <Text className={styles.formLabel}>邀请码</Text>
+                  <Input
+                    className={styles.input}
+                    placeholder="请输入10位邀请码"
+                    value={inviteCode}
+                    onInput={(e) => setInviteCode(e.detail.value.toUpperCase())}
+                    maxLength={10}
+                  />
+                </View>
+
+                <View className={styles.formItem}>
+                  <Text className={styles.formLabel}>昵称</Text>
+                  <Input
+                    className={styles.input}
+                    placeholder="请输入你的昵称"
+                    value={partnerName}
+                    onInput={(e) => setPartnerName(e.detail.value)}
+                    maxLength={20}
+                  />
+                </View>
+
+                <View className={styles.formItem}>
+                  <Text className={styles.formLabel}>头像</Text>
+                  <button
+                    className={styles.avatarButton}
+                    open-type="chooseAvatar"
+                    onChooseAvatar={handleChooseAvatar}
+                  >
+                    {partnerAvatar ? (
+                      <Image className={styles.avatarPreview} src={partnerAvatar} mode="aspectFill" />
+                    ) : (
+                      <View className={styles.avatarPlaceholder}>
+                        <Text className={styles.avatarIcon}>👤</Text>
+                      </View>
+                    )}
+                  </button>
+                </View>
+
+                <Button className={styles.primaryButton} onClick={handleJoin}>
+                  <Text className={styles.primaryButtonText}>加入情侣</Text>
+                </Button>
+              </View>
+            </View>
+          )}
+
+          {/* 已绑定 - 显示邀请码 */}
+          {isBound && (
+            <View className={styles.content}>
+              <View className={styles.card}>
+                <Text className={styles.cardTitle}>专属邀请码</Text>
+                <View className={styles.codeDisplay}>
+                  <Text className={styles.codeText}>{couple?.inviteCode}</Text>
+                </View>
+                <View className={styles.buttonGroup}>
+                  <Button className={styles.primaryButton} onClick={handleCopyCode}>
+                    <Text className={styles.primaryButtonText}>
+                      {copied ? '✓ 已复制' : '复制邀请码'}
+                    </Text>
+                  </Button>
+                  <Button className={styles.secondaryButton} onClick={handleShare}>
+                    <Text className={styles.secondaryButtonText}>📤 分享</Text>
+                  </Button>
+                </View>
+              </View>
+
+              <Button className={styles.dangerButton} onClick={handleUnbind}>
+                <Text className={styles.dangerButtonText}>解除绑定</Text>
+              </Button>
+            </View>
+          )}
+        </>
       )}
     </View>
   );

@@ -4,15 +4,17 @@ import Taro, { useShareAppMessage, useShareTimeline, useDidShow } from '@tarojs/
 import styles from './index.module.scss';
 import { moodConfig } from '../../data/diaries';
 import { useCoupleStore } from '../../store/useCoupleStore';
+import { diaryService } from '../../services/api';
 
 const defaultMood = { label: '', emoji: '', color: '#ccc' };
 
 const DiaryDetailPage: React.FC = () => {
-  const { diaries, likeDiary, addDiary, addComment } = useCoupleStore();
+  const { diaries, loadDiaries, likeDiary, addDiary, addComment } = useCoupleStore();
   const [diary, setDiary] = useState<any>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [showCommentInput, setShowCommentInput] = useState(false);
+  const [diaryId, setDiaryId] = useState('');
 
   useDidShow(() => {
     const pages = Taro.getCurrentPages();
@@ -20,26 +22,29 @@ const DiaryDetailPage: React.FC = () => {
     
     if (currentPage && currentPage.options) {
       const { id } = currentPage.options;
-      const foundDiary = diaries.find(d => d.id === id);
-      if (foundDiary) {
-        setDiary(foundDiary);
-        setIsLiked(false);
+      if (id) {
+        setDiaryId(id);
+        loadDiaryData(id);
       }
     }
   });
 
-  useEffect(() => {
-    const pages = Taro.getCurrentPages();
-    const currentPage = pages[pages.length - 1];
-    
-    if (currentPage && currentPage.options) {
-      const { id } = currentPage.options;
-      const foundDiary = diaries.find(d => d.id === id);
-      if (foundDiary) {
-        setDiary(foundDiary);
+  const loadDiaryData = async (id: string) => {
+    try {
+      const response: any = await diaryService.getDiaryDetail(id);
+      if (response.success && response.data) {
+        setDiary(response.data);
       }
+    } catch (error) {
+      console.error('加载日记详情失败:', error);
     }
-  }, [diaries]);
+  };
+
+  useEffect(() => {
+    if (diaryId) {
+      loadDiaryData(diaryId);
+    }
+  }, [diaryId]);
 
   useShareAppMessage(() => {
     if (!diary) return {

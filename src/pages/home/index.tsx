@@ -16,7 +16,8 @@ const HomePage: React.FC = () => {
     diaries, 
     anniversaries,
     calculateLoveDays,
-    initFromStorage 
+    initFromStorage,
+    loadAllData
   } = useCoupleStore();
   
   const [loveDay, setLoveDay] = useState(0);
@@ -29,7 +30,11 @@ const HomePage: React.FC = () => {
     
     const randomIndex = Math.floor(Math.random() * loveWords.length);
     setCurrentLoveWord(loveWords[randomIndex]);
-  }, []);
+    
+    if (couple) {
+      loadAllData();
+    }
+  }, [couple?.id]);
 
   const handleQuickAction = (type: string) => {
     switch (type) {

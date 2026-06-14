@@ -456,6 +456,117 @@ export const taskService = {
   },
 };
 
+export const billService = {
+  async createBill(data: {
+    coupleId: string;
+    amount: number;
+    category?: string;
+    categoryIcon?: string;
+    description?: string;
+    sweetWord?: string;
+    paidBy?: string;
+    paidByName?: string;
+    paidByAvatar?: string;
+    billDate?: string;
+    billType?: string;
+  }) {
+    return request({
+      url: '/api/bill',
+      method: 'POST',
+      data,
+    });
+  },
+
+  async getBills(coupleId: string) {
+    return request({
+      url: `/api/bill/couple/${coupleId}`,
+      method: 'GET',
+    });
+  },
+
+  async deleteBill(billId: string) {
+    return request({
+      url: `/api/bill/${billId}`,
+      method: 'DELETE',
+    });
+  },
+};
+
+export const letterService = {
+  async createLetter(data: {
+    coupleId: string;
+    title: string;
+    content?: string;
+    images?: string[];
+    voiceUrl?: string;
+    fromId: string;
+    fromName: string;
+    fromAvatar: string;
+    toId?: string;
+    openAt?: string;
+  }) {
+    return request({
+      url: '/api/letter',
+      method: 'POST',
+      data,
+    });
+  },
+
+  async getLetters(coupleId: string) {
+    return request({
+      url: `/api/letter/couple/${coupleId}`,
+      method: 'GET',
+    });
+  },
+
+  async openLetter(letterId: string) {
+    return request({
+      url: `/api/letter/${letterId}/open`,
+      method: 'POST',
+    });
+  },
+
+  async deleteLetter(letterId: string) {
+    return request({
+      url: `/api/letter/${letterId}`,
+      method: 'DELETE',
+    });
+  },
+};
+
+export const albumService = {
+  async uploadPhoto(data: {
+    coupleId: string;
+    url: string;
+    thumbnail?: string;
+    description?: string;
+    location?: string;
+    takenAt?: string;
+    uploadedBy?: string;
+    uploadedByName?: string;
+  }) {
+    return request({
+      url: '/api/album',
+      method: 'POST',
+      data,
+    });
+  },
+
+  async getPhotos(coupleId: string) {
+    return request({
+      url: `/api/album/couple/${coupleId}`,
+      method: 'GET',
+    });
+  },
+
+  async deletePhoto(photoId: string) {
+    return request({
+      url: `/api/album/${photoId}`,
+      method: 'DELETE',
+    });
+  },
+};
+
 export default {
   userService,
   coupleService,
@@ -463,4 +574,7 @@ export default {
   anniversaryService,
   wishService,
   taskService,
+  billService,
+  letterService,
+  albumService,
 };

@@ -1,16 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useCoupleStore } from '../../store/useCoupleStore';
-import { getWishStats } from '../../data/wishes';
-import { getBillStats } from '../../data/bill';
-import { diariesData } from '../../data/diaries';
 
 const MinePage: React.FC = () => {
-  const { couple, loveDays } = useCoupleStore();
-  const wishStats = getWishStats();
-  const billStats = getBillStats();
+  const { couple, loveDays, diaries, wishes, loadAllData } = useCoupleStore();
+
+  const completedWishes = wishes.filter(w => w.isCompleted).length;
+
+  useEffect(() => {
+    if (couple) {
+      loadAllData();
+    }
+  }, [couple?.id]);
 
   // 菜单项
   const menuItems = [
@@ -32,7 +35,7 @@ const MinePage: React.FC = () => {
       id: 'bill', 
       icon: '💰', 
       title: '共同记账', 
-      desc: `已记录 ${billStats.count} 笔账单`,
+      desc: '功能开发中',
       url: '/pages/bill-detail/index'
     },
     { 
@@ -134,11 +137,11 @@ const MinePage: React.FC = () => {
             <Text className={styles.statLabel}>恋爱天数</Text>
           </View>
           <View className={styles.statItem}>
-            <Text className={styles.statValue}>{diariesData.length}</Text>
+            <Text className={styles.statValue}>{diaries.length}</Text>
             <Text className={styles.statLabel}>甜蜜记录</Text>
           </View>
           <View className={styles.statItem}>
-            <Text className={styles.statValue}>{wishStats.completed}</Text>
+            <Text className={styles.statValue}>{completedWishes}</Text>
             <Text className={styles.statLabel}>愿望达成</Text>
           </View>
         </View>

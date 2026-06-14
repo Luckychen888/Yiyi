@@ -1,29 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classnames from 'classnames';
 import styles from './index.module.scss';
-import ProgressBar from '../../components/ProgressBar';
-import { wishesData, getWishStats, getCategories } from '../../data/wishes';
+import { useCoupleStore } from '../../store/useCoupleStore';
 import { formatDate } from '../../utils';
 
 const WishPage: React.FC = () => {
+  const { wishes, loadWishes, completeWish } = useCoupleStore();
   const [activeCategory, setActiveCategory] = useState('全部');
-  const wishStats = getWishStats();
-  const categories = ['全部', ...getCategories()];
 
-  // 筛选愿望
+  useEffect(() => {
+    loadWishes();
+  }, []);
+
+  const completedCount = wishes.filter(w => w.isCompleted).length;
+  const totalCount = wishes.length;
+  const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  const categories = ['全部', ...Array.from(new Set(wishes.map(w => w.category).filter(Boolean)))];
+
   const filteredWishes = activeCategory === '全部' 
-    ? wishesData 
-    : wishesData.filter(w => w.category === activeCategory);
+    ? wishes 
+    : wishes.filter(w => w.category === activeCategory);
 
-  // 点击愿望
-  const handleWishClick = (wishId: string) => {
-    const wish = wishesData.find(w => w.id === wishId);
+  const handleWishClick = async (wishId: string) => {
+    const wish = wishes.find(w => w.id === wishId);
     if (wish?.isCompleted) {
       Taro.showToast({ title: '已完成！', icon: 'success' });
     } else {
-      Taro.showToast({ title: '打卡功能开发中...', icon: 'none' });
+      await completeWish(wishId);
+      Taro.showToast({ title: '打卡成功！', icon: 'success' });
     }
   };
 
@@ -39,19 +46,19 @@ const WishPage: React.FC = () => {
         <View className={styles.progressHeader}>
           <Text className={styles.progressTitle}>100件小事</Text>
           <View className={styles.progressStats}>
-            <Text className={styles.progressValue}>{wishStats.completed}</Text>
-            <Text className={styles.progressUnit}>/{wishStats.total}</Text>
+            <Text className={styles.progressValue}>{completedCount}</Text>
+            <Text className={styles.progressUnit}>/{totalCount}</Text>
           </View>
         </View>
         <View className={styles.progressBar}>
           <View 
             className={styles.progressFill}
-            style={{ width: `${wishStats.percentage}%` }}
+            style={{ width: `${percentage}%` }}
           />
         </View>
         <Text className={styles.progressDesc}>
-          {wishStats.percentage >= 80 ? '太棒了！即将解锁惊喜彩蛋！' :
-           wishStats.percentage >= 50 ? '继续加油，一起完成更多愿望！' :
+          {percentage >= 80 ? '太棒了！即将解锁惊喜彩蛋！' :
+           percentage >= 50 ? '继续加油，一起完成更多愿望！' :
            '开始你们的甜蜜旅程吧~'}
         </Text>
       </View>
