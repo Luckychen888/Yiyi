@@ -4,7 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>恋人空间 - 管理后台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --secondary-light: #f472b6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --bg-input: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --border-light: #475569;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.6);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -12,125 +46,198 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f7fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
             min-height: 100vh;
-            padding: 20px;
+            color: var(--text-primary);
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1440px;
             margin: 0 auto;
+            padding: 24px;
         }
 
-        /* 头部样式 */
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 25px 30px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 32px;
+            border-radius: var(--radius-xl);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
         }
 
         .header-top {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
         }
 
         .header h1 {
-            font-size: 28px;
-            font-weight: 600;
+            font-size: 32px;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .header h1 svg {
+            width: 36px;
+            height: 36px;
         }
 
         .header p {
             opacity: 0.9;
-            font-size: 14px;
+            font-size: 15px;
+            margin-top: 8px;
         }
 
         .header-right {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
         }
 
         .status-badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: var(--radius-xl);
+            font-size: 13px;
+            font-weight: 500;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .status-badge svg {
+            width: 16px;
+            height: 16px;
         }
 
         .status-online {
-            background: #2ed573;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--radius-xl);
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--success);
             color: white;
-            padding: 4px 8px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 500;
         }
 
-        /* 导航样式 */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
         .nav {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
         }
 
         .nav button {
-            padding: 10px 22px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 25px;
-            background: rgba(255,255,255,0.15);
+            border-radius: var(--radius-xl);
+            background: rgba(255,255,255,0.1);
             color: white;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
             font-size: 14px;
             font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav button svg {
+            width: 18px;
+            height: 18px;
         }
 
         .nav button:hover {
-            background: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.2);
             transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .nav button.active {
             background: white;
-            color: #667eea;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            color: var(--primary);
+            box-shadow: var(--shadow-lg);
         }
 
-        /* 内容区域 */
         .content {
             display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
         }
 
-        /* 主内容 */
         .main-content {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
             overflow: hidden;
+            border: 1px solid var(--border);
         }
 
         .content-header {
-            padding: 20px 25px;
-            border-bottom: 1px solid #eee;
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .content-header h2 {
-            font-size: 18px;
-            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-header h2 svg {
+            width: 22px;
+            height: 22px;
+            color: var(--primary);
         }
 
         .search-box {
@@ -138,102 +245,151 @@
         }
 
         .search-box input {
-            padding: 10px 15px 10px 40px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            width: 250px;
+            padding: 12px 16px 12px 44px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            width: 280px;
             font-size: 14px;
-            transition: all 0.3s;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-muted);
         }
 
         .search-box input:focus {
             outline: none;
-            border-color: #667eea;
-            width: 300px;
+            border-color: var(--primary);
+            width: 320px;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
-        .search-box::before {
-            content: '🔍';
+        .search-box svg {
             position: absolute;
-            left: 12px;
+            left: 14px;
             top: 50%;
             transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
         }
 
-        /* 统计卡片 */
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
-            padding: 25px;
+            padding: 28px;
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 25px;
-            border-radius: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 24px;
+            border-radius: var(--radius-lg);
             color: white;
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .stat-card:nth-child(2) {
+            background: linear-gradient(135deg, var(--secondary) 0%, #db2777 100%);
+        }
+
+        .stat-card:nth-child(3) {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+        }
+
+        .stat-card:nth-child(4) {
+            background: linear-gradient(135deg, var(--info) 0%, #2563eb 100%);
+        }
+
+        .stat-card:nth-child(5) {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+        }
+
+        .stat-card:nth-child(6) {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-xl);
         }
 
         .stat-card::before {
             content: '';
             position: absolute;
-            right: -20px;
-            top: -20px;
-            width: 100px;
-            height: 100px;
+            right: -30px;
+            top: -30px;
+            width: 120px;
+            height: 120px;
             background: rgba(255,255,255,0.1);
             border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover::before {
+            transform: scale(1.2);
         }
 
         .stat-card-icon {
-            font-size: 32px;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 1;
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.2);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-card-icon svg {
+            width: 24px;
+            height: 24px;
         }
 
         .stat-card h3 {
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: 500;
             opacity: 0.9;
             margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-card .number {
             font-size: 36px;
-            font-weight: bold;
-            position: relative;
-            z-index: 1;
+            font-weight: 700;
+            letter-spacing: -1px;
         }
 
         .stat-card .change {
             font-size: 12px;
-            margin-top: 5px;
-            position: relative;
-            z-index: 1;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-card .change svg {
+            width: 14px;
+            height: 14px;
         }
 
         .stat-card .change.up {
-            color: #7bed9f;
+            color: rgba(255,255,255,0.9);
         }
 
         .stat-card .change.down {
-            color: #ff6b6b;
+            color: rgba(255,255,255,0.7);
         }
 
-        /* 表格样式 */
         .table-container {
-            padding: 20px 25px;
+            padding: 20px 28px;
             overflow-x: auto;
         }
 
@@ -244,77 +400,102 @@
         }
 
         th, td {
-            padding: 14px 12px;
+            padding: 16px 14px;
             text-align: left;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--border);
         }
 
         th {
-            background: #fafafa;
+            background: var(--bg-secondary);
             font-weight: 600;
-            color: #666;
+            color: var(--text-secondary);
             text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.5px;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        tr {
+            transition: var(--transition);
         }
 
         tr:hover {
-            background: #f9fafb;
+            background: var(--bg-card-hover);
         }
 
-        /* 按钮样式 */
+        tr:last-child td {
+            border-bottom: none;
+        }
+
         .btn {
-            padding: 8px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 18px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             cursor: pointer;
             font-size: 13px;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: var(--transition);
+        }
+
+        .btn svg {
+            width: 16px;
+            height: 16px;
         }
 
         .btn-sm {
-            padding: 5px 12px;
+            padding: 8px 14px;
             font-size: 12px;
         }
 
         .btn-danger {
-            background: #ff4757;
-            color: white;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .btn-danger:hover {
-            background: #ff6b7a;
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
         }
 
         .btn-primary {
-            background: #667eea;
-            color: white;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(99, 102, 241, 0.3);
         }
 
         .btn-primary:hover {
-            background: #7c8eea;
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
         .btn-success {
-            background: #2ed573;
-            color: white;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
         .btn-success:hover {
-            background: #48e08a;
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
         }
 
         .btn-secondary {
-            background: #f0f0f0;
-            color: #666;
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-            background: #e0e0e0;
+            background: var(--border);
+            color: var(--text-primary);
         }
 
-        /* 侧边栏 */
         .sidebar {
             display: flex;
             flex-direction: column;
@@ -322,179 +503,211 @@
         }
 
         .sidebar-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .sidebar-card:hover {
+            border-color: var(--border-light);
+            box-shadow: var(--shadow-xl);
         }
 
         .sidebar-card h3 {
             font-size: 16px;
-            margin-bottom: 15px;
-            color: #333;
+            font-weight: 600;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        /* 最近活动 */
+        .sidebar-card h3 svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary);
+        }
+
         .activity-list {
             list-style: none;
         }
 
         .activity-item {
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
             font-size: 13px;
-            color: #666;
+            color: var(--text-secondary);
+            transition: var(--transition);
         }
 
         .activity-item:last-child {
             border-bottom: none;
         }
 
-        .activity-time {
-            font-size: 11px;
-            color: #999;
-            margin-top: 4px;
+        .activity-item:hover {
+            color: var(--text-primary);
         }
 
-        /* 快捷操作 */
+        .activity-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .activity-time svg {
+            width: 12px;
+            height: 12px;
+        }
+
         .quick-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
         .quick-action-btn {
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 13px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 12px;
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .quick-action-btn svg {
+            width: 24px;
+            height: 24px;
         }
 
         .quick-action-btn:hover {
-            transform: translateY(-3px);
-        }
-
-        .action-icon {
-            font-size: 24px;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: var(--shadow-lg);
         }
 
         .btn-purple {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
         }
 
         .btn-blue {
-            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            background: linear-gradient(135deg, var(--info) 0%, #2563eb 100%);
             color: white;
         }
 
         .btn-green {
-            background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
             color: white;
         }
 
         .btn-orange {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            color: #2d3436;
-        }
-
-        /* 空状态 */
-        .empty {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-        }
-
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-        }
-
-        /* 标签页内容 */
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* 分页 */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            padding: 20px;
-        }
-
-        .pagination button {
-            padding: 8px 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .pagination button:hover:not(:disabled) {
-            border-color: #667eea;
-            color: #667eea;
-        }
-
-        .pagination button.active {
-            background: #667eea;
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
             color: white;
-            border-color: #667eea;
         }
 
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* 徽章 */
         .badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 5px 12px;
+            border-radius: var(--radius-xl);
+            font-size: 12px;
             font-weight: 500;
         }
 
         .badge-success {
-            background: #e8f5e9;
-            color: #2e7d32;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
         }
 
         .badge-warning {
-            background: #fff3e0;
-            color: #e65100;
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
         }
 
         .badge-info {
-            background: #e3f2fd;
-            color: #1565c0;
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--info);
         }
 
-        /* 头像 */
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
         .avatar {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #f0f0f0;
+            border: 2px solid var(--border);
+            transition: var(--transition);
         }
 
-        /* 模态框 */
+        tr:hover .avatar {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .pagination button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pagination button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .pagination button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -502,10 +715,17 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-overlay.active {
@@ -513,112 +733,327 @@
         }
 
         .modal {
-            background: white;
-            border-radius: 16px;
-            padding: 25px;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 32px;
             width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
+            max-width: 520px;
+            max-height: 85vh;
             overflow-y: auto;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 28px;
         }
 
         .modal-header h3 {
-            font-size: 18px;
-            color: #333;
+            font-size: 22px;
+            font-weight: 600;
         }
 
         .modal-close {
-            font-size: 24px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
             cursor: pointer;
-            color: #999;
+            color: var(--text-muted);
+            transition: var(--transition);
+            background: var(--bg-input);
         }
 
         .modal-close:hover {
-            color: #333;
+            background: var(--danger);
+            color: white;
+        }
+
+        .modal-close svg {
+            width: 20px;
+            height: 20px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-size: 14px;
-            color: #333;
+            font-weight: 500;
+            color: var(--text-secondary);
         }
 
         .form-group input,
         .form-group textarea,
         .form-group select {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             font-size: 14px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            transition: var(--transition);
         }
 
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
         }
 
         .form-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: flex-end;
-            margin-top: 20px;
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
         }
 
-        /* 响应式设计 */
-        @media (max-width: 1024px) {
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .chart-placeholder {
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--border);
+            margin: 0 28px 28px;
+            transition: var(--transition);
+        }
+
+        .chart-placeholder:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .chart-placeholder svg {
+            width: 56px;
+            height: 56px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .chart-placeholder p {
+            color: var(--text-muted);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .chart-placeholder span {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .setting-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 28px;
+        }
+
+        .setting-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+
+        .setting-card:hover {
+            border-color: var(--primary);
+        }
+
+        .setting-card h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setting-card h4 svg {
+            width: 18px;
+            height: 18px;
+            color: var(--primary);
+        }
+
+        .setting-item {
+            margin-bottom: 16px;
+        }
+
+        .setting-item label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .setting-item input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        .setting-item input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-bar span {
+            font-size: 13px;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-row span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .setting-row strong {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: var(--text-muted);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+        }
+
+        @media (max-width: 1200px) {
             .content {
                 grid-template-columns: 1fr;
             }
-            
-            .sidebar {
+
+            .stats {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .setting-grid {
+                grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 640px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header {
+                padding: 24px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
             .stats {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
             }
-            
+
+            .nav {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 8px;
+            }
+
             .nav button {
-                padding: 8px 16px;
-                font-size: 12px;
+                white-space: nowrap;
             }
-            
+
             .search-box input {
                 width: 100%;
             }
-        }
 
-        /* 加载动画 */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            .search-box input:focus {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -627,87 +1062,235 @@
         <div class="header">
             <div class="header-top">
                 <div>
-                    <h1>💑 恋人空间 - 管理后台</h1>
+                    <h1>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        恋人空间
+                    </h1>
                     <p>实时监控 · 数据管理 · 系统配置</p>
                 </div>
                 <div class="header-right">
-                    <span class="status-badge">运行中</span>
-                    <span class="status-online">ONLINE</span>
+                    <span class="status-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        运行中
+                    </span>
+                    <span class="status-online">
+                        <span class="status-dot"></span>
+                        ONLINE
+                    </span>
                 </div>
             </div>
             <div class="nav">
-                <button class="active" data-tab="dashboard">📊 仪表盘</button>
-                <button data-tab="users">👥 用户管理</button>
-                <button data-tab="couples">💑 情侣管理</button>
-                <button data-tab="diaries">📝 日记管理</button>
-                <button data-tab="anniversaries">📅 纪念日管理</button>
-                <button data-tab="messages">💬 消息日志</button>
-                <button data-tab="system">⚙️ 系统设置</button>
+                <button class="active" data-tab="dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    仪表盘
+                </button>
+                <button data-tab="users">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    用户管理
+                </button>
+                <button data-tab="couples">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                    情侣管理
+                </button>
+                <button data-tab="diaries">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                    日记管理
+                </button>
+                <button data-tab="anniversaries">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    纪念日管理
+                </button>
+                <button data-tab="messages">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    消息日志
+                </button>
+                <button data-tab="system">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    系统设置
+                </button>
             </div>
         </div>
 
         <div class="content">
             <div class="main-content">
-                <!-- 仪表盘 -->
                 <div id="dashboard" class="tab-content active">
                     <div class="stats">
                         <div class="stat-card">
-                            <div class="stat-card-icon">👥</div>
+                            <div class="stat-card-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
                             <h3>用户总数</h3>
                             <div class="number" id="userCount">1,234</div>
-                            <div class="change up">↑ +12% 本周</div>
+                            <div class="change up">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                                    <polyline points="17 6 23 6 23 12"/>
+                                </svg>
+                                +12% 本周
+                            </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-card-icon">💑</div>
+                            <div class="stat-card-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                </svg>
+                            </div>
                             <h3>绑定情侣数</h3>
                             <div class="number" id="coupleCount">567</div>
-                            <div class="change up">↑ +8% 本周</div>
+                            <div class="change up">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                                    <polyline points="17 6 23 6 23 12"/>
+                                </svg>
+                                +8% 本周
+                            </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-card-icon">📝</div>
+                            <div class="stat-card-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                    <line x1="16" y1="13" x2="8" y2="13"/>
+                                    <line x1="16" y1="17" x2="8" y2="17"/>
+                                </svg>
+                            </div>
                             <h3>日记总数</h3>
                             <div class="number" id="diaryCount">4,521</div>
-                            <div class="change up">↑ +15% 本周</div>
+                            <div class="change up">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                                    <polyline points="17 6 23 6 23 12"/>
+                                </svg>
+                                +15% 本周
+                            </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-card-icon">✨</div>
+                            <div class="stat-card-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                            </div>
                             <h3>愿望总数</h3>
                             <div class="number" id="wishCount">1,892</div>
-                            <div class="change up">↑ +5% 本周</div>
+                            <div class="change up">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                                    <polyline points="17 6 23 6 23 12"/>
+                                </svg>
+                                +5% 本周
+                            </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-card-icon">📅</div>
-                            <div class="number" id="anniCount">893</div>
+                            <div class="stat-card-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                            </div>
                             <h3>纪念日总数</h3>
-                            <div class="change up">↑ +23% 本周</div>
+                            <div class="number" id="anniCount">893</div>
+                            <div class="change up">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                                    <polyline points="17 6 23 6 23 12"/>
+                                </svg>
+                                +23% 本周
+                            </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-card-icon">💬</div>
+                            <div class="stat-card-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                </svg>
+                            </div>
                             <h3>消息发送</h3>
                             <div class="number" id="msgCount">2,341</div>
-                            <div class="change down">↓ -2% 本周</div>
+                            <div class="change down">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+                                    <polyline points="17 18 23 18 23 12"/>
+                                </svg>
+                                -2% 本周
+                            </div>
                         </div>
                     </div>
                     
                     <div class="content-header">
-                        <h2>📊 最近趋势</h2>
+                        <h2>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            </svg>
+                            最近趋势
+                        </h2>
                     </div>
-                    <div class="table-container">
-                        <div style="height: 200px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius: 12px;">
-                            <div style="text-align: center; color: #999;">
-                                <div style="font-size: 48px; margin-bottom: 10px;">📈</div>
-                                <p>图表展示区域</p>
-                                <p style="font-size: 12px;">用户增长趋势 · 活跃数据统计</p>
-                            </div>
-                        </div>
+                    <div class="chart-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                            <line x1="2" y1="20" x2="22" y2="20"/>
+                        </svg>
+                        <p>图表展示区域</p>
+                        <span>用户增长趋势 · 活跃数据统计</span>
                     </div>
                 </div>
 
-                <!-- 用户管理 -->
                 <div id="users" class="tab-content">
                     <div class="content-header">
-                        <h2>👥 用户列表</h2>
+                        <h2>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                            </svg>
+                            用户列表
+                        </h2>
                         <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
                             <input type="text" placeholder="搜索用户昵称或ID..." id="userSearch">
                         </div>
                     </div>
@@ -728,82 +1311,158 @@
                                 <tr>
                                     <td>user_20240601001</td>
                                     <td>小怿</td>
-                                    <td><img src="https://picsum.photos/id/64/40/40" class="avatar"/></td>
+                                    <td><img src="https://picsum.photos/id/64/42/42" class="avatar"/></td>
                                     <td>o123456789...</td>
                                     <td><span class="badge badge-success">活跃</span></td>
                                     <td>2024-06-01 10:30:00</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary">编辑</button>
-                                        <button class="btn btn-sm btn-danger">删除</button>
+                                        <button class="btn btn-sm btn-primary">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            编辑
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                            删除
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>user_20240602002</td>
                                     <td>小爱</td>
-                                    <td><img src="https://picsum.photos/id/91/40/40" class="avatar"/></td>
+                                    <td><img src="https://picsum.photos/id/91/42/42" class="avatar"/></td>
                                     <td>o987654321...</td>
                                     <td><span class="badge badge-success">活跃</span></td>
                                     <td>2024-06-02 14:20:00</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary">编辑</button>
-                                        <button class="btn btn-sm btn-danger">删除</button>
+                                        <button class="btn btn-sm btn-primary">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            编辑
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                            删除
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>user_20240603003</td>
                                     <td>阳光男孩</td>
-                                    <td><img src="https://picsum.photos/id/1/40/40" class="avatar"/></td>
+                                    <td><img src="https://picsum.photos/id/1/42/42" class="avatar"/></td>
                                     <td>o555555555...</td>
                                     <td><span class="badge badge-info">游客</span></td>
                                     <td>2024-06-03 09:15:00</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary">编辑</button>
-                                        <button class="btn btn-sm btn-danger">删除</button>
+                                        <button class="btn btn-sm btn-primary">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            编辑
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                            删除
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>user_20240604004</td>
                                     <td>甜蜜女孩</td>
-                                    <td><img src="https://picsum.photos/id/2/40/40" class="avatar"/></td>
+                                    <td><img src="https://picsum.photos/id/2/42/42" class="avatar"/></td>
                                     <td>o666666666...</td>
                                     <td><span class="badge badge-success">活跃</span></td>
                                     <td>2024-06-04 16:45:00</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary">编辑</button>
-                                        <button class="btn btn-sm btn-danger">删除</button>
+                                        <button class="btn btn-sm btn-primary">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            编辑
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                            删除
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>user_20240605005</td>
                                     <td>幸福恋人</td>
-                                    <td><img src="https://picsum.photos/id/3/40/40" class="avatar"/></td>
+                                    <td><img src="https://picsum.photos/id/3/42/42" class="avatar"/></td>
                                     <td>o777777777...</td>
                                     <td><span class="badge badge-warning">离线</span></td>
                                     <td>2024-06-05 11:00:00</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary">编辑</button>
-                                        <button class="btn btn-sm btn-danger">删除</button>
+                                        <button class="btn btn-sm btn-primary">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            编辑
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                            删除
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="pagination">
-                        <button disabled>«</button>
+                        <button disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                        </button>
                         <button class="active">1</button>
                         <button>2</button>
                         <button>3</button>
                         <button>4</button>
                         <button>5</button>
-                        <button>»</button>
+                        <button>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
-                <!-- 情侣管理 -->
                 <div id="couples" class="tab-content">
                     <div class="content-header">
-                        <h2>💑 情侣列表</h2>
+                        <h2>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            情侣列表
+                        </h2>
                         <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
                             <input type="text" placeholder="搜索邀请码或昵称..." id="coupleSearch">
                         </div>
                     </div>
@@ -826,9 +1485,9 @@
                                     <td>couple_001</td>
                                     <td>小怿</td>
                                     <td>小爱</td>
-                                    <td>LOVEA1B2</td>
+                                    <td><strong style="color: var(--primary);">LOVEA1B2</strong></td>
                                     <td>2024-01-01</td>
-                                    <td><strong>165</strong> 天</td>
+                                    <td><strong style="color: var(--secondary);">165</strong> 天</td>
                                     <td>1,250</td>
                                     <td>2024-01-01 00:00:00</td>
                                 </tr>
@@ -836,9 +1495,9 @@
                                     <td>couple_002</td>
                                     <td>阳光男孩</td>
                                     <td>甜蜜女孩</td>
-                                    <td>LOVEC3D4</td>
+                                    <td><strong style="color: var(--primary);">LOVEC3D4</strong></td>
                                     <td>2024-03-15</td>
-                                    <td><strong>82</strong> 天</td>
+                                    <td><strong style="color: var(--secondary);">82</strong> 天</td>
                                     <td>890</td>
                                     <td>2024-03-15 10:00:00</td>
                                 </tr>
@@ -846,9 +1505,9 @@
                                     <td>couple_003</td>
                                     <td>幸福恋人</td>
                                     <td>温柔天使</td>
-                                    <td>LOVEE5F6</td>
+                                    <td><strong style="color: var(--primary);">LOVEE5F6</strong></td>
                                     <td>2024-05-20</td>
-                                    <td><strong>25</strong> 天</td>
+                                    <td><strong style="color: var(--secondary);">25</strong> 天</td>
                                     <td>320</td>
                                     <td>2024-05-20 14:30:00</td>
                                 </tr>
@@ -856,9 +1515,9 @@
                                     <td>couple_004</td>
                                     <td>浪漫先生</td>
                                     <td>优雅小姐</td>
-                                    <td>LOVEG7H8</td>
+                                    <td><strong style="color: var(--primary);">LOVEG7H8</strong></td>
                                     <td>2024-02-14</td>
-                                    <td><strong>119</strong> 天</td>
+                                    <td><strong style="color: var(--secondary);">119</strong> 天</td>
                                     <td>2,100</td>
                                     <td>2024-02-14 09:00:00</td>
                                 </tr>
@@ -866,19 +1525,38 @@
                         </table>
                     </div>
                     <div class="pagination">
-                        <button disabled>«</button>
+                        <button disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                        </button>
                         <button class="active">1</button>
                         <button>2</button>
                         <button>3</button>
-                        <button>»</button>
+                        <button>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
-                <!-- 日记管理 -->
                 <div id="diaries" class="tab-content">
                     <div class="content-header">
-                        <h2>📝 日记列表</h2>
+                        <h2>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                            日记列表
+                        </h2>
                         <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
                             <input type="text" placeholder="搜索日记内容..." id="diarySearch">
                         </div>
                     </div>
@@ -908,8 +1586,20 @@
                                     <td>3</td>
                                     <td>2024-06-10 20:30:00</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary">查看</button>
-                                        <button class="btn btn-sm btn-danger">删除</button>
+                                        <button class="btn btn-sm btn-primary">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                <circle cx="12" cy="12" r="3"/>
+                                            </svg>
+                                            查看
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                            删除
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -922,8 +1612,20 @@
                                     <td>2</td>
                                     <td>2024-06-09 15:00:00</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary">查看</button>
-                                        <button class="btn btn-sm btn-danger">删除</button>
+                                        <button class="btn btn-sm btn-primary">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                <circle cx="12" cy="12" r="3"/>
+                                            </svg>
+                                            查看
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                            删除
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr>
@@ -936,30 +1638,60 @@
                                     <td>5</td>
                                     <td>2024-06-08 18:45:00</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary">查看</button>
-                                        <button class="btn btn-sm btn-danger">删除</button>
+                                        <button class="btn btn-sm btn-primary">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                                <circle cx="12" cy="12" r="3"/>
+                                            </svg>
+                                            查看
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="3 6 5 6 21 6"/>
+                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                            </svg>
+                                            删除
+                                        </button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="pagination">
-                        <button disabled>«</button>
+                        <button disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                        </button>
                         <button class="active">1</button>
                         <button>2</button>
                         <button>3</button>
                         <button>4</button>
                         <button>5</button>
-                        <button>6</button>
-                        <button>»</button>
+                        <button>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
-                <!-- 纪念日管理 -->
                 <div id="anniversaries" class="tab-content">
                     <div class="content-header">
-                        <h2>📅 纪念日列表</h2>
+                        <h2>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            纪念日列表
+                        </h2>
                         <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
                             <input type="text" placeholder="搜索纪念日名称..." id="anniSearch">
                         </div>
                     </div>
@@ -985,7 +1717,7 @@
                                     <td>2025-01-01</td>
                                     <td><span class="badge badge-success">恋爱</span></td>
                                     <td><span class="badge badge-success">开启</span></td>
-                                    <td><strong>204</strong> 天</td>
+                                    <td><strong style="color: var(--secondary);">204</strong> 天</td>
                                     <td>2024-06-01 10:00:00</td>
                                 </tr>
                                 <tr>
@@ -995,7 +1727,7 @@
                                     <td>2024-08-15</td>
                                     <td><span class="badge badge-warning">生日</span></td>
                                     <td><span class="badge badge-success">开启</span></td>
-                                    <td><strong>62</strong> 天</td>
+                                    <td><strong style="color: var(--secondary);">62</strong> 天</td>
                                     <td>2024-06-05 14:30:00</td>
                                 </tr>
                                 <tr>
@@ -1012,18 +1744,34 @@
                         </table>
                     </div>
                     <div class="pagination">
-                        <button disabled>«</button>
+                        <button disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                        </button>
                         <button class="active">1</button>
                         <button>2</button>
-                        <button>»</button>
+                        <button>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
-                <!-- 消息日志 -->
                 <div id="messages" class="tab-content">
                     <div class="content-header">
-                        <h2>💬 消息发送日志</h2>
+                        <h2>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            消息发送日志
+                        </h2>
                         <div class="search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
                             <input type="text" placeholder="搜索用户ID或消息类型..." id="msgSearch">
                         </div>
                     </div>
@@ -1084,160 +1832,271 @@
                         </table>
                     </div>
                     <div class="pagination">
-                        <button disabled>«</button>
+                        <button disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                        </button>
                         <button class="active">1</button>
                         <button>2</button>
                         <button>3</button>
-                        <button>»</button>
+                        <button>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
-                <!-- 系统设置 -->
                 <div id="system" class="tab-content">
                     <div class="content-header">
-                        <h2>⚙️ 系统设置</h2>
+                        <h2>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            系统设置
+                        </h2>
                     </div>
-                    <div class="table-container" style="padding: 25px;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="sidebar-card" style="margin: 0;">
-                                <h3>🔧 微信配置</h3>
-                                <div style="space-y: 15px;">
-                                    <div style="margin-bottom: 15px;">
-                                        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 5px;">AppID</label>
-                                        <input type="text" value="wxc148a9c24090a2bb" readonly style="background: #f5f5f5;"/>
-                                    </div>
-                                    <div style="margin-bottom: 15px;">
-                                        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 5px;">AppSecret</label>
-                                        <input type="text" value="****************" readonly style="background: #f5f5f5;"/>
-                                    </div>
-                                    <button class="btn btn-primary" style="width: 100%;">保存配置</button>
-                                </div>
+                    <div class="setting-grid">
+                        <div class="setting-card">
+                            <h4>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="2" y1="12" x2="22" y2="12"/>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                </svg>
+                                微信配置
+                            </h4>
+                            <div class="setting-item">
+                                <label>AppID</label>
+                                <input type="text" value="wxc148a9c24090a2bb" readonly/>
                             </div>
-                            
-                            <div class="sidebar-card" style="margin: 0;">
-                                <h3>📱 消息模板</h3>
-                                <div style="space-y: 15px;">
-                                    <div style="margin-bottom: 15px;">
-                                        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 5px;">绑定通知模板</label>
-                                        <input type="text" value="ye6sttAhDmQPb_KxXUIsnpoUH87dn1BAUSsUHMLVoo0" readonly style="background: #f5f5f5;"/>
-                                    </div>
-                                    <div style="margin-bottom: 15px;">
-                                        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 5px;">纪念日提醒模板</label>
-                                        <input type="text" value="EzWVVfGH0hfcou80ekmjrsqwVzQobr_So4eJwH30xMA" readonly style="background: #f5f5f5;"/>
-                                    </div>
-                                    <button class="btn btn-primary" style="width: 100%;">更新模板</button>
-                                </div>
+                            <div class="setting-item">
+                                <label>AppSecret</label>
+                                <input type="password" value="c189e54de4cac1ad7e20e5e7b8c91856" readonly/>
                             </div>
+                            <button class="btn btn-primary" style="width: 100%;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                                保存配置
+                            </button>
+                        </div>
 
-                            <div class="sidebar-card" style="margin: 0;">
-                                <h3>⏰ 定时任务</h3>
-                                <div style="space-y: 15px;">
-                                    <div style="margin-bottom: 15px;">
-                                        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 5px;">提醒时间</label>
-                                        <input type="time" value="09:00"/>
-                                    </div>
-                                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #e8f5e9; border-radius: 8px;">
-                                        <span style="color: #2e7d32;">定时任务状态</span>
-                                        <span class="status-online">运行中</span>
-                                    </div>
-                                    <button class="btn btn-secondary" style="width: 100%;">重启定时任务</button>
-                                </div>
+                        <div class="setting-card">
+                            <h4>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                                消息模板
+                            </h4>
+                            <div class="setting-item">
+                                <label>绑定通知模板</label>
+                                <input type="text" value="ye6sttAhDmQPb_KxXUIsnpoUH87dn1BAUSsUHMLVoo0" readonly/>
                             </div>
+                            <div class="setting-item">
+                                <label>纪念日提醒模板</label>
+                                <input type="text" value="EzWVVfGH0hfcou80ekmjrsqwVzQobr_So4eJwH30xMA" readonly/>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                                </svg>
+                                更新模板
+                            </button>
+                        </div>
 
-                            <div class="sidebar-card" style="margin: 0;">
-                                <h3>📊 数据统计</h3>
-                                <div style="space-y: 10px;">
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                                        <span style="color: #666;">服务启动时间</span>
-                                        <span>2024-06-14 08:00:00</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                                        <span style="color: #666;">在线用户数</span>
-                                        <span>156</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                                        <span style="color: #666;">今日请求数</span>
-                                        <span>3,421</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                                        <span style="color: #666;">平均响应时间</span>
-                                        <span>23ms</span>
-                                    </div>
-                                </div>
+                        <div class="setting-card">
+                            <h4>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                定时任务
+                            </h4>
+                            <div class="setting-item">
+                                <label>提醒时间</label>
+                                <input type="time" value="09:00"/>
+                            </div>
+                            <div class="status-bar" style="margin-bottom: 16px;">
+                                <span>定时任务状态</span>
+                                <span class="status-online">
+                                    <span class="status-dot"></span>
+                                    运行中
+                                </span>
+                            </div>
+                            <button class="btn btn-secondary" style="width: 100%;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                                </svg>
+                                重启定时任务
+                            </button>
+                        </div>
+
+                        <div class="setting-card">
+                            <h4>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="20" x2="18" y2="10"/>
+                                    <line x1="12" y1="20" x2="12" y2="4"/>
+                                    <line x1="6" y1="20" x2="6" y2="14"/>
+                                    <line x1="2" y1="20" x2="22" y2="20"/>
+                                </svg>
+                                数据统计
+                            </h4>
+                            <div class="setting-row">
+                                <span>服务启动时间</span>
+                                <strong>2024-06-14 08:00:00</strong>
+                            </div>
+                            <div class="setting-row">
+                                <span>在线用户数</span>
+                                <strong>156</strong>
+                            </div>
+                            <div class="setting-row">
+                                <span>今日请求数</span>
+                                <strong>3,421</strong>
+                            </div>
+                            <div class="setting-row">
+                                <span>平均响应时间</span>
+                                <strong style="color: var(--success);">23ms</strong>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 侧边栏 -->
             <div class="sidebar">
                 <div class="sidebar-card">
-                    <h3>⚡ 快捷操作</h3>
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                        快捷操作
+                    </h3>
                     <div class="quick-actions">
                         <button class="quick-action-btn btn-purple" onclick="showModal('addUser')">
-                            <span class="action-icon">➕</span>
-                            <span>新增用户</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                <circle cx="8.5" cy="7" r="4"/>
+                                <line x1="20" y1="8" x2="20" y2="14"/>
+                                <line x1="23" y1="11" x2="17" y2="11"/>
+                            </svg>
+                            新增用户
                         </button>
                         <button class="quick-action-btn btn-blue" onclick="showModal('addCouple')">
-                            <span class="action-icon">💑</span>
-                            <span>新增情侣</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            新增情侣
                         </button>
                         <button class="quick-action-btn btn-green">
-                            <span class="action-icon">📤</span>
-                            <span>发送消息</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                            发送消息
                         </button>
                         <button class="quick-action-btn btn-orange">
-                            <span class="action-icon">📊</span>
-                            <span>导出数据</span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            导出数据
                         </button>
                     </div>
                 </div>
 
                 <div class="sidebar-card">
-                    <h3>📢 最近活动</h3>
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="2"/>
+                            <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>
+                        </svg>
+                        最近活动
+                    </h3>
                     <ul class="activity-list">
                         <li class="activity-item">
                             用户 <strong>幸福恋人</strong> 创建了新日记
-                            <div class="activity-time">2分钟前</div>
+                            <div class="activity-time">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                2分钟前
+                            </div>
                         </li>
                         <li class="activity-item">
                             <strong>阳光男孩 & 甜蜜女孩</strong> 绑定成功
-                            <div class="activity-time">15分钟前</div>
+                            <div class="activity-time">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                15分钟前
+                            </div>
                         </li>
                         <li class="activity-item">
                             用户 <strong>浪漫先生</strong> 设置了纪念日提醒
-                            <div class="activity-time">30分钟前</div>
+                            <div class="activity-time">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                30分钟前
+                            </div>
                         </li>
                         <li class="activity-item">
                             <strong>12</strong> 条消息成功发送
-                            <div class="activity-time">1小时前</div>
+                            <div class="activity-time">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                1小时前
+                            </div>
                         </li>
                         <li class="activity-item">
                             用户 <strong>优雅小姐</strong> 完成了愿望
-                            <div class="activity-time">2小时前</div>
+                            <div class="activity-time">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                                2小时前
+                            </div>
                         </li>
                     </ul>
                 </div>
 
                 <div class="sidebar-card">
-                    <h3>📈 今日统计</h3>
-                    <div style="space-y: 10px;">
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
-                            <span style="color: #666;">新增用户</span>
-                            <span style="font-weight: 600;">28</span>
+                    <h3>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                        今日统计
+                    </h3>
+                    <div>
+                        <div class="setting-row">
+                            <span>新增用户</span>
+                            <strong style="color: var(--primary);">28</strong>
                         </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
-                            <span style="color: #666;">新增情侣</span>
-                            <span style="font-weight: 600;">12</span>
+                        <div class="setting-row">
+                            <span>新增情侣</span>
+                            <strong style="color: var(--secondary);">12</strong>
                         </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
-                            <span style="color: #666;">新增日记</span>
-                            <span style="font-weight: 600;">45</span>
+                        <div class="setting-row">
+                            <span>新增日记</span>
+                            <strong style="color: var(--success);">45</strong>
                         </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span style="color: #666;">消息发送</span>
-                            <span style="font-weight: 600;">156</span>
+                        <div class="setting-row">
+                            <span>消息发送</span>
+                            <strong style="color: var(--info);">156</strong>
                         </div>
                     </div>
                 </div>
@@ -1245,12 +2104,16 @@
         </div>
     </div>
 
-    <!-- 模态框 -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
             <div class="modal-header">
                 <h3 id="modalTitle">标题</h3>
-                <span class="modal-close" onclick="closeModal()">×</span>
+                <span class="modal-close" onclick="closeModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </span>
             </div>
             <div id="modalContent">
                 <div class="form-group">
@@ -1267,14 +2130,18 @@
                 </div>
                 <div class="form-actions">
                     <button class="btn btn-secondary" onclick="closeModal()">取消</button>
-                    <button class="btn btn-primary">确认添加</button>
+                    <button class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        确认添加
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 标签页切换
         document.querySelectorAll('.nav button').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
@@ -1285,7 +2152,6 @@
             });
         });
 
-        // 搜索功能
         document.getElementById('userSearch').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('#usersTable tbody tr');
@@ -1313,7 +2179,6 @@
             });
         });
 
-        // 模态框功能
         function showModal(type) {
             document.getElementById('modalOverlay').classList.add('active');
             const titles = {
@@ -1327,14 +2192,12 @@
             document.getElementById('modalOverlay').classList.remove('active');
         }
 
-        // 点击模态框外部关闭
         document.getElementById('modalOverlay').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
             }
         });
 
-        // 模拟统计数据更新
         function updateStats() {
             const stats = ['userCount', 'coupleCount', 'diaryCount', 'wishCount', 'anniCount', 'msgCount'];
             stats.forEach(id => {
@@ -1347,10 +2210,8 @@
             });
         }
 
-        // 定时更新统计数据
         setInterval(updateStats, 10000);
 
-        // 删除确认
         document.querySelectorAll('.btn-danger').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 if (!confirm('确定要删除吗？此操作不可恢复。')) {
