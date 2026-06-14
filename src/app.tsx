@@ -23,7 +23,7 @@ function App(props) {
         });
       }
     } catch (e) {
-      console.log('云开发初始化:', e);
+      // 云开发初始化失败，静默处理
     }
   };
 

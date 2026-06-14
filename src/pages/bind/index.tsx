@@ -113,7 +113,7 @@ const BindPage: React.FC = () => {
         tmplIds: [BIND_TEMPLATE_ID],
       });
     } catch (e) {
-      console.log('订阅授权跳过:', e);
+      // 订阅授权跳过
     }
 
     const success = await bindPartner(inviteCode.trim(), partnerName.trim(), partnerAvatar);

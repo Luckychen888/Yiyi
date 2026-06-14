@@ -110,8 +110,6 @@ const AnniversaryPage: React.FC = () => {
         tmplIds: [TEMPLATE_ID],
       });
 
-      console.log('订阅结果', res);
-
       if (res[TEMPLATE_ID] === 'accept') {
         Taro.showToast({
           title: '提醒订阅成功',
@@ -161,7 +159,7 @@ const AnniversaryPage: React.FC = () => {
       });
 
       if (response.data?.success) {
-        console.log('订阅状态保存成功');
+        // 订阅状态保存成功
       }
     } catch (error) {
       console.error('保存订阅状态失败', error);
