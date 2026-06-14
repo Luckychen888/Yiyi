@@ -47,7 +47,7 @@ interface CoupleStore {
   
   // 日记操作
   loadDiaries: () => Promise<void>;
-  addDiary: (diary: Omit<Diary, 'id' | 'createdAt' | 'likes' | 'comments'>) => Promise<void>;
+  addDiary: (diary: Omit<Diary, 'id' | 'createdAt' | 'likes' | 'comments' | 'authorId' | 'authorName' | 'authorAvatar'>) => Promise<void>;
   likeDiary: (id: string) => Promise<void>;
   addComment: (diaryId: string, content: string) => Promise<void>;
   

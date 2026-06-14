@@ -48,7 +48,7 @@ const HomePage: React.FC = () => {
   const handleQuickAction = (type: string) => {
     switch (type) {
       case 'diary':
-        Taro.navigateTo({ url: '/pages/interact/index' });
+        Taro.navigateTo({ url: '/pages/diary-detail/index?action=create' });
         break;
       case 'anniversary':
         Taro.navigateTo({ url: '/pages/anniversary/index' });
@@ -58,6 +58,15 @@ const HomePage: React.FC = () => {
         break;
       case 'wish':
         Taro.navigateTo({ url: '/pages/wish/index' });
+        break;
+      case 'letter':
+        Taro.navigateTo({ url: '/pages/letter-detail/index' });
+        break;
+      case 'bill':
+        Taro.navigateTo({ url: '/pages/bill-detail/index' });
+        break;
+      case 'bind':
+        Taro.navigateTo({ url: '/pages/bind/index' });
         break;
       default:
         break;

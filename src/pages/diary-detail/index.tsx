@@ -1,29 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, ScrollView, Input, Button } from '@tarojs/components';
-import Taro, { useShareAppMessage, useShareTimeline, useDidShow } from '@tarojs/taro';
+import React, { useState } from 'react';
+import { View, Text, Image, ScrollView, Textarea, Button } from '@tarojs/components';
+import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
-import { moodConfig } from '../../data/diaries';
 import { useCoupleStore } from '../../store/useCoupleStore';
 import { diaryService } from '../../services/api';
 
-const defaultMood = { label: '', emoji: '', color: '#ccc' };
+const MOOD_OPTIONS = [
+  { key: 'happy', label: '开心', emoji: '😊', color: '#FFD93D' },
+  { key: 'love', label: '甜蜜', emoji: '🥰', color: '#FF6B9D' },
+  { key: 'sad', label: '难过', emoji: '😢', color: '#74B9FF' },
+  { key: 'angry', label: '生气', emoji: '😤', color: '#FF6B6B' },
+  { key: 'miss', label: '想你', emoji: '🥺', color: '#A29BFE' },
+  { key: 'shy', label: '害羞', emoji: '😳', color: '#FFB6C1' },
+];
 
 const DiaryDetailPage: React.FC = () => {
-  const { likeDiary, addComment } = useCoupleStore();
+  const { couple, likeDiary, addComment, addDiary } = useCoupleStore();
   const [diary, setDiary] = useState<any>(null);
+  const [isCreateMode, setIsCreateMode] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [showCommentInput, setShowCommentInput] = useState(false);
-  const [diaryId, setDiaryId] = useState('');
+
+  // 创建模式的表单
+  const [formContent, setFormContent] = useState('');
+  const [formMood, setFormMood] = useState('');
+  const [formLocation, setFormLocation] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useDidShow(() => {
     const pages = Taro.getCurrentPages();
     const currentPage = pages[pages.length - 1];
-    
     if (currentPage && currentPage.options) {
-      const { id } = currentPage.options;
-      if (id) {
-        setDiaryId(id);
+      const { id, action } = currentPage.options;
+      if (action === 'create') {
+        setIsCreateMode(true);
+      } else if (id) {
         loadDiaryData(id);
       }
     }
@@ -36,78 +48,56 @@ const DiaryDetailPage: React.FC = () => {
         setDiary(response.data);
       }
     } catch (error) {
-      console.error('加载日记详情失败:', error);
+      Taro.showToast({ title: '加载失败', icon: 'none' });
     }
   };
 
-  useEffect(() => {
-    if (diaryId) {
-      loadDiaryData(diaryId);
+  const handleCreate = async () => {
+    if (!formContent.trim()) {
+      Taro.showToast({ title: '请输入日记内容', icon: 'none' });
+      return;
     }
-  }, [diaryId]);
+    if (!couple) {
+      Taro.showToast({ title: '请先绑定情侣', icon: 'none' });
+      return;
+    }
 
-  useShareAppMessage(() => {
-    if (!diary) return {
-      title: '甜蜜日记 - 恋人空间',
-      path: '/pages/diary-detail/index',
-      imageUrl: 'https://picsum.photos/id/104/300/300'
-    };
-    
-    const content = diary.content || '';
-    const truncatedContent = content.length > 20 
-      ? content.substring(0, 20) + '...' 
-      : content;
-    const images = diary.images || [];
-    
-    return {
-      title: `${truncatedContent} 💌`,
-      path: `/pages/diary-detail/index?id=${diary.id}`,
-      imageUrl: images[0] || 'https://picsum.photos/id/104/300/300'
-    };
-  });
-
-  useShareTimeline(() => {
-    if (!diary) return {
-      title: '甜蜜日记 - 恋人空间',
-      query: ''
-    };
-    
-    const content = diary.content || '';
-    return {
-      title: `${diary.authorName || ''}的日记：${content.substring(0, 50)}...`,
-      query: `id=${diary.id}`
-    };
-  });
+    setIsSubmitting(true);
+    try {
+      await addDiary({
+        content: formContent,
+        images: [],
+        mood: formMood as 'happy' | 'love' | 'sad' | 'angry' | 'miss' | 'shy',
+        location: formLocation || undefined,
+        weather: undefined,
+      });
+      Taro.showToast({ title: '发布成功', icon: 'success' });
+      setTimeout(() => Taro.navigateBack(), 1000);
+    } catch (error) {
+      Taro.showToast({ title: '发布失败', icon: 'none' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleLike = () => {
     if (!diary) return;
     setIsLiked(!isLiked);
     likeDiary(diary.id);
-    Taro.showToast({
-      title: isLiked ? '取消点赞' : '点赞成功',
-      icon: 'none'
-    });
+    Taro.showToast({ title: isLiked ? '取消点赞' : '点赞成功', icon: 'none' });
   };
 
-  const handleSendComment = () => {
-    if (!commentText.trim()) {
-      Taro.showToast({ title: '请输入评论内容', icon: 'none' });
-      return;
-    }
-
-    if (!diary) return;
-
-    addComment(diary.id, commentText.trim());
+  const handleSendComment = async () => {
+    if (!commentText.trim() || !diary) return;
+    await addComment(diary.id, commentText.trim());
     setCommentText('');
     setShowCommentInput(false);
     Taro.showToast({ title: '评论成功', icon: 'success' });
+    loadDiaryData(diary.id);
   };
 
   const handlePreviewImage = (urls: string[], index: number) => {
-    Taro.previewImage({
-      current: urls[index],
-      urls: urls
-    });
+    Taro.previewImage({ current: urls[index], urls });
   };
 
   const formatTime = (dateStr: string): string => {
@@ -115,19 +105,94 @@ const DiaryDetailPage: React.FC = () => {
     const date = new Date(dateStr);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
-    
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
-
     if (minutes < 1) return '刚刚';
     if (minutes < 60) return `${minutes}分钟前`;
     if (hours < 24) return `${hours}小时前`;
     if (days < 7) return `${days}天前`;
-    
     return `${date.getMonth() + 1}月${date.getDate()}日 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
 
+  // ===== 创建日记模式 =====
+  if (isCreateMode) {
+    return (
+      <ScrollView className={styles.page} scrollY enhanced showScrollbar={false}>
+        <View className={styles.backButton} onClick={() => Taro.navigateBack()}>
+          <Text className={styles.backIcon}>‹</Text>
+          <Text className={styles.backText}>返回</Text>
+        </View>
+
+        <View className={styles.createHeader}>
+          <Text className={styles.createTitle}>📝 写日记</Text>
+          <Text className={styles.createDesc}>记录今天的甜蜜时刻</Text>
+        </View>
+
+        {/* 选择心情 */}
+        <View className={styles.section}>
+          <Text className={styles.sectionLabel}>今天的心情</Text>
+          <View className={styles.moodGrid}>
+            {MOOD_OPTIONS.map(mood => (
+              <View
+                key={mood.key}
+                className={`${styles.moodItem} ${formMood === mood.key ? styles.moodActive : ''}`}
+                style={formMood === mood.key ? { borderColor: mood.color, background: mood.color + '15' } : {}}
+                onClick={() => setFormMood(mood.key)}
+              >
+                <Text className={styles.moodEmoji}>{mood.emoji}</Text>
+                <Text className={styles.moodLabel}>{mood.label}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* 日记内容 */}
+        <View className={styles.section}>
+          <Text className={styles.sectionLabel}>日记内容 *</Text>
+          <Textarea
+            className={styles.createTextarea}
+            placeholder="写下今天的心情和故事..."
+            value={formContent}
+            onInput={(e: any) => setFormContent(e.detail.value)}
+            maxLength={2000}
+            autoHeight
+          />
+          <Text className={styles.charCount}>{formContent.length}/2000</Text>
+        </View>
+
+        {/* 位置 */}
+        <View className={styles.section}>
+          <Text className={styles.sectionLabel}>📍 位置（选填）</Text>
+          <Textarea
+            className={styles.createInput}
+            placeholder="记录今天在哪里..."
+            value={formLocation}
+            onInput={(e: any) => setFormLocation(e.detail.value)}
+            maxLength={50}
+            autoHeight
+            style={{ minHeight: '80rpx' }}
+          />
+        </View>
+
+        {/* 发布按钮 */}
+        <View className={styles.publishBtnWrap}>
+          <Button
+            className={styles.publishBtn}
+            onClick={handleCreate}
+            loading={isSubmitting}
+            disabled={isSubmitting || !formContent.trim()}
+          >
+            <Text style={{ color: '#fff', fontSize: '30rpx', fontWeight: '600' }}>
+              {isSubmitting ? '发布中...' : '发布日记 📝'}
+            </Text>
+          </Button>
+        </View>
+      </ScrollView>
+    );
+  }
+
+  // ===== 查看日记模式 =====
   if (!diary) {
     return (
       <View className={styles.page}>
@@ -139,7 +204,7 @@ const DiaryDetailPage: React.FC = () => {
     );
   }
 
-  const mood = moodConfig[diary.mood] || defaultMood;
+  const mood = MOOD_OPTIONS.find(m => m.key === diary.mood);
   const images = diary.images || [];
   const comments = diary.comments || [];
 
@@ -152,19 +217,15 @@ const DiaryDetailPage: React.FC = () => {
 
       <View className={styles.authorCard}>
         <View className={styles.authorInfo}>
-          <Image 
-            className={styles.authorAvatar}
-            src={diary.authorAvatar || ''}
-            mode="aspectFill"
-          />
+          <Image className={styles.authorAvatar} src={diary.authorAvatar || ''} mode="aspectFill" />
           <View className={styles.authorMeta}>
             <Text className={styles.authorName}>{diary.authorName || ''}</Text>
-            <Text className={styles.publishTime}>{formatTime(diary.createdAt)}</Text>
+            <Text className={styles.publishTime}>{formatTime(diary.createdAt || diary.created_at)}</Text>
           </View>
         </View>
-        {mood.label && (
-          <View className={styles.moodBadge} style={{ background: mood.color }}>
-            <Text className={styles.moodIcon}>{mood.emoji}</Text>
+        {mood && (
+          <View className={styles.moodBadge} style={{ background: mood.color + '20' }}>
+            <Text>{mood.emoji}</Text>
             <Text className={styles.moodText}>{mood.label}</Text>
           </View>
         )}
@@ -177,72 +238,41 @@ const DiaryDetailPage: React.FC = () => {
       {images.length > 0 && (
         <View className={styles.imageGrid}>
           {images.map((img: string, index: number) => (
-            <View 
-              key={index}
-              className={styles.imageItem}
-              onClick={() => handlePreviewImage(images, index)}
-            >
-              <Image 
-                className={styles.image}
-                src={img}
-                mode="aspectFill"
-                lazyLoad
-              />
+            <View key={index} className={styles.imageItem} onClick={() => handlePreviewImage(images, index)}>
+              <Image className={styles.image} src={img} mode="aspectFill" lazyLoad />
             </View>
           ))}
         </View>
       )}
 
-      <View className={styles.metaInfo}>
-        {diary.location && (
-          <View className={styles.metaItem}>
-            <Text className={styles.metaIcon}>📍</Text>
-            <Text className={styles.metaText}>{diary.location}</Text>
-          </View>
-        )}
-        {diary.weather && (
-          <View className={styles.metaItem}>
-            <Text className={styles.metaIcon}>🌤️</Text>
-            <Text className={styles.metaText}>{diary.weather}</Text>
-          </View>
-        )}
-      </View>
+      {(diary.location || diary.weather) && (
+        <View className={styles.metaInfo}>
+          {diary.location && <View className={styles.metaItem}><Text>📍</Text><Text>{diary.location}</Text></View>}
+          {diary.weather && <View className={styles.metaItem}><Text>🌤️</Text><Text>{diary.weather}</Text></View>}
+        </View>
+      )}
 
       <View className={styles.actionBar}>
-        <View 
-          className={`${styles.actionItem} ${isLiked ? styles.actionLiked : ''}`}
-          onClick={handleLike}
-        >
+        <View className={`${styles.actionItem} ${isLiked ? styles.actionLiked : ''}`} onClick={handleLike}>
           <Text className={styles.actionIcon}>{isLiked ? '❤️' : '🤍'}</Text>
           <Text className={styles.actionText}>{diary.likes || 0}</Text>
         </View>
-        <View 
-          className={styles.actionItem}
-          onClick={() => setShowCommentInput(!showCommentInput)}
-        >
+        <View className={styles.actionItem} onClick={() => setShowCommentInput(!showCommentInput)}>
           <Text className={styles.actionIcon}>💬</Text>
           <Text className={styles.actionText}>{comments.length}</Text>
-        </View>
-        <View className={styles.actionItem} onClick={() => {
-          Taro.showShareMenu({
-            withShareTicket: true,
-            menus: ['shareAppMessage', 'shareTimeline']
-          });
-        }}>
-          <Text className={styles.actionIcon}>📤</Text>
-          <Text className={styles.actionText}>分享</Text>
         </View>
       </View>
 
       {showCommentInput && (
         <View className={styles.commentInput}>
-          <Input
-            className={styles.input}
+          <Textarea
+            className={styles.commentTextarea}
             placeholder="写下你的评论..."
             value={commentText}
             onInput={(e: any) => setCommentText(e.detail.value)}
             maxLength={200}
-            focus
+            autoHeight
+            style={{ minHeight: '120rpx' }}
           />
           <Button className={styles.sendButton} onClick={handleSendComment}>
             <Text className={styles.sendButtonText}>发送</Text>
@@ -264,15 +294,11 @@ const DiaryDetailPage: React.FC = () => {
           <View className={styles.commentList}>
             {comments.map((comment: any) => (
               <View key={comment.id} className={styles.commentItem}>
-                <Image 
-                  className={styles.commentAvatar}
-                  src={comment.authorAvatar || ''}
-                  mode="aspectFill"
-                />
+                <Image className={styles.commentAvatar} src={comment.authorAvatar || ''} mode="aspectFill" />
                 <View className={styles.commentContent}>
                   <View className={styles.commentMeta}>
                     <Text className={styles.commentAuthor}>{comment.authorName || ''}</Text>
-                    <Text className={styles.commentTime}>{formatTime(comment.createdAt)}</Text>
+                    <Text className={styles.commentTime}>{formatTime(comment.createdAt || comment.created_at)}</Text>
                   </View>
                   <Text className={styles.commentText}>{comment.content || ''}</Text>
                 </View>
@@ -281,8 +307,6 @@ const DiaryDetailPage: React.FC = () => {
           </View>
         )}
       </View>
-
-      <View className={styles.bottomSpace} />
     </ScrollView>
   );
 };
