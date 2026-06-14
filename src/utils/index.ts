@@ -1,8 +1,5 @@
-// 工具函数
+import Taro from '@tarojs/taro';
 
-/**
- * 格式化日期
- */
 export const formatDate = (date: string | Date, format: string = 'YYYY-MM-DD'): string => {
   const d = new Date(date);
   const year = d.getFullYear();
@@ -21,9 +18,6 @@ export const formatDate = (date: string | Date, format: string = 'YYYY-MM-DD'): 
     .replace('ss', seconds);
 };
 
-/**
- * 格式化相对时间
- */
 export const formatRelativeTime = (date: string): string => {
   const now = new Date();
   const target = new Date(date);
@@ -41,23 +35,14 @@ export const formatRelativeTime = (date: string): string => {
   return formatDate(date, 'MM-DD');
 };
 
-/**
- * 生成唯一ID
- */
 export const generateId = (): string => {
   return `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };
 
-/**
- * 格式化数字（添加千分位）
- */
 export const formatNumber = (num: number): string => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 
-/**
- * 获取随机情话
- */
 export const getRandomLoveWord = (): string => {
   const words = [
     '你是我最想留住的幸运',
@@ -74,9 +59,6 @@ export const getRandomLoveWord = (): string => {
   return words[Math.floor(Math.random() * words.length)];
 };
 
-/**
- * 获取随机任务
- */
 export const getRandomTask = (): string => {
   const tasks = [
     '给对方一个拥抱',
@@ -89,4 +71,66 @@ export const getRandomTask = (): string => {
     '说一个对方的优点'
   ];
   return tasks[Math.floor(Math.random() * tasks.length)];
+};
+
+export interface UserInfo {
+  userId: string;
+  userName: string;
+  userAvatar: string;
+}
+
+export const isLoggedIn = (): boolean => {
+  try {
+    const isLogin = Taro.getStorageSync('isLogin');
+    const userId = Taro.getStorageSync('userId');
+    return !!isLogin && !!userId;
+  } catch (error) {
+    console.error('检查登录状态失败:', error);
+    return false;
+  }
+};
+
+export const getUserInfo = (): UserInfo | null => {
+  try {
+    const userId = Taro.getStorageSync('userId');
+    const userName = Taro.getStorageSync('userName');
+    const userAvatar = Taro.getStorageSync('userAvatar');
+    
+    if (!userId) return null;
+    
+    return {
+      userId,
+      userName: userName || '',
+      userAvatar: userAvatar || ''
+    };
+  } catch (error) {
+    console.error('获取用户信息失败:', error);
+    return null;
+  }
+};
+
+export const checkLoginAndRedirect = (redirectUrl?: string): boolean => {
+  if (!isLoggedIn()) {
+    Taro.navigateTo({
+      url: `/pages/login/index${redirectUrl ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`
+    });
+    return false;
+  }
+  return true;
+};
+
+export const logout = (): void => {
+  try {
+    Taro.removeStorageSync('userId');
+    Taro.removeStorageSync('userName');
+    Taro.removeStorageSync('userAvatar');
+    Taro.removeStorageSync('userInfo');
+    Taro.removeStorageSync('coupleData');
+    Taro.removeStorageSync('isBound');
+    Taro.removeStorageSync('isLogin');
+    
+    Taro.switchTab({ url: '/pages/login/index' });
+  } catch (error) {
+    console.error('退出登录失败:', error);
+  }
 };

@@ -7,6 +7,7 @@
 
 const express = require('express');
 const router = express.Router();
+const { sendSubscribeMessage, getAccessToken } = require('./utils/wechat');
 
 // 获取数据库连接
 function getDB(req) {
@@ -201,6 +202,37 @@ router.post('/couple/join', async (req, res) => {
     );
     
     const [updated] = await db.query('SELECT * FROM couples WHERE id = ?', [couple.id]);
+
+    // 绑定成功后发送订阅消息通知双方
+    const bindTemplateId = process.env.BIND_TEMPLATE_ID || '';
+    if (bindTemplateId) {
+      const now = new Date();
+      const timeStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const messageData = {
+        thing1: { value: '情侣绑定成功' },
+        time2: { value: timeStr },
+        thing3: { value: '恭喜你们成功绑定，一起记录甜蜜时光吧' }
+      };
+
+      // 查询双方openid并发送通知
+      const [users] = await db.query(
+        'SELECT id, openid FROM users WHERE id IN (?, ?)',
+        [couple.user1_id, user2Id]
+      );
+
+      for (const user of users) {
+        if (!user.openid) continue;
+        try {
+          await sendSubscribeMessage(user.openid, bindTemplateId, messageData, '/pages/home/index');
+          await db.query(
+            'INSERT INTO message_logs (user_id, message_type, status, created_at) VALUES (?, ?, ?, NOW())',
+            [user.id, 'bind_notify', 'sent']
+          );
+        } catch (err) {
+          console.error('发送绑定通知失败:', err.message);
+        }
+      }
+    }
     
     res.json({ success: true, data: updated[0] });
   } catch (error) {
@@ -734,5 +766,260 @@ router.get('/task/points/:coupleId', async (req, res) => {
     res.status(500).json({ success: false, message: '获取失败' });
   }
 });
+
+// ==================== 消息推送相关API ====================
+
+/**
+ * POST /api/message/subscribe
+ * 发送订阅消息
+ */
+router.post('/message/subscribe', async (req, res) => {
+  try {
+    const { touser, templateId, data, page } = req.body;
+    
+    if (!touser || !templateId || !data) {
+      return res.status(400).json({ success: false, message: '缺少必填参数' });
+    }
+    
+    const result = await sendSubscribeMessage(touser, templateId, data, page);
+    res.json({ success: true, data: result, message: '消息发送成功' });
+  } catch (error) {
+    console.error('发送订阅消息失败:', error);
+    res.status(500).json({ success: false, message: '发送失败', error: error.message });
+  }
+});
+
+/**
+ * POST /api/message/anniversary-remind
+ * 发送纪念日提醒消息
+ */
+router.post('/message/anniversary-remind', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { anniversaryId, userId } = req.body;
+    
+    if (!anniversaryId) {
+      return res.status(400).json({ success: false, message: '缺少纪念日ID' });
+    }
+    
+    const [anniversaries] = await db.query(
+      'SELECT * FROM anniversaries WHERE id = ?',
+      [anniversaryId]
+    );
+    
+    if (anniversaries.length === 0) {
+      return res.status(404).json({ success: false, message: '纪念日不存在' });
+    }
+    
+    const anniversary = anniversaries[0];
+    
+    let targetUserId = userId;
+    let openid = null;
+    
+    if (userId) {
+      const [users] = await db.query('SELECT openid FROM users WHERE id = ?', [userId]);
+      if (users.length > 0) {
+        openid = users[0].openid;
+      }
+    } else {
+      const [couples] = await db.query(
+        'SELECT user1_id, user2_id FROM couples WHERE id = ?',
+        [anniversary.couple_id]
+      );
+      if (couples.length > 0) {
+        const couple = couples[0];
+        const [users] = await db.query(
+          'SELECT openid FROM users WHERE id IN (?, ?)',
+          [couple.user1_id, couple.user2_id]
+        );
+        if (users.length > 0) {
+          openid = users[0].openid;
+        }
+      }
+    }
+    
+    if (!openid) {
+      return res.status(400).json({ success: false, message: '未找到用户的openid' });
+    }
+    
+    const templateId = process.env.ANNIVERSARY_TEMPLATE_ID || '';
+    if (!templateId) {
+      return res.status(500).json({ success: false, message: '未配置纪念日模板ID' });
+    }
+    
+    const daysLeft = calculateDaysLeft(anniversary.date);
+    const title = anniversary.title;
+    
+    // 模板472字段: thing3(温馨提醒) time4(上月日期) number2(倒计时天数) date1(预计日期)
+    const data = {
+      thing3: { value: title },
+      time4: { value: anniversary.date },
+      number2: { value: daysLeft },
+      date1: { value: getNextOccurrence(anniversary.date) }
+    };
+    
+    const result = await sendSubscribeMessage(openid, templateId, data, '/pages/anniversary/index');
+    
+    await db.query(
+      'INSERT INTO message_logs (user_id, anniversary_id, message_type, status, created_at) VALUES (?, ?, ?, ?, NOW())',
+      [targetUserId, anniversaryId, 'anniversary_remind', 'sent']
+    );
+    
+    res.json({ success: true, data: result, message: '提醒消息发送成功' });
+  } catch (error) {
+    console.error('发送纪念日提醒失败:', error);
+    res.status(500).json({ success: false, message: '发送失败', error: error.message });
+  }
+});
+
+/**
+ * POST /api/message/batch-remind
+ * 批量发送纪念日提醒（用于定时任务）
+ */
+router.post('/message/batch-remind', async (req, res) => {
+  try {
+    const db = getDB(req);
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0];
+    
+    const [anniversaries] = await db.query(`
+      SELECT a.*, c.user1_id, c.user2_id 
+      FROM anniversaries a 
+      JOIN couples c ON a.couple_id = c.id 
+      WHERE a.is_remind = 1
+    `);
+    
+    const sendResults = [];
+    const failedResults = [];
+    
+    for (const anniversary of anniversaries) {
+      const daysUntil = calculateDaysLeft(anniversary.date);
+      const remindDays = anniversary.remind_days || 0;
+      
+      if (daysUntil !== remindDays) {
+        continue;
+      }
+      
+      const [users] = await db.query(
+        'SELECT id, openid FROM users WHERE id IN (?, ?)',
+        [anniversary.user1_id, anniversary.user2_id]
+      );
+      
+      const templateId = process.env.ANNIVERSARY_TEMPLATE_ID;
+      if (!templateId) {
+        continue;
+      }
+      
+      // 模板472字段: thing3(温馨提醒) time4(上月日期) number2(倒计时天数) date1(预计日期)
+      const data = {
+        thing3: { value: anniversary.title },
+        time4: { value: anniversary.date },
+        number2: { value: daysUntil },
+        date1: { value: getNextOccurrence(anniversary.date) }
+      };
+      
+      for (const user of users) {
+        if (!user.openid) continue;
+        
+        try {
+          const result = await sendSubscribeMessage(
+            user.openid, 
+            templateId, 
+            data, 
+            '/pages/anniversary/index'
+          );
+          
+          await db.query(
+            'INSERT INTO message_logs (user_id, anniversary_id, message_type, status, created_at) VALUES (?, ?, ?, ?, NOW())',
+            [user.id, anniversary.id, 'anniversary_remind', 'sent']
+          );
+          
+          sendResults.push({ userId: user.id, anniversaryId: anniversary.id, success: true });
+        } catch (error) {
+          failedResults.push({ userId: user.id, anniversaryId: anniversary.id, error: error.message });
+        }
+      }
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        sent: sendResults.length,
+        failed: failedResults.length,
+        details: { sent: sendResults, failed: failedResults }
+      },
+      message: `批量提醒完成，成功${sendResults.length}条，失败${failedResults.length}条`
+    });
+  } catch (error) {
+    console.error('批量发送提醒失败:', error);
+    res.status(500).json({ success: false, message: '批量发送失败', error: error.message });
+  }
+});
+
+/**
+ * GET /api/message/token
+ * 获取access_token（用于测试）
+ */
+router.get('/message/token', async (req, res) => {
+  try {
+    const token = await getAccessToken();
+    res.json({ success: true, data: { accessToken: token } });
+  } catch (error) {
+    console.error('获取access_token失败:', error);
+    res.status(500).json({ success: false, message: '获取失败', error: error.message });
+  }
+});
+
+/**
+ * GET /api/message/logs
+ * 获取消息发送日志
+ */
+router.get('/message/logs', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [logs] = await db.query('SELECT * FROM message_logs ORDER BY created_at DESC LIMIT 100');
+    res.json({ success: true, data: logs });
+  } catch (error) {
+    console.error('获取消息日志失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+function calculateDaysLeft(dateStr) {
+  const target = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  target.setHours(0, 0, 0, 0);
+  
+  let diff = target.getTime() - today.getTime();
+  let days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  
+  if (days < 0) {
+    const nextYear = new Date(target);
+    nextYear.setFullYear(nextYear.getFullYear() + 1);
+    diff = nextYear.getTime() - today.getTime();
+    days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+  
+  return days;
+}
+
+function getNextOccurrence(dateStr) {
+  const target = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  target.setHours(0, 0, 0, 0);
+  
+  if (target < today) {
+    target.setFullYear(today.getFullYear());
+    if (target < today) {
+      target.setFullYear(today.getFullYear() + 1);
+    }
+  }
+  
+  return target.toISOString().split('T')[0];
+}
 
 module.exports = router;

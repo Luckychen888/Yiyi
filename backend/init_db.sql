@@ -15,9 +15,11 @@ CREATE TABLE IF NOT EXISTS users (
   openid VARCHAR(128) DEFAULT NULL COMMENT '微信OpenID',
   nickname VARCHAR(50) DEFAULT NULL COMMENT '昵称',
   avatar VARCHAR(500) DEFAULT NULL COMMENT '头像URL',
+  is_guest TINYINT(1) DEFAULT 0 COMMENT '是否游客',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  UNIQUE INDEX idx_openid (openid)
+  UNIQUE INDEX idx_openid (openid),
+  INDEX idx_guest (is_guest)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
 -- 情侣关系表
@@ -130,6 +132,21 @@ CREATE TABLE IF NOT EXISTS tasks (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   INDEX idx_couple (couple_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='任务表';
+
+-- 消息日志表
+CREATE TABLE IF NOT EXISTS message_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY COMMENT '日志ID',
+  user_id VARCHAR(50) DEFAULT NULL COMMENT '用户ID',
+  anniversary_id VARCHAR(50) DEFAULT NULL COMMENT '纪念日ID',
+  message_type VARCHAR(50) DEFAULT NULL COMMENT '消息类型',
+  status VARCHAR(20) DEFAULT 'pending' COMMENT '状态: pending/sent/failed',
+  error_message TEXT DEFAULT NULL COMMENT '错误信息',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  INDEX idx_user (user_id),
+  INDEX idx_anniversary (anniversary_id),
+  INDEX idx_status (status),
+  INDEX idx_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='消息日志表';
 
 -- 插入默认全局任务
 INSERT IGNORE INTO tasks (id, couple_id, title, description, points, is_daily) VALUES

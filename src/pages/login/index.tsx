@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, Button, Input } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
@@ -6,10 +6,58 @@ import { useCoupleStore } from '../../store/useCoupleStore';
 import { userService, coupleService } from '../../services/api';
 
 const LoginPage: React.FC = () => {
-  const { setCouple, setBound, setCurrentUser } = useCoupleStore();
+  const { setCouple, setBound, setCurrentUser, initFromStorage } = useCoupleStore();
   const [avatar, setAvatar] = useState('');
   const [nickname, setNickname] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isAutoLogin, setIsAutoLogin] = useState(true);
+
+  useEffect(() => {
+    checkAutoLogin();
+  }, []);
+
+  const checkAutoLogin = async () => {
+    try {
+      const isLogin = Taro.getStorageSync('isLogin');
+      const userId = Taro.getStorageSync('userId');
+      
+      if (isLogin && userId) {
+        setIsAutoLogin(true);
+        await restoreLoginState();
+      } else {
+        setIsAutoLogin(false);
+      }
+    } catch (error) {
+      console.error('检查自动登录失败:', error);
+      setIsAutoLogin(false);
+    }
+  };
+
+  const restoreLoginState = async () => {
+    try {
+      const userId = Taro.getStorageSync('userId');
+      const userName = Taro.getStorageSync('userName');
+      const userAvatar = Taro.getStorageSync('userAvatar');
+      const coupleData = Taro.getStorageSync('coupleData');
+      const isBound = Taro.getStorageSync('isBound');
+
+      setCurrentUser(userId, userName, userAvatar);
+
+      if (coupleData && isBound) {
+        setCouple(coupleData);
+        setBound(true);
+      }
+
+      Taro.showToast({ title: '欢迎回来', icon: 'success' });
+      
+      setTimeout(() => {
+        Taro.switchTab({ url: '/pages/home/index' });
+      }, 1500);
+    } catch (error) {
+      console.error('恢复登录状态失败:', error);
+      setIsAutoLogin(false);
+    }
+  };
 
   const handleChooseAvatar = (e: any) => {
     const { avatarUrl } = e.detail;
@@ -18,6 +66,31 @@ const LoginPage: React.FC = () => {
 
   const handleNicknameChange = (e: any) => {
     setNickname(e.detail.value);
+  };
+
+  const handleQuickLogin = async () => {
+    setIsLoading(true);
+    
+    try {
+      const { code } = await Taro.login();
+      
+      const userProfile = await Taro.getUserProfile({
+        desc: '用于完善会员资料'
+      });
+
+      const { nickName, avatarUrl } = userProfile.userInfo;
+      
+      await doLogin(nickName, avatarUrl, code);
+    } catch (error: any) {
+      console.error('微信授权失败:', error);
+      if (error.errMsg && error.errMsg.includes('auth deny')) {
+        Taro.showToast({ title: '请授权登录', icon: 'none' });
+      } else {
+        Taro.showToast({ title: '授权失败，请重试', icon: 'none' });
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLogin = async () => {
@@ -34,12 +107,21 @@ const LoginPage: React.FC = () => {
 
     try {
       const { code } = await Taro.login();
+      await doLogin(nickname.trim(), avatar, code);
+    } catch (error) {
+      console.error('登录失败:', error);
+      Taro.showToast({ title: '登录失败，请重试', icon: 'none' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      // 调用后端登录接口
+  const doLogin = async (nickname: string, avatar: string, code: string) => {
+    try {
       const loginRes: any = await userService.login({
-        nickname: nickname.trim(),
-        avatar: avatar,
-        code: code
+        nickname,
+        avatar,
+        code
       });
 
       if (!loginRes.success) {
@@ -49,11 +131,9 @@ const LoginPage: React.FC = () => {
 
       const userInfo = loginRes.data;
 
-      // 查询是否已有情侣关系
       const coupleRes: any = await coupleService.getCoupleInfoByUser(userInfo.id);
       const coupleData = coupleRes.success ? coupleRes.data : null;
 
-      // 保存到状态管理
       setCurrentUser(userInfo.id, userInfo.nickname, userInfo.avatar);
 
       if (coupleData) {
@@ -61,7 +141,6 @@ const LoginPage: React.FC = () => {
         setBound(true);
       }
 
-      // 持久化保存到本地存储
       Taro.setStorageSync('userId', userInfo.id);
       Taro.setStorageSync('userName', userInfo.nickname);
       Taro.setStorageSync('userAvatar', userInfo.avatar);
@@ -76,12 +155,20 @@ const LoginPage: React.FC = () => {
         Taro.switchTab({ url: '/pages/home/index' });
       }, 1500);
     } catch (error) {
-      console.error('登录失败:', error);
-      Taro.showToast({ title: '登录失败，请重试', icon: 'none' });
-    } finally {
-      setIsLoading(false);
+      throw error;
     }
   };
+
+  if (isAutoLogin) {
+    return (
+      <View className={styles.loadingPage}>
+        <View className={styles.loadingLogo}>
+          <Text className={styles.loadingIcon}>❤️</Text>
+        </View>
+        <Text className={styles.loadingText}>正在加载...</Text>
+      </View>
+    );
+  }
 
   return (
     <View className={styles.page}>
@@ -92,6 +179,22 @@ const LoginPage: React.FC = () => {
           </View>
           <Text className={styles.appTitle}>恋人空间</Text>
           <Text className={styles.appDesc}>记录属于你们的甜蜜时光</Text>
+        </View>
+
+        <Button
+          className={styles.quickLoginButton}
+          onClick={handleQuickLogin}
+          loading={isLoading}
+          disabled={isLoading}
+        >
+          <Text className={styles.wechatIcon}>💬</Text>
+          <Text className={styles.quickLoginText}>微信快捷登录</Text>
+        </Button>
+
+        <View className={styles.divider}>
+          <View className={styles.dividerLine}></View>
+          <Text className={styles.dividerText}>或</Text>
+          <View className={styles.dividerLine}></View>
         </View>
 
         <View className={styles.formSection}>

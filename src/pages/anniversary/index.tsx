@@ -97,44 +97,72 @@ const AnniversaryPage: React.FC = () => {
     return `${date.getMonth() + 1}月${date.getDate()}日`;
   };
 
+  const TEMPLATE_ID = 'EzWVVfGH0hfcou80ekmjrsqwVzQobr_So4eJwH30xMA';
+
   // 订阅消息提醒
   const handleRequestRemind = async () => {
     try {
-      // 请求订阅消息权限
       const res = await Taro.requestSubscribeMessage({
-        tmplIds: ['你的模板消息ID'], // 需要在微信公众平台配置
-        success: (res) => {
-          if (res.errMsg === 'requestSubscribeMessage:ok') {
-            Taro.showToast({
-              title: '提醒订阅成功',
-              icon: 'success'
-            });
-            // 这里可以调用后端API保存订阅状态
-            saveRemindSubscription();
-          }
-        },
-        fail: (err) => {
-          console.error('订阅失败', err);
-          Taro.showToast({
-            title: '订阅失败，可稍后重试',
-            icon: 'none'
-          });
-        }
+        tmplIds: [TEMPLATE_ID],
       });
+
       console.log('订阅结果', res);
+
+      if (res[TEMPLATE_ID] === 'accept') {
+        Taro.showToast({
+          title: '提醒订阅成功',
+          icon: 'success'
+        });
+        await saveRemindSubscription();
+        return true;
+      } else if (res[TEMPLATE_ID] === 'reject') {
+        Taro.showModal({
+          title: '订阅失败',
+          content: '您已拒绝订阅消息提醒，可在小程序设置中重新开启',
+          showCancel: false
+        });
+        return false;
+      } else {
+        Taro.showToast({
+          title: '订阅失败，可稍后重试',
+          icon: 'none'
+        });
+        return false;
+      }
     } catch (error) {
       console.error('订阅消息出错', error);
       Taro.showToast({
         title: '订阅功能暂不可用',
         icon: 'none'
       });
+      return false;
     }
   };
 
-  // 保存订阅状态（这里应该调用后端API）
-  const saveRemindSubscription = () => {
-    // TODO: 调用后端API保存用户的订阅状态
-    console.log('保存订阅状态到服务器');
+  // 保存订阅状态到服务器
+  const saveRemindSubscription = async () => {
+    try {
+      const token = Taro.getStorageSync('userToken');
+      const response = await Taro.request({
+        url: '/api/message/subscribe',
+        method: 'POST',
+        header: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        data: {
+          anniversaryId: editingItem?.id || '',
+          remindDays: formData.remindDays,
+          remindTime: formData.remindTime
+        }
+      });
+
+      if (response.data?.success) {
+        console.log('订阅状态保存成功');
+      }
+    } catch (error) {
+      console.error('保存订阅状态失败', error);
+    }
   };
 
   // 计算提醒日期
@@ -174,7 +202,7 @@ const AnniversaryPage: React.FC = () => {
     setShowAddModal(true);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!formData.title.trim()) {
       Taro.showToast({ title: '请输入纪念日名称', icon: 'none' });
       return;
@@ -184,9 +212,11 @@ const AnniversaryPage: React.FC = () => {
       return;
     }
 
-    // 如果开启了提醒，先请求订阅
     if (formData.isRemind) {
-      handleRequestRemind();
+      const subscribed = await handleRequestRemind();
+      if (!subscribed) {
+        return;
+      }
     }
 
     if (editingItem) {

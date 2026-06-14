@@ -12,6 +12,8 @@ const BindPage: React.FC = () => {
   const [partnerAvatar, setPartnerAvatar] = useState('');
   const [copied, setCopied] = useState(false);
 
+  const BIND_TEMPLATE_ID = 'ye6sttAhDmQPb_KxXUIsnpoUH87dn1BAUSsUHMLVoo0';
+
   const isBound = couple && couple.user2Id;
 
   // 从分享链接获取邀请码
@@ -90,7 +92,7 @@ const BindPage: React.FC = () => {
     setPartnerAvatar(avatarUrl);
   };
 
-  const handleJoin = () => {
+  const handleJoin = async () => {
     if (!inviteCode.trim()) {
       Taro.showToast({ title: '请输入邀请码', icon: 'none' });
       return;
@@ -102,6 +104,15 @@ const BindPage: React.FC = () => {
     if (!partnerAvatar) {
       Taro.showToast({ title: '请选择头像', icon: 'none' });
       return;
+    }
+
+    // 先请求订阅消息授权，无论是否授权都继续绑定流程
+    try {
+      await Taro.requestSubscribeMessage({
+        tmplIds: [BIND_TEMPLATE_ID],
+      });
+    } catch (e) {
+      console.log('订阅授权跳过:', e);
     }
 
     const success = bindPartner(inviteCode.trim(), partnerName.trim(), partnerAvatar);

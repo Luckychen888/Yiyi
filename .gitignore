@@ -3,3 +3,4 @@ dist/
 .auth/
 .pai/
 .swc/
+node_modules

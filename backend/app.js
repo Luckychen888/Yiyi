@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
 const routes = require('./routes');
+const cronService = require('./utils/cron');
 
 const app = express();
 const PORT = process.env.PORT || 80;
@@ -108,6 +109,8 @@ async function start() {
     console.log(`📡 端口: ${PORT}`);
     console.log(`🌍 环境: ${process.env.NODE_ENV || 'development'}`);
   });
+  
+  cronService.start();
 }
 
 start();

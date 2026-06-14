@@ -42,32 +42,26 @@ const config = {
       }
     },
     uglify: {
-      enable: true,
+      enable: false,
       config: {
         compress: {
-          drop_console: true,
+          drop_console: false,
           drop_debugger: true
         }
       }
     },
     optimizeMainPackage: {
-      enable: true
+      enable: false
     },
+    commonChunks: ['runtime', 'vendors', 'taro', 'common'],
     splitChunks: {
       enable: true,
       config: {
-        minSize: 20000,
-        minChunks: 1,
         cacheGroups: {
-          vendors: {
-            name: 'vendors',
-            test: /[\\/]node_modules[\\/]/,
-            priority: -10
-          },
           common: {
             name: 'common',
             minChunks: 2,
-            priority: -20,
+            priority: 1,
             reuseExistingChunk: true
           }
         }

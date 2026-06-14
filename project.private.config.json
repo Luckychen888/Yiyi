@@ -1,6 +1,7 @@
 {
   "libVersion": "3.16.1",
-  "projectname": "%E5%B0%8F%E6%80%BF%E4%B8%93%E5%B1%9E",
+  "projectname": "恋人空间",
+  "appid": "wxc148a9c24090a2bb",
   "condition": {},
   "setting": {
     "urlCheck": true,
