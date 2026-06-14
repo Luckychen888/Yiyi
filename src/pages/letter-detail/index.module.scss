@@ -3,7 +3,7 @@
 .page {
   min-height: 100vh;
   padding: $spacing-lg $page-padding;
-  padding-bottom: 160rpx;
+  padding-bottom: 140rpx;
   background: $color-bg-page;
 }
 
@@ -16,38 +16,26 @@
   font-size: $font-size-xl;
   font-weight: $font-weight-bold;
   color: $color-text-primary;
-  margin-bottom: $spacing-sm;
 }
 
 .headerDesc {
   font-size: $font-size-md;
   color: $color-text-secondary;
+  margin-top: $spacing-xs;
 }
 
-.emptyState {
+// Empty
+.empty {
   text-align: center;
-  padding: $spacing-xl;
+  padding: 80rpx 20rpx;
 }
 
-.emptyIcon {
-  font-size: 80rpx;
-}
+.emptyIcon { font-size: 80rpx; }
+.emptyText { font-size: $font-size-lg; color: $color-text-primary; margin-top: $spacing-md; display: block; }
+.emptyDesc { font-size: $font-size-sm; color: $color-text-secondary; margin-top: $spacing-sm; display: block; }
 
-.emptyText {
-  font-size: $font-size-lg;
-  color: $color-text-primary;
-  margin-top: $spacing-md;
-}
-
-.emptyDesc {
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-  margin-top: $spacing-sm;
-}
-
-.letterList {
-  margin-bottom: $spacing-xl;
-}
+// Letter List
+.letterList { margin-bottom: $spacing-lg; }
 
 .letterCard {
   display: flex;
@@ -57,124 +45,69 @@
   padding: $spacing-md;
   margin-bottom: $spacing-sm;
   box-shadow: $shadow-card;
+  transition: transform 0.2s;
+
+  &:active { transform: scale(0.98); }
 }
 
-.letterCardMe {
-  border-left: 6rpx solid $color-primary;
-}
-
-.letterCardPartner {
-  border-left: 6rpx solid $color-secondary;
-}
-
-.letterCardLeft {
-  margin-right: $spacing-md;
-  flex-shrink: 0;
-}
-
-.letterCardAvatar {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: $radius-round;
-}
-
-.letterCardContent {
-  flex: 1;
-  min-width: 0;
-}
-
-.letterCardHeader {
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-}
-
-.letterCardName {
-  font-size: $font-size-sm;
-  color: $color-text-secondary;
-}
-
-.letterUnreadBadge {
-  background: $color-primary;
-  border-radius: $radius-xs;
-  padding: 2rpx $spacing-xs;
-}
-
-.letterUnreadText {
-  font-size: 18rpx;
-  color: #fff;
-  font-weight: $font-weight-bold;
-}
-
-.letterCardTitle {
+.cardLeft { margin-right: $spacing-md; flex-shrink: 0; }
+.cardAvatar { width: 80rpx; height: 80rpx; border-radius: 50%; }
+.cardCenter { flex: 1; min-width: 0; }
+.cardRow { display: flex; align-items: center; gap: $spacing-sm; }
+.cardName { font-size: $font-size-sm; color: $color-text-secondary; }
+.cardTitle {
   font-size: $font-size-md;
   font-weight: $font-weight-semibold;
   color: $color-text-primary;
   margin-top: $spacing-xs;
-  @include text-ellipsis;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cardMeta { display: flex; align-items: center; gap: $spacing-sm; margin-top: $spacing-xs; }
+.cardTime { font-size: $font-size-xs; color: $color-text-tertiary; }
+.cardOpen { font-size: $font-size-xs; color: $color-primary; margin-top: $spacing-xs; display: block; }
+.cardIcon { font-size: 36rpx; margin-left: $spacing-md; flex-shrink: 0; }
+
+.newBadge {
+  background: $color-primary;
+  border-radius: $radius-xs;
+  padding: 2rpx 10rpx;
 }
 
-.letterCardTime {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  margin-top: $spacing-xs;
-}
-
-.letterOpenTime {
-  font-size: $font-size-xs;
-  color: $color-primary;
-  margin-top: $spacing-xs;
-}
-
-.letterCardRight {
-  margin-left: $spacing-md;
-  flex-shrink: 0;
-}
-
-.letterCardIcon {
-  font-size: 40rpx;
-}
-
-.addButtonWrapper {
+// FAB
+.fabWrapper {
   position: fixed;
-  bottom: 40rpx;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  padding: 0 $spacing-xl;
+  bottom: 60rpx;
+  right: 32rpx;
+  z-index: 50;
 }
 
-.addButton {
-  width: 100%;
-  height: $button-height-lg;
-  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
-  border-radius: $radius-button;
+.fab {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $color-primary, $color-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   box-shadow: 0 8rpx 24rpx rgba($color-primary, 0.4);
 }
 
-.addButtonText {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-semibold;
-  color: #fff;
-}
-
+// Modal
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: flex-end;
-  z-index: 1000;
+  z-index: 100;
 }
 
 .modalContent {
   width: 100%;
-  max-height: 85vh;
+  max-height: 90vh;
   background: $color-bg-card;
   border-radius: $radius-xl $radius-xl 0 0;
   display: flex;
@@ -183,46 +116,25 @@
 
 .modalHeader {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   padding: $spacing-lg;
   border-bottom: 1rpx solid $color-border;
 }
 
-.modalTitle {
-  font-size: $font-size-lg;
-  font-weight: $font-weight-semibold;
-  color: $color-text-primary;
-}
+.modalTitle { font-size: $font-size-lg; font-weight: $font-weight-semibold; }
+.modalClose { font-size: $font-size-xl; color: $color-text-tertiary; padding: $spacing-sm; }
+.modalBody { flex: 1; padding: $spacing-lg; max-height: 65vh; overflow-y: auto; }
+.modalFooter { display: flex; padding: $spacing-lg; gap: $spacing-md; border-top: 1rpx solid $color-border; }
 
-.modalClose {
-  font-size: $font-size-xl;
-  color: $color-text-tertiary;
-  padding: $spacing-sm;
-}
+.cancelBtn { flex: 1; height: $button-height-md; background: $color-bg-page; border-radius: $radius-button; border: none; }
+.confirmBtn { flex: 1; height: $button-height-md; background: linear-gradient(135deg, $color-primary, $color-secondary); border-radius: $radius-button; border: none; }
 
-.modalBody {
-  flex: 1;
-  padding: $spacing-lg;
-  max-height: 60vh;
-}
-
-.formItem {
-  margin-bottom: $spacing-lg;
-}
-
-.formLabel {
-  font-size: $font-size-md;
-  font-weight: $font-weight-medium;
-  color: $color-text-primary;
-  margin-bottom: $spacing-sm;
-}
-
-.formTip {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  margin-bottom: $spacing-sm;
-}
+// Form
+.formItem { margin-bottom: $spacing-lg; }
+.formLabel { font-size: $font-size-md; font-weight: $font-weight-medium; color: $color-text-primary; margin-bottom: $spacing-sm; display: block; }
+.formRow { display: flex; justify-content: space-between; align-items: center; margin-bottom: $spacing-sm; }
+.formHint { font-size: $font-size-xs; color: $color-text-tertiary; }
 
 .input {
   width: 100%;
@@ -231,7 +143,6 @@
   border-radius: $radius-md;
   padding: 0 $spacing-md;
   font-size: $font-size-md;
-  color: $color-text-primary;
   box-sizing: border-box;
 }
 
@@ -242,307 +153,155 @@
   border-radius: $radius-md;
   padding: $spacing-md;
   font-size: $font-size-md;
-  color: $color-text-primary;
   box-sizing: border-box;
+  line-height: 1.8;
 }
 
-.modalFooter {
+// Template Picker
+.tplScroll { white-space: nowrap; margin-top: $spacing-sm; }
+.tplList { display: inline-flex; gap: $spacing-sm; }
+
+.tplItem {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: $radius-lg;
+  transition: all 0.2s;
+}
+
+.tplActive { transform: scale(1.05); }
+.tplName { font-size: 20rpx; color: $color-text-secondary; margin-top: $spacing-xs; }
+
+// Suggestions
+.suggestions {
   display: flex;
-  padding: $spacing-lg;
-  gap: $spacing-md;
-  border-top: 1rpx solid $color-border;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
 }
 
-.cancelButton {
-  flex: 1;
-  height: $button-height-md;
-  background: $color-bg-page;
+.suggestionItem {
+  padding: $spacing-sm $spacing-md;
+  background: linear-gradient(135deg, rgba($color-primary, 0.08), rgba($color-secondary, 0.08));
   border-radius: $radius-button;
-  border: none;
+  transition: all 0.2s;
+
+  &:active { transform: scale(0.95); }
 }
 
-.cancelButtonText {
-  font-size: $font-size-md;
-  color: $color-text-secondary;
-}
-
-.confirmButton {
-  flex: 1;
-  height: $button-height-md;
-  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
-  border-radius: $radius-button;
-  border: none;
-}
-
-.confirmButtonText {
-  font-size: $font-size-md;
-  font-weight: $font-weight-semibold;
-  color: #fff;
-}
-
-.letterView {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #FFF5F7 0%, $color-bg-page 100%);
-  padding: $spacing-lg $page-padding;
-}
-
-.letterViewHeader {
-  margin-bottom: $spacing-lg;
-}
-
-.letterViewBack {
-  font-size: $font-size-lg;
+.suggestionText {
+  font-size: $font-size-sm;
   color: $color-primary;
 }
 
-.letterPaper {
-  background: #FFFEF9;
+// Selector
+.selectorBtn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  background: $color-bg-page;
+  border-radius: $radius-md;
+}
+
+.selectorText { flex: 1; font-size: $font-size-md; color: $color-text-secondary; }
+
+.selectedTag {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: rgba($color-primary, 0.1);
+  border-radius: $radius-sm;
+  font-size: $font-size-sm;
+  color: $color-primary;
+}
+
+// Music List
+.musicItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-sm;
+  transition: background 0.2s;
+
+  &:active { background: $color-bg-page; }
+}
+
+.musicActive { background: rgba($color-primary, 0.1); }
+
+// View Page
+.viewPage {
+  min-height: 100vh;
+  padding: $spacing-lg $page-padding;
+}
+
+.viewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+}
+
+.viewBack { font-size: $font-size-lg; color: $color-primary; font-weight: 500; }
+
+.playBtn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: $radius-button;
+}
+
+.playText { font-size: $font-size-sm; color: $color-text-secondary; }
+
+.viewPaper {
+  background: $color-bg-card;
   border-radius: $radius-xl;
   padding: $spacing-xl;
   box-shadow: $shadow-popup;
-  border: 1rpx solid rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
+  min-height: 600rpx;
 }
 
-.letterPaperDecor {
-  position: absolute;
-  top: $spacing-md;
-  right: $spacing-md;
+.viewAuthor {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin: $spacing-lg 0;
+}
+
+.viewAvatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+}
+
+.viewDivider {
+  border-bottom: 1rpx dashed;
+  margin-bottom: $spacing-lg;
   opacity: 0.3;
 }
 
-.letterPaperIcon {
-  font-size: 80rpx;
-}
-
-.letterTitle {
-  font-size: $font-size-xxl;
-  font-weight: $font-weight-bold;
-  color: $color-text-primary;
+.viewMusicBadge {
+  margin-top: $spacing-lg;
+  padding: $spacing-sm $spacing-md;
+  background: rgba($color-primary, 0.1);
+  border-radius: $radius-md;
   text-align: center;
-  margin-bottom: $spacing-xl;
-}
-
-.letterFrom {
-  display: flex;
-  align-items: center;
-  margin-bottom: $spacing-xl;
-  padding-bottom: $spacing-lg;
-  border-bottom: 1rpx dashed $color-border;
-}
-
-.letterFromAvatar {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: $radius-round;
-  margin-right: $spacing-md;
-}
-
-.letterFromInfo {
-  flex: 1;
-}
-
-.letterFromName {
-  font-size: $font-size-md;
-  font-weight: $font-weight-medium;
-  color: $color-text-primary;
-}
-
-.letterFromTime {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  margin-top: $spacing-xs;
-}
-
-.letterContentWrapper {
-  min-height: 300rpx;
-}
-
-.letterContent {
-  font-size: $font-size-md;
-  color: $color-text-primary;
-  line-height: $line-height-loose;
-  white-space: pre-wrap;
-}
-
-.letterFooter {
-  text-align: center;
-  margin-top: $spacing-xl;
-  padding-top: $spacing-lg;
-  border-top: 1rpx dashed $color-border;
-}
-
-.letterFooterText {
   font-size: $font-size-sm;
-  color: $color-text-tertiary;
+  color: $color-primary;
 }
 
-.letterActions {
-  margin-top: $spacing-xl;
-}
-
-.letterDeleteBtn {
+.delBtn {
   width: 100%;
   height: $button-height-md;
   background: transparent;
   border: 1rpx solid $color-text-tertiary;
   border-radius: $radius-button;
-}
-
-.letterDeleteText {
-  font-size: $font-size-md;
-  color: $color-text-tertiary;
-}
-
-// 音乐控制
-.musicControl {
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-sm $spacing-md;
-  background: rgba($color-primary, 0.1);
-  border-radius: $radius-button;
-}
-
-.musicIcon {
-  font-size: 32rpx;
-}
-
-.musicName {
-  font-size: $font-size-sm;
-  color: $color-primary;
-}
-
-// 音乐徽章
-.musicBadge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: $spacing-xs;
-  margin-top: $spacing-lg;
-  padding: $spacing-sm $spacing-md;
-  background: linear-gradient(135deg, rgba($color-primary, 0.1), rgba($color-secondary, 0.1));
-  border-radius: $radius-md;
-}
-
-.musicBadgeIcon {
-  font-size: 28rpx;
-}
-
-.musicBadgeText {
-  font-size: $font-size-sm;
-  color: $color-primary;
-}
-
-// 音乐卡片标记
-.letterCardMeta {
-  display: flex;
-  align-items: center;
-  gap: $spacing-sm;
-  margin-top: $spacing-xs;
-}
-
-.letterCardMusic {
-  font-size: 24rpx;
-}
-
-// 音乐选择器
-.musicSelector {
-  display: flex;
-  align-items: center;
-  padding: $spacing-md;
-  background: $color-bg-page;
-  border-radius: $radius-md;
-}
-
-.musicSelectorIcon {
-  font-size: 36rpx;
-  margin-right: $spacing-sm;
-}
-
-.musicSelectorText {
-  flex: 1;
-  font-size: $font-size-md;
-  color: $color-text-secondary;
-}
-
-.musicSelectorArrow {
-  font-size: $font-size-lg;
-  color: $color-text-tertiary;
-}
-
-.musicSelected {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: $spacing-sm;
-  padding: $spacing-sm $spacing-md;
-  background: rgba($color-primary, 0.1);
-  border-radius: $radius-sm;
-}
-
-.musicSelectedName {
-  font-size: $font-size-sm;
-  color: $color-primary;
-}
-
-.musicSelectedClear {
-  font-size: $font-size-sm;
-  color: $color-text-tertiary;
-}
-
-// 音乐列表
-.musicList {
-  padding: $spacing-md 0;
-}
-
-.musicItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-md;
-  border-radius: $radius-md;
-  margin-bottom: $spacing-sm;
-  transition: all 0.2s;
-
-  &:active {
-    background: $color-bg-page;
-  }
-}
-
-.musicItemActive {
-  background: rgba($color-primary, 0.1);
-}
-
-.musicItemLeft {
-  display: flex;
-  align-items: center;
-  gap: $spacing-md;
-}
-
-.musicItemIcon {
-  font-size: 40rpx;
-}
-
-.musicItemInfo {
-  flex: 1;
-}
-
-.musicItemName {
-  font-size: $font-size-md;
-  font-weight: $font-weight-medium;
-  color: $color-text-primary;
-}
-
-.musicItemArtist {
-  font-size: $font-size-xs;
-  color: $color-text-tertiary;
-  margin-top: $spacing-xs;
-}
-
-.musicItemCheck {
-  font-size: $font-size-lg;
-  color: $color-primary;
-  font-weight: $font-weight-bold;
 }
