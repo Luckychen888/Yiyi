@@ -101,18 +101,14 @@ app.use((err, req, res, next) => {
 
 // ==================== 启动服务 ====================
 
-async function start() {
-  await initDB();
-  
-  app.listen(PORT, () => {
-    console.log(`🚀 恋人空间 API 服务已启动`);
-    console.log(`📡 端口: ${PORT}`);
-    console.log(`🌍 环境: ${process.env.NODE_ENV || 'development'}`);
-  });
-  
-  cronService.start();
-}
+app.listen(PORT, () => {
+  console.log(`🚀 恋人空间 API 服务已启动`);
+  console.log(`📡 端口: ${PORT}`);
+  console.log(`🌍 环境: ${process.env.NODE_ENV || 'development'}`);
+});
 
-start();
+initDB().then(() => {
+  cronService.start();
+});
 
 module.exports = app;

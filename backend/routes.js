@@ -1022,4 +1022,301 @@ function getNextOccurrence(dateStr) {
   return target.toISOString().split('T')[0];
 }
 
+// ==================== 账单相关API ====================
+
+/**
+ * POST /api/bill
+ * 创建账单
+ */
+router.post('/bill', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { coupleId, amount, category, categoryIcon, description, sweetWord, paidBy, paidByName, paidByAvatar, billDate, billType } = req.body;
+    const billId = generateId('bill');
+    
+    await db.query(
+      `INSERT INTO bills (id, couple_id, amount, category, category_icon, description, sweet_word, paid_by, paid_by_name, paid_by_avatar, bill_date, bill_type, created_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [billId, coupleId, amount, category || null, categoryIcon || '💰', description || null, sweetWord || null, paidBy || null, paidByName || null, paidByAvatar || null, billDate || new Date().toISOString().split('T')[0], billType || 'common']
+    );
+    
+    const bill = {
+      id: billId, coupleId, amount, category, categoryIcon: categoryIcon || '💰',
+      description, sweetWord, paidBy, paidByName, paidByAvatar,
+      billDate: billDate || new Date().toISOString().split('T')[0],
+      billType: billType || 'common',
+      createdAt: new Date().toISOString()
+    };
+    
+    res.json({ success: true, data: bill });
+  } catch (error) {
+    console.error('创建账单失败:', error);
+    res.status(500).json({ success: false, message: '创建失败' });
+  }
+});
+
+/**
+ * GET /api/bill/couple/:coupleId
+ * 获取账单列表
+ */
+router.get('/bill/couple/:coupleId', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [bills] = await db.query(
+      'SELECT * FROM bills WHERE couple_id = ? ORDER BY created_at DESC',
+      [req.params.coupleId]
+    );
+    
+    res.json({ success: true, data: bills });
+  } catch (error) {
+    console.error('获取账单列表失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+/**
+ * DELETE /api/bill/:id
+ * 删除账单
+ */
+router.delete('/bill/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query('DELETE FROM bills WHERE id = ?', [req.params.id]);
+    res.json({ success: true, message: '删除成功' });
+  } catch (error) {
+    console.error('删除账单失败:', error);
+    res.status(500).json({ success: false, message: '删除失败' });
+  }
+});
+
+// ==================== 时光胶囊/情书相关API ====================
+
+/**
+ * POST /api/letter
+ * 创建情书
+ */
+router.post('/letter', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { coupleId, title, content, images, voiceUrl, fromId, fromName, fromAvatar, toId, openAt } = req.body;
+    const letterId = generateId('letter');
+    
+    await db.query(
+      `INSERT INTO letters (id, couple_id, title, content, images, voice_url, from_id, from_name, from_avatar, to_id, open_at, created_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [letterId, coupleId, title, content || null, JSON.stringify(images || []), voiceUrl || null, fromId, fromName, fromAvatar, toId || null, openAt || null]
+    );
+    
+    const letter = {
+      id: letterId, coupleId, title, content, images: images || [],
+      voiceUrl, fromId, fromName, fromAvatar, toId,
+      sendAt: new Date().toISOString(), openAt,
+      isOpened: false, createdAt: new Date().toISOString()
+    };
+    
+    res.json({ success: true, data: letter });
+  } catch (error) {
+    console.error('创建情书失败:', error);
+    res.status(500).json({ success: false, message: '创建失败' });
+  }
+});
+
+/**
+ * GET /api/letter/couple/:coupleId
+ * 获取情书列表
+ */
+router.get('/letter/couple/:coupleId', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [letters] = await db.query(
+      'SELECT * FROM letters WHERE couple_id = ? ORDER BY created_at DESC',
+      [req.params.coupleId]
+    );
+    
+    const parsedLetters = letters.map(l => ({
+      ...l,
+      images: JSON.parse(l.images || '[]')
+    }));
+    
+    res.json({ success: true, data: parsedLetters });
+  } catch (error) {
+    console.error('获取情书列表失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+/**
+ * POST /api/letter/:id/open
+ * 打开情书
+ */
+router.post('/letter/:id/open', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query(
+      'UPDATE letters SET is_opened = 1 WHERE id = ?',
+      [req.params.id]
+    );
+    res.json({ success: true, message: '打开成功' });
+  } catch (error) {
+    console.error('打开情书失败:', error);
+    res.status(500).json({ success: false, message: '打开失败' });
+  }
+});
+
+/**
+ * DELETE /api/letter/:id
+ * 删除情书
+ */
+router.delete('/letter/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query('DELETE FROM letters WHERE id = ?', [req.params.id]);
+    res.json({ success: true, message: '删除成功' });
+  } catch (error) {
+    console.error('删除情书失败:', error);
+    res.status(500).json({ success: false, message: '删除失败' });
+  }
+});
+
+// ==================== 相册相关API ====================
+
+/**
+ * POST /api/album
+ * 上传照片
+ */
+router.post('/album', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { coupleId, url, thumbnail, description, location, takenAt, uploadedBy, uploadedByName } = req.body;
+    const photoId = generateId('photo');
+    
+    await db.query(
+      `INSERT INTO albums (id, couple_id, url, thumbnail, description, location, taken_at, uploaded_by, uploaded_by_name, created_at) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+      [photoId, coupleId, url, thumbnail || null, description || null, location || null, takenAt || null, uploadedBy || null, uploadedByName || null]
+    );
+    
+    const photo = {
+      id: photoId, coupleId, url, thumbnail, description, location,
+      takenAt, uploadedBy, uploadedByName,
+      createdAt: new Date().toISOString()
+    };
+    
+    res.json({ success: true, data: photo });
+  } catch (error) {
+    console.error('上传照片失败:', error);
+    res.status(500).json({ success: false, message: '上传失败' });
+  }
+});
+
+/**
+ * GET /api/album/couple/:coupleId
+ * 获取相册列表
+ */
+router.get('/album/couple/:coupleId', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [photos] = await db.query(
+      'SELECT * FROM albums WHERE couple_id = ? ORDER BY created_at DESC',
+      [req.params.coupleId]
+    );
+    
+    res.json({ success: true, data: photos });
+  } catch (error) {
+    console.error('获取相册列表失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+/**
+ * DELETE /api/album/:id
+ * 删除照片
+ */
+router.delete('/album/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query('DELETE FROM albums WHERE id = ?', [req.params.id]);
+    res.json({ success: true, message: '删除成功' });
+  } catch (error) {
+    console.error('删除照片失败:', error);
+    res.status(500).json({ success: false, message: '删除失败' });
+  }
+});
+
+// ==================== 管理后台 API ====================
+
+// 获取所有用户
+router.get('/admin/users', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [users] = await db.query('SELECT * FROM users ORDER BY created_at DESC');
+    res.json({ success: true, data: users });
+  } catch (error) {
+    console.error('获取用户失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+// 获取所有情侣
+router.get('/admin/couples', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [couples] = await db.query('SELECT * FROM couples ORDER BY created_at DESC');
+    res.json({ success: true, data: couples });
+  } catch (error) {
+    console.error('获取情侣失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+// 获取所有日记
+router.get('/admin/diaries', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [diaries] = await db.query('SELECT * FROM diaries ORDER BY created_at DESC');
+    res.json({ success: true, data: diaries });
+  } catch (error) {
+    console.error('获取日记失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+// 删除日记
+router.delete('/admin/diaries/:id', async (req, res) => {
+  try {
+    const db = getDB(req);
+    await db.query('DELETE FROM diary_comments WHERE diary_id = ?', [req.params.id]);
+    await db.query('DELETE FROM diary_likes WHERE diary_id = ?', [req.params.id]);
+    await db.query('DELETE FROM diaries WHERE id = ?', [req.params.id]);
+    res.json({ success: true, message: '删除成功' });
+  } catch (error) {
+    console.error('删除日记失败:', error);
+    res.status(500).json({ success: false, message: '删除失败' });
+  }
+});
+
+// 获取所有愿望
+router.get('/admin/wishes', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [wishes] = await db.query('SELECT * FROM wishes ORDER BY created_at DESC');
+    res.json({ success: true, data: wishes });
+  } catch (error) {
+    console.error('获取愿望失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
+// 获取所有纪念日
+router.get('/admin/anniversaries', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [anniversaries] = await db.query('SELECT * FROM anniversaries ORDER BY created_at DESC');
+    res.json({ success: true, data: anniversaries });
+  } catch (error) {
+    console.error('获取纪念日失败:', error);
+    res.status(500).json({ success: false, message: '获取失败' });
+  }
+});
+
 module.exports = router;
