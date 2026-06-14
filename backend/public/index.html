@@ -96,6 +96,9 @@ tr:hover td{background:#FFF8FA}
 <button data-t="letters">💌 情书</button>
 <button data-t="albums">📷 相册</button>
 <button data-t="messages">💬 消息</button>
+<button data-t="status">🖥️ 服务</button>
+<button data-t="logs">📋 日志</button>
+<button data-t="database">🗄️ 数据库</button>
 </nav></div></header>
 
 <main class="mn" id="main"></main>
@@ -147,7 +150,8 @@ switch(t){
 case'dashboard':await loadDash();break;case'users':await loadUsers();break;case'couples':await loadCouples();break;
 case'diaries':await loadDiaries();break;case'wishes':await loadWishes();break;case'anniversaries':await loadAnni();break;
 case'bills':await loadBills();break;case'letters':await loadLetters();break;case'albums':await loadAlbums();break;
-case'messages':await loadMsgs();break;
+case'messages':await loadMsgs();break;case'status':await loadStatus();break;case'logs':await loadLogs();break;
+case'database':await loadDatabase();break;
 }}
 
 // Dashboard
@@ -317,6 +321,88 @@ mkTable(['用户','类型','纪念日','状态','时间'],d.slice(0,50).map(m=>`
 <td><span class="bg bg-${m.status==='sent'?'ok':m.status==='failed'?'e':'w'}">${m.status==='sent'?'已发送':m.status==='failed'?'失败':'发送中'}</span></td>
 <td style="color:var(--tx2)">${fd(m.created_at)}</td>
 </tr>`)));}
+
+// Server Status
+async function loadStatus(){
+const d=await f('/admin/status');
+if(!d){M.innerHTML='<div class="emp"><div class="emp-i">❌</div><div class="emp-t">无法获取服务状态</div></div>';return;}
+M.innerHTML=mkStats([
+{e:'⏱️',l:'运行时间',v:d.uptimeFormatted,c:'gn'},
+{e:'💾',l:'内存使用',v:d.memory.heap,c:'bl'},
+{e:'📊',l:'堆内存',v:d.memory.rss,c:'pp'},
+{e:'🟢',l:'Node版本',v:d.nodeVersion,c:'og'}
+])+mkCard('🖥️ 服务详情','',`<div style="padding:20px">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+<div style="background:var(--bg);border-radius:12px;padding:18px">
+<h3 style="font-size:14px;margin-bottom:14px;color:var(--p)">📦 基本信息</h3>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd)"><span style="color:var(--tx2)">版本</span><strong>${d.version}</strong></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd)"><span style="color:var(--tx2)">环境</span><span class="bg bg-ok">${d.env}</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd)"><span style="color:var(--tx2)">平台</span><span>${d.platform}</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--tx2)">运行时间</span><strong>${d.uptimeFormatted}</strong></div>
+</div>
+<div style="background:var(--bg);border-radius:12px;padding:18px">
+<h3 style="font-size:14px;margin-bottom:14px;color:var(--p)">🗄️ 数据库</h3>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd)"><span style="color:var(--tx2)">主机</span><span>${d.dbHost}</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd)"><span style="color:var(--tx2)">数据库</span><strong>${d.dbName}</strong></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd)"><span style="color:var(--tx2)">内存</span><span>${d.memory.heap} / ${d.memory.heapTotal}</span></div>
+<div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--tx2)">RSS</span><span>${d.memory.rss}</span></div>
+</div>
+</div>
+${d.tableStats?`<div style="margin-top:20px"><h3 style="font-size:14px;margin-bottom:12px">📊 数据表统计</h3><div style="display:flex;flex-wrap:wrap;gap:8px">${d.tableStats.map(t=>`<div style="background:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px"><strong>${t.name}</strong> <span style="color:var(--tx2)">${t.count>=0?t.count+'条':'-'}</span></div>`).join('')}</div></div>`:''}
+</div>`);}
+
+// Logs
+async function loadLogs(){
+const d=await f('/admin/logs?limit=100')||[];
+const sourceIcons={message:'💬',diary:'📝',user:'👤',couple:'💑'};
+const sourceColors={message:'i',diary:'bl',user:'pk',couple:'pp'};
+const typeLabels={create:'创建',register:'注册',bind:'绑定',sent:'发送',failed:'失败'};
+M.innerHTML=mkStats([{e:'📋',l:'日志总数',v:d.length,c:'gn'}])+
+mkCard('📋 操作日志',`<div class="sw"><input class="si" placeholder="搜索日志..." oninput="filterT(this,'logBody')"></div>`,
+mkTable(['类型','详情','时间'],d.map(l=>`<tr>
+<td><span class="bg bg-${sourceColors[l.source]||'i'}">${sourceIcons[l.source]||'📋'} ${l.source}</span></td>
+<td>${l.detail||l.author||l.type||'-'}</td>
+<td style="color:var(--tx2)">${fd(l.time)}</td>
+</tr>`)));}
+
+// Database
+let curDbTable='users';let curDbPage=1;
+async function loadDatabase(){
+const tables=await f('/admin/db/tables')||[];
+if(!tables.length){M.innerHTML='<div class="emp"><div class="emp-i">🗄️</div><div class="emp-t">无法连接数据库</div></div>';return;}
+const totalRows=tables.reduce((s,t)=>s+(t.count||0),0);
+M.innerHTML=mkStats([
+{e:'🗄️',l:'数据表',v:tables.length,c:'pp'},
+{e:'📊',l:'总记录数',v:totalRows,c:'bl'}
+])+`<div class="cd"><div class="cd-h"><div class="cd-t">🗄️ 数据库管理</div>
+<div class="cd-acts"><div style="display:flex;gap:4px;flex-wrap:wrap">${tables.map(t=>`<button class="btn btn-sm ${t.name===curDbTable?'btn-p':'btn-g'}" onclick="switchTable('${t.name}')">${t.name} (${t.count})</button>`).join('')}</div></div></div>
+<div class="tw"><div style="display:flex;gap:10px;margin-bottom:14px"><input class="si" style="flex:1" id="sqlInput" placeholder="输入SQL查询语句（仅SELECT）..." onkeydown="if(event.key==='Enter')runSql()"><button class="btn btn-p" onclick="runSql()">执行</button></div>
+<div id="dbContent"><div class="ld"><div class="sp"></div></div></div></div></div>`;
+loadTableData(curDbTable);}
+
+async function switchTable(t){curDbTable=t;curDbPage=1;loadDatabase();}
+
+async function loadTableData(table){
+const d=await fetch(API+`/admin/db/query/${table}?page=${curDbPage}&limit=15`).then(r=>r.json());
+const el=document.getElementById('dbContent');if(!el)return;
+if(!d.success||!d.data){el.innerHTML='<div class="emp"><div class="emp-t">查询失败</div></div>';return;}
+const{columns,rows,pagination}=d.data;
+el.innerHTML=mkTable(columns.map(c=>`<span style="font-weight:500">${c}</span>`),
+rows.map(r=>`<tr>${columns.map(c=>`<td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${String(r[c]||'')}">${r[c]===null?'<span style=color:var(--tx3)>NULL</span>':typeof r[c]==='object'?JSON.stringify(r[c]):String(r[c])}</td>`).join('')}</tr>`))+
+(pagination.totalPages>1?`<div style="display:flex;justify-content:center;gap:8px;padding:14px"><button class="btn btn-sm btn-g" ${pagination.page<=1?'disabled':''} onclick="goDbPage(${pagination.page-1})">‹</button><span style="font-size:13px;color:var(--tx2);padding:6px">第${pagination.page}/${pagination.totalPages}页 共${pagination.total}条</span><button class="btn btn-sm btn-g" ${pagination.page>=pagination.totalPages?'disabled':''} onclick="goDbPage(${pagination.page+1})">›</button></div>`:'');}
+
+function goDbPage(p){curDbPage=p;loadTableData(curDbTable);}
+
+async function runSql(){
+const sql=document.getElementById('sqlInput')?.value?.trim();
+if(!sql){toast('请输入SQL语句','er');return;}
+const el=document.getElementById('dbContent');el.innerHTML='<div class="ld"><div class="sp"></div></div>';
+try{
+const r=await fetch(API+'/admin/db/sql',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sql})});
+const d=await r.json();
+if(!d.success){el.innerHTML=`<div style="background:#FFEBEE;padding:14px;border-radius:8px;color:var(--err)">${d.message}</div>`;return;}
+el.innerHTML=`<div style="margin-bottom:10px;font-size:13px;color:var(--tx2)">✅ 查询成功 · ${d.data.rowCount}行 · ${d.data.duration}ms</div>`+mkTable(d.data.columns,d.data.rows.map(r=>`<tr>${d.data.columns.map(c=>`<td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${String(r[c]||'')}">${r[c]===null?'NULL':typeof r[c]==='object'?JSON.stringify(r[c]):String(r[c])}</td>`).join('')}</tr>`));
+}catch(e){el.innerHTML=`<div style="background:#FFEBEE;padding:14px;border-radius:8px;color:var(--err)">执行失败: ${e.message}</div>`;}}
 
 // Delete
 async function delItem(p,n){if(!confirm('确定删除该'+n+'吗？'))return;if(await fm(p,'DELETE')){toast('删除成功','ok');loadTab(curTab)}else toast('删除失败','er')}

@@ -1506,4 +1506,254 @@ router.delete('/admin/albums/:id', async (req, res) => {
   }
 });
 
+// ==================== 系统管理 API ====================
+
+// 服务状态
+router.get('/admin/status', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const uptime = process.uptime();
+    const memUsage = process.memoryUsage();
+    
+    // 获取数据库统计
+    const [tables] = await db.query("SHOW TABLES");
+    const tableNames = tables.map(t => Object.values(t)[0]);
+    
+    const tableStats = [];
+    for (const table of tableNames) {
+      try {
+        const [count] = await db.query(`SELECT COUNT(*) as count FROM \`${table}\``);
+        tableStats.push({ name: table, count: count[0].count });
+      } catch (e) {
+        tableStats.push({ name: table, count: -1 });
+      }
+    }
+    
+    res.json({
+      success: true,
+      data: {
+        version: '1.2.0',
+        uptime: Math.floor(uptime),
+        uptimeFormatted: formatUptime(uptime),
+        memory: {
+          rss: (memUsage.rss / 1024 / 1024).toFixed(1) + 'MB',
+          heap: (memUsage.heapUsed / 1024 / 1024).toFixed(1) + 'MB',
+          heapTotal: (memUsage.heapTotal / 1024 / 1024).toFixed(1) + 'MB'
+        },
+        nodeVersion: process.version,
+        platform: process.platform,
+        env: process.env.NODE_ENV || 'development',
+        dbHost: process.env.DB_HOST || 'localhost',
+        dbName: process.env.DB_NAME || 'wxcloudrun',
+        tableStats
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: '获取状态失败' });
+  }
+});
+
+function formatUptime(seconds) {
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (d > 0) return `${d}天${h}小时${m}分`;
+  if (h > 0) return `${h}小时${m}分`;
+  return `${m}分钟`;
+}
+
+// 数据库表列表
+router.get('/admin/db/tables', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const [tables] = await db.query("SHOW TABLES");
+    const tableNames = tables.map(t => Object.values(t)[0]);
+    
+    const result = [];
+    for (const table of tableNames) {
+      try {
+        const [count] = await db.query(`SELECT COUNT(*) as count FROM \`${table}\``);
+        const [cols] = await db.query(`DESCRIBE \`${table}\``);
+        result.push({
+          name: table,
+          count: count[0].count,
+          columns: cols.map(c => ({ name: c.Field, type: c.Type, key: c.Key }))
+        });
+      } catch (e) {
+        result.push({ name: table, count: -1, columns: [] });
+      }
+    }
+    
+    res.json({ success: true, data: result });
+  } catch (error) {
+    res.status(500).json({ success: false, message: '获取表列表失败' });
+  }
+});
+
+// 查询表数据
+router.get('/admin/db/query/:table', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const table = req.params.table;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
+    const search = req.query.search || '';
+    
+    // 验证表名
+    const [tables] = await db.query("SHOW TABLES");
+    const validTables = tables.map(t => Object.values(t)[0]);
+    if (!validTables.includes(table)) {
+      return res.status(400).json({ success: false, message: '无效的表名' });
+    }
+    
+    // 获取列信息
+    const [cols] = await db.query(`DESCRIBE \`${table}\``);
+    const columns = cols.map(c => c.Field);
+    
+    // 构建查询
+    let whereClause = '';
+    let queryParams = [];
+    
+    if (search) {
+      const conditions = columns.map(col => `\`${col}\` LIKE ?`).join(' OR ');
+      whereClause = `WHERE ${conditions}`;
+      queryParams = columns.map(() => `%${search}%`);
+    }
+    
+    // 获取总数
+    const [countResult] = await db.query(`SELECT COUNT(*) as total FROM \`${table}\` ${whereClause}`, queryParams);
+    const total = countResult[0].total;
+    
+    // 获取数据
+    const [rows] = await db.query(
+      `SELECT * FROM \`${table}\` ${whereClause} ORDER BY id DESC LIMIT ? OFFSET ?`,
+      [...queryParams, limit, offset]
+    );
+    
+    res.json({
+      success: true,
+      data: {
+        columns,
+        rows,
+        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) }
+      }
+    });
+  } catch (error) {
+    console.error('查询表数据失败:', error);
+    res.status(500).json({ success: false, message: '查询失败: ' + error.message });
+  }
+});
+
+// 执行SQL查询（只允许SELECT）
+router.post('/admin/db/sql', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const { sql } = req.body;
+    
+    if (!sql) {
+      return res.status(400).json({ success: false, message: '请输入SQL语句' });
+    }
+    
+    // 安全检查：只允许SELECT
+    const trimmedSql = sql.trim().toUpperCase();
+    if (!trimmedSql.startsWith('SELECT') && !trimmedSql.startsWith('SHOW') && !trimmedSql.startsWith('DESCRIBE')) {
+      return res.status(400).json({ success: false, message: '只允许SELECT/SHOW/DESCRIBE查询' });
+    }
+    
+    const startTime = Date.now();
+    const [rows, fields] = await db.query(sql);
+    const duration = Date.now() - startTime;
+    
+    const columns = fields ? fields.map(f => f.name) : Object.keys(rows[0] || {});
+    
+    res.json({
+      success: true,
+      data: {
+        columns,
+        rows: Array.isArray(rows) ? rows : [rows],
+        rowCount: Array.isArray(rows) ? rows.length : 1,
+        duration
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: '查询失败: ' + error.message });
+  }
+});
+
+// 获取数据库表结构
+router.get('/admin/db/schema/:table', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const table = req.params.table;
+    
+    const [cols] = await db.query(`DESCRIBE \`${table}\``);
+    const [createTable] = await db.query(`SHOW CREATE TABLE \`${table}\``);
+    
+    res.json({
+      success: true,
+      data: {
+        columns: cols,
+        createStatement: createTable[0]['Create Table']
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: '获取表结构失败' });
+  }
+});
+
+// 获取操作日志（从数据库查询最近的记录）
+router.get('/admin/logs', async (req, res) => {
+  try {
+    const db = getDB(req);
+    const type = req.query.type || 'all';
+    const limit = parseInt(req.query.limit) || 50;
+    
+    const logs = [];
+    
+    // 消息日志
+    if (type === 'all' || type === 'messages') {
+      const [msgLogs] = await db.query(
+        'SELECT id, user_id as userId, message_type as type, status, created_at as time FROM message_logs ORDER BY created_at DESC LIMIT ?',
+        [limit]
+      );
+      logs.push(...msgLogs.map(l => ({ ...l, source: 'message' })));
+    }
+    
+    // 最近的日记
+    if (type === 'all' || type === 'diaries') {
+      const [diaries] = await db.query(
+        'SELECT id, author_name as author, LEFT(content, 50) as detail, created_at as time FROM diaries ORDER BY created_at DESC LIMIT ?',
+        [Math.min(limit, 20)]
+      );
+      logs.push(...diaries.map(d => ({ ...d, source: 'diary', type: 'create' })));
+    }
+    
+    // 最近的用户
+    if (type === 'all' || type === 'users') {
+      const [users] = await db.query(
+        'SELECT id, nickname as author, created_at as time FROM users ORDER BY created_at DESC LIMIT ?',
+        [Math.min(limit, 20)]
+      );
+      logs.push(...users.map(u => ({ ...u, source: 'user', type: 'register', detail: u.author + ' 注册' })));
+    }
+    
+    // 最近的情侣绑定
+    if (type === 'all' || type === 'couples') {
+      const [couples] = await db.query(
+        "SELECT id, CONCAT(user1_name, ' & ', user2_name) as author, start_date as detail, created_at as time FROM couples WHERE user2_id IS NOT NULL ORDER BY created_at DESC LIMIT ?",
+        [Math.min(limit, 20)]
+      );
+      logs.push(...couples.map(c => ({ ...c, source: 'couple', type: 'bind' })));
+    }
+    
+    // 按时间排序
+    logs.sort((a, b) => new Date(b.time) - new Date(a.time));
+    
+    res.json({ success: true, data: logs.slice(0, limit) });
+  } catch (error) {
+    res.status(500).json({ success: false, message: '获取日志失败' });
+  }
+});
+
 module.exports = router;
