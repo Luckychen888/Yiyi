@@ -6,30 +6,30 @@ import { useCoupleStore } from '../../store/useCoupleStore';
 import { userService, coupleService } from '../../services/api';
 
 const LoginPage: React.FC = () => {
-  const { setCouple, setBound, setCurrentUser } = useCoupleStore();
+  const { setCouple, setBound, setCurrentUser, currentUserId } = useCoupleStore();
   const [avatar, setAvatar] = useState('');
   const [nickname, setNickname] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isAutoLogin, setIsAutoLogin] = useState(true);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
-    checkAutoLogin();
+    checkLoginStatus();
   }, []);
 
-  const checkAutoLogin = async () => {
+  const checkLoginStatus = async () => {
     try {
       const isLogin = Taro.getStorageSync('isLogin');
       const userId = Taro.getStorageSync('userId');
-      
+
       if (isLogin && userId) {
-        setIsAutoLogin(true);
+        // 已登录，恢复状态并跳转
         await restoreLoginState();
       } else {
-        setIsAutoLogin(false);
+        // 未登录，显示登录页
+        setShowLogin(true);
       }
     } catch (error) {
-      console.error('检查自动登录失败:', error);
-      setIsAutoLogin(false);
+      setShowLogin(true);
     }
   };
 
@@ -48,14 +48,10 @@ const LoginPage: React.FC = () => {
         setBound(true);
       }
 
-      Taro.showToast({ title: '欢迎回来', icon: 'success' });
-      
-      setTimeout(() => {
-        Taro.switchTab({ url: '/pages/home/index' });
-      }, 1500);
+      // 直接跳转，不显示loading
+      Taro.switchTab({ url: '/pages/home/index' });
     } catch (error) {
-      console.error('恢复登录状态失败:', error);
-      setIsAutoLogin(false);
+      setShowLogin(true);
     }
   };
 
@@ -68,31 +64,44 @@ const LoginPage: React.FC = () => {
     setNickname(e.detail.value);
   };
 
+  // 微信快捷登录（新版本使用chooseAvatar + input nickname）
   const handleQuickLogin = async () => {
     setIsLoading(true);
-    
+
     try {
       const { code } = await Taro.login();
-      
-      const userProfile = await Taro.getUserProfile({
-        desc: '用于完善会员资料'
-      });
 
-      const { nickName, avatarUrl } = userProfile.userInfo;
-      
+      // 尝试获取用户信息
+      let nickName = nickname || '微信用户';
+      let avatarUrl = avatar || '';
+
+      // 尝试getUserProfile（兼容旧版本）
+      try {
+        const userProfile: any = await Taro.getUserProfile({
+          desc: '用于完善会员资料'
+        });
+        if (userProfile.userInfo) {
+          nickName = userProfile.userInfo.nickName || nickName;
+          avatarUrl = userProfile.userInfo.avatarUrl || avatarUrl;
+        }
+      } catch (e) {
+        // getUserProfile失败，使用输入的信息
+        if (!nickname) {
+          setIsLoading(false);
+          Taro.showToast({ title: '请输入昵称', icon: 'none' });
+          return;
+        }
+      }
+
       await doLogin(nickName, avatarUrl, code);
     } catch (error: any) {
-      console.error('微信授权失败:', error);
-      if (error.errMsg && error.errMsg.includes('auth deny')) {
-        Taro.showToast({ title: '请授权登录', icon: 'none' });
-      } else {
-        Taro.showToast({ title: '授权失败，请重试', icon: 'none' });
-      }
+      Taro.showToast({ title: '登录失败，请重试', icon: 'none' });
     } finally {
       setIsLoading(false);
     }
   };
 
+  // 手动登录
   const handleLogin = async () => {
     if (!avatar) {
       Taro.showToast({ title: '请选择头像', icon: 'none' });
@@ -109,7 +118,6 @@ const LoginPage: React.FC = () => {
       const { code } = await Taro.login();
       await doLogin(nickname.trim(), avatar, code);
     } catch (error) {
-      console.error('登录失败:', error);
       Taro.showToast({ title: '登录失败，请重试', icon: 'none' });
     } finally {
       setIsLoading(false);
@@ -131,9 +139,11 @@ const LoginPage: React.FC = () => {
 
       const userInfo = loginRes.data;
 
+      // 获取情侣关系
       const coupleRes: any = await coupleService.getCoupleInfoByUser(userInfo.id);
       const coupleData = coupleRes.success ? coupleRes.data : null;
 
+      // 更新状态
       setCurrentUser(userInfo.id, userInfo.nickname, userInfo.avatar);
 
       if (coupleData) {
@@ -141,6 +151,7 @@ const LoginPage: React.FC = () => {
         setBound(true);
       }
 
+      // 保存到本地存储
       Taro.setStorageSync('userId', userInfo.id);
       Taro.setStorageSync('userName', userInfo.nickname);
       Taro.setStorageSync('userAvatar', userInfo.avatar);
@@ -153,17 +164,18 @@ const LoginPage: React.FC = () => {
 
       setTimeout(() => {
         Taro.switchTab({ url: '/pages/home/index' });
-      }, 1500);
+      }, 1000);
     } catch (error) {
       throw error;
     }
   };
 
-  if (isAutoLogin) {
+  // 未显示登录页时（自动登录中）
+  if (!showLogin) {
     return (
       <View className={styles.loadingPage}>
         <View className={styles.loadingLogo}>
-          <Text className={styles.loadingIcon}>❤️</Text>
+          <Text className={styles.loadingIcon}>💕</Text>
         </View>
         <Text className={styles.loadingText}>正在加载...</Text>
       </View>
@@ -175,12 +187,13 @@ const LoginPage: React.FC = () => {
       <View className={styles.loginContainer}>
         <View className={styles.logoSection}>
           <View className={styles.logo}>
-            <Text className={styles.logoText}>❤️</Text>
+            <Text className={styles.logoText}>💕</Text>
           </View>
           <Text className={styles.appTitle}>恋人空间</Text>
           <Text className={styles.appDesc}>记录属于你们的甜蜜时光</Text>
         </View>
 
+        {/* 微信快捷登录 */}
         <Button
           className={styles.quickLoginButton}
           onClick={handleQuickLogin}
@@ -197,6 +210,7 @@ const LoginPage: React.FC = () => {
           <View className={styles.dividerLine}></View>
         </View>
 
+        {/* 手动登录表单 */}
         <View className={styles.formSection}>
           <View className={styles.formItem}>
             <Text className={styles.formLabel}>头像</Text>
@@ -219,6 +233,7 @@ const LoginPage: React.FC = () => {
             <Text className={styles.formLabel}>昵称</Text>
             <Input
               className={styles.input}
+              type="nickname"
               placeholder="请输入您的昵称"
               value={nickname}
               onInput={handleNicknameChange}

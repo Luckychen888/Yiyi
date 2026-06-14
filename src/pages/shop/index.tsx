@@ -14,6 +14,11 @@ const ShopPage: React.FC = () => {
   const [points, setPoints] = useState(0);
 
   useEffect(() => {
+    const isLogin = Taro.getStorageSync('isLogin');
+    if (!isLogin) {
+      Taro.redirectTo({ url: '/pages/login/index' });
+      return;
+    }
     if (couple) {
       loadTasks();
       loadPoints();

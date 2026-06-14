@@ -10,6 +10,11 @@ const MinePage: React.FC = () => {
   const completedWishes = wishes.filter(w => w.isCompleted).length;
 
   useEffect(() => {
+    const isLogin = Taro.getStorageSync('isLogin');
+    if (!isLogin) {
+      Taro.redirectTo({ url: '/pages/login/index' });
+      return;
+    }
     if (couple) {
       loadAllData();
     }

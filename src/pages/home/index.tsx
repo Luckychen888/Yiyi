@@ -24,6 +24,15 @@ const HomePage: React.FC = () => {
   const [currentLoveWord, setCurrentLoveWord] = useState('');
 
   useEffect(() => {
+    // 检查登录状态
+    const isLogin = Taro.getStorageSync('isLogin');
+    const userId = Taro.getStorageSync('userId');
+    
+    if (!isLogin || !userId) {
+      Taro.redirectTo({ url: '/pages/login/index' });
+      return;
+    }
+
     initFromStorage();
     const days = calculateLoveDays();
     setLoveDay(days);

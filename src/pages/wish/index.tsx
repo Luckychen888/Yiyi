@@ -11,6 +11,11 @@ const WishPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('全部');
 
   useEffect(() => {
+    const isLogin = Taro.getStorageSync('isLogin');
+    if (!isLogin) {
+      Taro.redirectTo({ url: '/pages/login/index' });
+      return;
+    }
     loadWishes();
   }, []);
 

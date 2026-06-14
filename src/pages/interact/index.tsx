@@ -37,6 +37,13 @@ const InteractPage: React.FC = () => {
   const [waterCount, setWaterCount] = useState(28);
   const [fertilizerCount, setFertilizerCount] = useState(12);
 
+  useEffect(() => {
+    const isLogin = Taro.getStorageSync('isLogin');
+    if (!isLogin) {
+      Taro.redirectTo({ url: '/pages/login/index' });
+    }
+  }, []);
+
   const matchScore = Math.round((QUIZZES.filter(q => q.match).length / QUIZZES.length) * 100);
   const currentStage = TREE_STAGES.find(s => treeExp >= s.minExp) || TREE_STAGES[0];
   const nextStage = TREE_STAGES.find(s => s.minExp > treeExp) || TREE_STAGES[TREE_STAGES.length - 1];
