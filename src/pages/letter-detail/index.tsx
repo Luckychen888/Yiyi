@@ -113,7 +113,6 @@ const LetterDetailPage: React.FC = () => {
   const [viewingLetter, setViewingLetter] = useState<any>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showMusicPicker, setShowMusicPicker] = useState(false);
-  const [showTemplatePicker, setShowTemplatePicker] = useState(false);
   const [audioContext, setAudioContext] = useState<any>(null);
   const [formData, setFormData] = useState({
     title: '',
@@ -160,6 +159,7 @@ const LetterDetailPage: React.FC = () => {
         openAt: formData.openAt || undefined,
         musicUrl: formData.musicUrl || undefined,
         musicName: formData.musicName || undefined,
+        template: formData.template || 'romantic',
       });
 
       if (response.success) {

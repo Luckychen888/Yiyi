@@ -6,7 +6,7 @@ import { useCoupleStore } from '../../store/useCoupleStore';
 import { userService, coupleService } from '../../services/api';
 
 const LoginPage: React.FC = () => {
-  const { setCouple, setBound, setCurrentUser, currentUserId } = useCoupleStore();
+  const { setCouple, setBound, setCurrentUser } = useCoupleStore();
   const [avatar, setAvatar] = useState('');
   const [nickname, setNickname] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -233,7 +233,6 @@ const LoginPage: React.FC = () => {
             <Text className={styles.formLabel}>昵称</Text>
             <Input
               className={styles.input}
-              type="nickname"
               placeholder="请输入您的昵称"
               value={nickname}
               onInput={handleNicknameChange}

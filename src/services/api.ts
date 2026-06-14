@@ -385,11 +385,14 @@ export const letterService = {
     content?: string;
     images?: string[];
     voiceUrl?: string;
+    musicUrl?: string;
+    musicName?: string;
     fromId: string;
     fromName: string;
     fromAvatar: string;
     toId?: string;
     openAt?: string;
+    template?: string;
   }) {
     return request({
       url: '/api/letter',

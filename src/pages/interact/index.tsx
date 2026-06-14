@@ -32,7 +32,7 @@ const QUIZZES = [
 ];
 
 const InteractPage: React.FC = () => {
-  const { diaries, couple } = useCoupleStore();
+  const { diaries } = useCoupleStore();
   const [treeExp, setTreeExp] = useState(450);
   const [waterCount, setWaterCount] = useState(28);
   const [fertilizerCount, setFertilizerCount] = useState(12);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Button, Picker } from '@tarojs/components';
+import { View, Text, ScrollView, Button, Picker, Input } from '@tarojs/components';
 import Taro, { useShareAppMessage, useShareTimeline } from '@tarojs/taro';
 import styles from './index.module.scss';
 import { useCoupleStore } from '../../store/useCoupleStore';
